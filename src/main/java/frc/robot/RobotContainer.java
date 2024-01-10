@@ -56,7 +56,7 @@ public class RobotContainer {
 
     driver.x().whileTrue(new RunCommand(swerveSubsystem::xConfig,swerveSubsystem));
 
-    driver.a().onTrue(Autos.ballerAuto(swerveSubsystem));
+    driver.a().onTrue(Autos.pathPlannerTest(swerveSubsystem));
 
     // Configure the trigger bindings
     configureBindings();
