@@ -90,8 +90,8 @@ public class FollowTrajectory extends Command {
         SmartDashboard.putNumber("transSpeed",transSpeed);
 
         //swerveSubsystem.drive(0,0,0);
-        //swerveSubsystem.driveToPose(pPose);
-        //swerveSubsystem.driveToPose(pPose,0,0,Math.cos(angleOfTravel)*transSpeed, Math.sin(angleOfTravel)*transSpeed, rotVelocity);
+        //swerveSubsystem.driveToPose(sampledPoseNow);
+        //swerveSubsystem.driveToPose(sampledPoseNow,0,0,Math.cos(angleOfTravel)*transSpeed, Math.sin(angleOfTravel)*transSpeed, rotVelocity);
 
         swerveSubsystem.driveToPose(sampledPoseNow,0.2,0.2,Math.cos(angleOfTravel)*transSpeed, Math.sin(angleOfTravel)*transSpeed, rotVelocity);
 

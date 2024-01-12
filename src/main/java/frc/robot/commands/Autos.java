@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -15,7 +16,7 @@ import static frc.robot.Constants.FieldConstants.*;
 public class Autos {
 
     public static Command pathPlannerTest(SwerveSubsystem swerveSubsystem){
-        var path = PathPlannerPath.fromPathFile("testpath").getTrajectory(new ChassisSpeeds(0,0,0),Rotation2d.fromDegrees(0));
+        var path = PathPlannerPath.fromPathFile("New New Path").getTrajectory(new ChassisSpeeds(0,0,0),Rotation2d.fromDegrees(0));
 
         Command resetPose = new InstantCommand(()->swerveSubsystem.resetOdometry(path.getInitialTargetHolonomicPose()));
         Command trajectoryCommand = new FollowTrajectory(swerveSubsystem, path);
