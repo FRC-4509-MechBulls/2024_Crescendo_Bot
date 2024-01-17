@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -56,7 +57,7 @@ public class RobotContainer {
 
     driver.x().whileTrue(new RunCommand(swerveSubsystem::xConfig,swerveSubsystem));
 
-    driver.a().onTrue(Autos.pathPlannerTest(swerveSubsystem));
+    driver.a().onTrue(Autos.testAuto());
 
     // Configure the trigger bindings
     configureBindings();
@@ -74,11 +75,12 @@ public class RobotContainer {
    */
 
   private void createAutos(){
-    SmartDashboard.putData(autoChooser);
-
     autoChooser.setDefaultOption("no auto :'( ", null);
+    autoChooser.addOption("test",Autos.testAuto());
 
+    //autoChooser = AutoBuilder.buildAutoChooser();
 
+    SmartDashboard.putData(autoChooser);
 
   }
 

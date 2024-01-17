@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -23,6 +24,10 @@ public class Autos {
 
         return resetPose.andThen(trajectoryCommand);
 
+    }
+
+    public static Command testAuto(){
+        return new PathPlannerAuto("New Auto");
     }
 
 

@@ -26,7 +26,7 @@ public final class Constants {
     public static final double translationkP = 2;
     public static final double rotationkP = 2;
 
-    public static final double maxTranslation = 6.5;
+    public static final double maxTranslation = 6.5; //no longer used
     public static final double maxRotation = 2;
 
   }
