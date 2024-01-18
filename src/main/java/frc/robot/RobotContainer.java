@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.Autos;
+import frc.robot.commands.drive.Alignments;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 import frc.robot.subsystems.drive.VisionSubsystem;
 
@@ -57,7 +58,7 @@ public class RobotContainer {
 
     driver.x().whileTrue(new RunCommand(swerveSubsystem::xConfig,swerveSubsystem));
 
-    driver.a().onTrue(Autos.testAuto());
+    driver.a().whileTrue(Alignments.speakerAlignTest);
 
     // Configure the trigger bindings
     configureBindings();
