@@ -112,6 +112,8 @@ VisionSubsystem visionSubsystem;
   }
 
   ChassisSpeeds getRobotRelativeSpeeds(){
+    if(Robot.isSimulation())
+      return new ChassisSpeeds(simXMeters,simYMeters,simRad);
     return kinematics.toChassisSpeeds(frontLeft.getState(), frontRight.getState(), rearLeft.getState(), rearRight.getState());
   }
 
@@ -195,6 +197,15 @@ public void xConfig() {
 
 Rotation2d lastStillHeading = new Rotation2d();
 public void drive(double xMeters,double yMeters, double rad){
+
+  if(Robot.isSimulation()){
+    simXMeters = xMeters;
+    simYMeters = yMeters;
+    simRad = rad;
+
+  }
+
+
   if(Math.abs(rad)>radPerSecondDeadband || lastStillHeading.getDegrees() == 0){
     lastStillHeading = Rotation2d.fromDegrees(pigeon.getAngle());
   }
@@ -213,30 +224,32 @@ public void drive(double xMeters,double yMeters, double rad){
 
   setStates(states);
 
-  if(Robot.isSimulation()){
-    if(lastSimDriveUpdateTime == 0)
-      lastSimDriveUpdateTime = Timer.getFPGATimestamp();
 
-    Rotation2d newAngle = Rotation2d.fromRadians(odometry.getEstimatedPosition().getRotation().getRadians() + rad * (Timer.getFPGATimestamp() - lastSimDriveUpdateTime));
-
-    double hypot = Math.hypot(xMeters,yMeters);
-    double angOfTranslation = Math.atan2(yMeters,xMeters);
-
-    Pose2d newPose = new Pose2d(
-            odometry.getEstimatedPosition().getX() + hypot*Math.cos(angOfTranslation+newAngle.getRadians()) *  (Timer.getFPGATimestamp() - lastSimDriveUpdateTime),
-            odometry.getEstimatedPosition().getY() + hypot*Math.sin(angOfTranslation+newAngle.getRadians())  *(Timer.getFPGATimestamp() - lastSimDriveUpdateTime),
-            newAngle
-    );
-
-  //  odometry.addVisionMeasurement(newPose, Timer.getFPGATimestamp(), VecBuilder.fill(0, 0, Units.degreesToRadians(0))); //trust, bro
-
-    resetOdometry(newPose);
-    lastSimDriveUpdateTime = Timer.getFPGATimestamp();
-  }
 
 }
 double lastSimDriveUpdateTime = 0;
 
+double simXMeters,simYMeters,simRad;
+void simDriveUpdate(){
+  if(lastSimDriveUpdateTime == 0)
+    lastSimDriveUpdateTime = Timer.getFPGATimestamp();
+
+  Rotation2d newAngle = Rotation2d.fromRadians(odometry.getEstimatedPosition().getRotation().getRadians() + simRad * (Timer.getFPGATimestamp() - lastSimDriveUpdateTime));
+
+  double hypot = Math.hypot(simXMeters,simYMeters);
+  double angOfTranslation = Math.atan2(simYMeters,simXMeters);
+
+  Pose2d newPose = new Pose2d(
+          odometry.getEstimatedPosition().getX() + hypot*Math.cos(angOfTranslation+newAngle.getRadians()) *  (Timer.getFPGATimestamp() - lastSimDriveUpdateTime),
+          odometry.getEstimatedPosition().getY() + hypot*Math.sin(angOfTranslation+newAngle.getRadians())  *(Timer.getFPGATimestamp() - lastSimDriveUpdateTime),
+          newAngle
+  );
+
+  //  odometry.addVisionMeasurement(newPose, Timer.getFPGATimestamp(), VecBuilder.fill(0, 0, Units.degreesToRadians(0))); //trust, bro
+
+  resetOdometry(newPose);
+  lastSimDriveUpdateTime = Timer.getFPGATimestamp();
+}
 
   void setStates(SwerveModuleState[] states){
     frontLeft.setState(states[0]);
@@ -286,6 +299,8 @@ void updatePoseFromVision(){
   public void periodic() {
     // This method will be called once per scheduler run
 
+    if(Robot.isSimulation())
+      simDriveUpdate();
     SmartDashboard.putNumber("FLVel",frontLeft.getModuleVelocity());
 
 odometry.updateWithTime(Timer.getFPGATimestamp(),pigeon.getRotation2d(),getPositions());

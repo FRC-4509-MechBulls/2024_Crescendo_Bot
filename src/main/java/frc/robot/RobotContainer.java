@@ -58,7 +58,9 @@ public class RobotContainer {
 
     driver.x().whileTrue(new RunCommand(swerveSubsystem::xConfig,swerveSubsystem));
 
-    driver.a().whileTrue(Alignments.speakerAlignTest);
+    driver.a().toggleOnTrue(Alignments.speakerAlignTest);
+
+
 
     // Configure the trigger bindings
     configureBindings();
