@@ -19,16 +19,11 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardComponent;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
-import frc.robot.FMSGetter;
 import frc.robot.MBUtils;
 import frc.robot.Robot;
 import org.photonvision.EstimatedRobotPose;
@@ -151,7 +146,7 @@ VisionSubsystem visionSubsystem;
   //field oriented :p
     //oriented to 180 degrees
     double zeroHeading = 0;
-    if(FMSGetter.isRedAlliance())
+    if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
       zeroHeading = Math.PI; 
 
   if(beFieldOriented)
@@ -265,20 +260,7 @@ void simDriveUpdate(){
     rearRight.setStateWithoutDeadband(states[3]);
   }
 
-  public void autoBalanceForward(){
-    double roll = pigeon.getRoll(); //probably in degrees
-    double speedForward = roll*(1.0/100);
 
-    if(roll>15)
-      speedForward = 0.5;
-    if(roll<-15)
-      speedForward = -0.5;
-
-
-    speedForward = MBUtils.clamp(speedForward, 0.5);
-
-    drive(-speedForward,0,0);
-  }
 
 void updatePoseFromVision(){
     Optional<EstimatedRobotPose> result = visionSubsystem.getEstimatedGlobalPose(odometry.getEstimatedPosition());
