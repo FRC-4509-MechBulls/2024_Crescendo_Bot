@@ -6,6 +6,10 @@ package frc.robot.subsystems.drive;
 
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,10 +18,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardComponent;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -74,7 +75,48 @@ VisionSubsystem visionSubsystem;
     SmartDashboard.putNumber("debugGoTo_y",0);
     SmartDashboard.putNumber("debugGoTo_deg",0);
 
+    AutoBuilder.configureHolonomic(
+            this::getPose, // Robot pose supplier
+            this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+            this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            this::drive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+            new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                    new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                    new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                    4.5, // Max module speed, in m/s
+                    0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+                    new ReplanningConfig() // Default path replanning config. See the API for the options here
+            ),
+            () -> {
+              // Boolean supplier that controls when the path will be mirrored for the red alliance
+              // This will flip the path being followed to the red side of the field.
+              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+              var alliance = DriverStation.getAlliance();
+              if (alliance.isPresent()) {
+                return alliance.get() == DriverStation.Alliance.Red;
+              }
+              return false;
+            },
+            this // Reference to this subsystem to set requirements
+    );
   }
+
+
+  public void drive(ChassisSpeeds speeds){
+    drive(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond);
+  }
+
+  public Pose2d getPose(){
+    return odometry.getEstimatedPosition();
+  }
+
+  ChassisSpeeds getRobotRelativeSpeeds(){
+    if(Robot.isSimulation())
+      return new ChassisSpeeds(simXMeters,simYMeters,simRad);
+    return kinematics.toChassisSpeeds(frontLeft.getState(), frontRight.getState(), rearLeft.getState(), rearRight.getState());
+  }
+
 
   public SwerveModulePosition[] getPositions(){
     return new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),rearLeft.getPosition(),rearRight.getPosition()};
@@ -155,6 +197,15 @@ public void xConfig() {
 
 Rotation2d lastStillHeading = new Rotation2d();
 public void drive(double xMeters,double yMeters, double rad){
+
+  if(Robot.isSimulation()){
+    simXMeters = xMeters;
+    simYMeters = yMeters;
+    simRad = rad;
+
+  }
+
+
   if(Math.abs(rad)>radPerSecondDeadband || lastStillHeading.getDegrees() == 0){
     lastStillHeading = Rotation2d.fromDegrees(pigeon.getAngle());
   }
@@ -173,30 +224,32 @@ public void drive(double xMeters,double yMeters, double rad){
 
   setStates(states);
 
-  if(Robot.isSimulation()){
-    if(lastSimDriveUpdateTime == 0)
-      lastSimDriveUpdateTime = Timer.getFPGATimestamp();
 
-    Rotation2d newAngle = Rotation2d.fromRadians(odometry.getEstimatedPosition().getRotation().getRadians() + rad * (Timer.getFPGATimestamp() - lastSimDriveUpdateTime));
-
-    double hypot = Math.hypot(xMeters,yMeters);
-    double angOfTranslation = Math.atan2(yMeters,xMeters);
-
-    Pose2d newPose = new Pose2d(
-            odometry.getEstimatedPosition().getX() + hypot*Math.cos(angOfTranslation+newAngle.getRadians()) *  (Timer.getFPGATimestamp() - lastSimDriveUpdateTime),
-            odometry.getEstimatedPosition().getY() + hypot*Math.sin(angOfTranslation+newAngle.getRadians())  *(Timer.getFPGATimestamp() - lastSimDriveUpdateTime),
-            newAngle
-    );
-
-  //  odometry.addVisionMeasurement(newPose, Timer.getFPGATimestamp(), VecBuilder.fill(0, 0, Units.degreesToRadians(0))); //trust, bro
-
-    resetOdometry(newPose);
-    lastSimDriveUpdateTime = Timer.getFPGATimestamp();
-  }
 
 }
 double lastSimDriveUpdateTime = 0;
 
+double simXMeters,simYMeters,simRad;
+void simDriveUpdate(){
+  if(lastSimDriveUpdateTime == 0)
+    lastSimDriveUpdateTime = Timer.getFPGATimestamp();
+
+  Rotation2d newAngle = Rotation2d.fromRadians(odometry.getEstimatedPosition().getRotation().getRadians() + simRad * (Timer.getFPGATimestamp() - lastSimDriveUpdateTime));
+
+  double hypot = Math.hypot(simXMeters,simYMeters);
+  double angOfTranslation = Math.atan2(simYMeters,simXMeters);
+
+  Pose2d newPose = new Pose2d(
+          odometry.getEstimatedPosition().getX() + hypot*Math.cos(angOfTranslation+newAngle.getRadians()) *  (Timer.getFPGATimestamp() - lastSimDriveUpdateTime),
+          odometry.getEstimatedPosition().getY() + hypot*Math.sin(angOfTranslation+newAngle.getRadians())  *(Timer.getFPGATimestamp() - lastSimDriveUpdateTime),
+          newAngle
+  );
+
+  //  odometry.addVisionMeasurement(newPose, Timer.getFPGATimestamp(), VecBuilder.fill(0, 0, Units.degreesToRadians(0))); //trust, bro
+
+  resetOdometry(newPose);
+  lastSimDriveUpdateTime = Timer.getFPGATimestamp();
+}
 
   void setStates(SwerveModuleState[] states){
     frontLeft.setState(states[0]);
@@ -246,6 +299,8 @@ void updatePoseFromVision(){
   public void periodic() {
     // This method will be called once per scheduler run
 
+    if(Robot.isSimulation())
+      simDriveUpdate();
     SmartDashboard.putNumber("FLVel",frontLeft.getModuleVelocity());
 
 odometry.updateWithTime(Timer.getFPGATimestamp(),pigeon.getRotation2d(),getPositions());

@@ -23,10 +23,10 @@ import java.util.ArrayList;
 public final class Constants {
 
   public static class AutoConstants {
-    public static final double translationkP = 4;
-    public static final double rotationkP = 4;
+    public static final double translationkP = 2;
+    public static final double rotationkP = 2;
 
-    public static final double maxTranslation = 6.5;
+    public static final double maxTranslation = 6.5; //no longer used
     public static final double maxRotation = 2;
 
   }
@@ -109,7 +109,7 @@ public final class Constants {
 
     /*Turning Motor Constants */
 
-    public static final double turningMotorkP = 0.2;
+    public static final double turningMotorkP = 0.1;
     public static final double turningMotorkI = 0.0;
     public static final double turningMotorkD = 0.01;
     public static final double turningMotorkF = 0.0;

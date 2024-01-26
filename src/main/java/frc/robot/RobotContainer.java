@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.Autos;
+import frc.robot.commands.drive.Alignments;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 import frc.robot.subsystems.drive.VisionSubsystem;
 
@@ -56,7 +58,9 @@ public class RobotContainer {
 
     driver.x().whileTrue(new RunCommand(swerveSubsystem::xConfig,swerveSubsystem));
 
-    driver.a().onTrue(Autos.ballerAuto(swerveSubsystem));
+    driver.a().toggleOnTrue(Alignments.speakerAlignTest);
+
+
 
     // Configure the trigger bindings
     configureBindings();
@@ -74,11 +78,12 @@ public class RobotContainer {
    */
 
   private void createAutos(){
-    SmartDashboard.putData(autoChooser);
-
     autoChooser.setDefaultOption("no auto :'( ", null);
+    autoChooser.addOption("test",Autos.testAuto());
 
+    //autoChooser = AutoBuilder.buildAutoChooser();
 
+    SmartDashboard.putData(autoChooser);
 
   }
 

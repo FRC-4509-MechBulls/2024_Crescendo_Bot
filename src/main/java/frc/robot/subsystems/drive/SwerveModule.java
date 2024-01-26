@@ -130,6 +130,10 @@ public class SwerveModule extends SubsystemBase {
 
     }
 
+    public SwerveModuleState getState(){
+        return new SwerveModuleState(getModuleVelocity(),Rotation2d.fromRadians(getAngle()));
+    }
+
     public void setStateWithoutDeadband(SwerveModuleState state) {
 
         state = SwerveModuleState.optimize(state,Rotation2d.fromRadians(getAngle())); //minimize change in heading
