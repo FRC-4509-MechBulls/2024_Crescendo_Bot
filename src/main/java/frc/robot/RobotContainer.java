@@ -62,6 +62,20 @@ public class RobotContainer {
     driver.start().onTrue(new InstantCommand(swerveSubsystem::resetOdometry));
     driver.back().onTrue(new InstantCommand(swerveSubsystem::toggleFieldOriented));
 
+    operator.a().onTrue(new InstantCommand(stateController::intakePressed));
+    operator.b().onTrue(new InstantCommand(stateController::holdPressed));
+    operator.x().onTrue(new InstantCommand(stateController::ejectPressed));
+    operator.y().onTrue(new InstantCommand(stateController::readyToShootPressed));
+
+    operator.leftBumper().onTrue(new InstantCommand(stateController::stowPressed));
+    operator.rightBumper().onTrue(new InstantCommand(stateController::raiseClimbPressed));
+    operator.rightTrigger(0.5).onTrue(new InstantCommand(stateController::climbPressed));
+
+    operator.povUp().onTrue(new InstantCommand(stateController::sourcePressed));
+    operator.povRight().onTrue(new InstantCommand(stateController::ampPressed));
+    operator.povDown().onTrue(new InstantCommand(stateController::speakerPressed));
+    operator.povLeft().onTrue(new InstantCommand(stateController::trapPressed));
+
  // operator.a().onTrue(new InstantCommand(()->stateController.setArmState(StateControllerSub.ArmState.INTAKE)));
 
   }

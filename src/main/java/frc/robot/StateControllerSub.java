@@ -13,10 +13,14 @@ public class StateControllerSub extends SubsystemBase {
     public enum ArmState{HOLD,SPEAKER,AMP,TRAP,INTAKE,SOURCE}
     public enum EFState{HOLD,INTAKE,EJECT,READY,SHOOT}
     public enum ClimbState{STOWED,READY,CLIMBED}
+    public enum Objective{SPEAKER,AMP,SOURCE,TRAP}
+    public enum SelectedTrap{AMP,SOURCE,REAR}
 
     private ArmState armState = ArmState.HOLD;
     private EFState efState = EFState.HOLD;
     private ClimbState climbState = ClimbState.STOWED;
+    Objective objective = Objective.SPEAKER;
+    SelectedTrap selectedTrap = SelectedTrap.AMP;
     private Pose2d robotPose = new Pose2d();
 
     public ArmState getArmState(){
@@ -65,6 +69,9 @@ public class StateControllerSub extends SubsystemBase {
         table.getEntry("armState").setString(armState.toString());
         table.getEntry("efState").setString(efState.toString());
         table.getEntry("climbState").setString(climbState.toString());
+        table.getEntry("objective").setString(objective.toString());
+        table.getEntry("selectedTrap").setString(selectedTrap.toString());
+
 
     }
 
@@ -97,20 +104,20 @@ public class StateControllerSub extends SubsystemBase {
     }
 
     public void speakerPressed(){
-        armState = ArmState.SPEAKER;
+        objective = Objective.SPEAKER;
         efState = EFState.HOLD;
     }
     public void ampPressed(){
-        armState = ArmState.AMP;
+        objective = Objective.AMP;
         efState = EFState.HOLD;
     }
     public void trapPressed(){
-        armState = ArmState.TRAP;
+        objective = Objective.TRAP;
         efState = EFState.HOLD;
     }
 
     public void sourcePressed(){
-        armState = ArmState.SOURCE;
+        objective = Objective.SOURCE;
         efState = EFState.INTAKE;
     }
 
@@ -118,7 +125,7 @@ public class StateControllerSub extends SubsystemBase {
         efState = EFState.SHOOT;
     }
 
-    
+
 
 
 
