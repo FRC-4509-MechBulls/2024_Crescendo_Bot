@@ -178,3 +178,7 @@ logs/
 ctre_sim/
 
 .run/
+
+simgui-ds.json
+
+simgui.json

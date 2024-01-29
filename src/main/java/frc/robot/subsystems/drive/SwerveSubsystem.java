@@ -23,17 +23,16 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import frc.robot.Constants;
 import frc.robot.MBUtils;
 import frc.robot.Robot;
+import frc.robot.StateControllerSub;
 import org.photonvision.EstimatedRobotPose;
 
 import java.util.Optional;
 
 import static frc.robot.Constants.AutoConstants.*;
 import static frc.robot.Constants.DriveConstants.*;
-import static frc.robot.Constants.FieldConstants.alignmentPoses;
-import static frc.robot.Constants.FieldConstants.nodeYValues;
+
 import static frc.robot.Constants.OperatorConstants.*;
 
 
@@ -51,6 +50,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
   SwerveDrivePoseEstimator odometry;
 VisionSubsystem visionSubsystem;
+StateControllerSub stateController;
+
 
   Field2d field2d = new Field2d();
 
@@ -59,12 +60,13 @@ VisionSubsystem visionSubsystem;
   boolean beFieldOriented = true;
 
 
-  public SwerveSubsystem(VisionSubsystem visionSubsystem) {
+  public SwerveSubsystem(VisionSubsystem visionSubsystem, StateControllerSub stateController) {
     pigeon.configFactoryDefault();
     pigeon.zeroGyroBiasNow();
     odometry = new SwerveDrivePoseEstimator(kinematics,pigeon.getRotation2d(),getPositions(),new Pose2d());
     odometry.setVisionMeasurementStdDevs(VecBuilder.fill(7, 7, Units.degreesToRadians(400)));
     this.visionSubsystem = visionSubsystem;
+    this.stateController = stateController;
 
     SmartDashboard.putNumber("debugGoTo_x",0);
     SmartDashboard.putNumber("debugGoTo_y",0);
@@ -283,20 +285,10 @@ void updatePoseFromVision(){
 
     if(Robot.isSimulation())
       simDriveUpdate();
-    SmartDashboard.putNumber("FLVel",frontLeft.getModuleVelocity());
 
 odometry.updateWithTime(Timer.getFPGATimestamp(),pigeon.getRotation2d(),getPositions());
 
 updatePoseFromVision();
-
-
-  field2d.setRobotPose(odometry.getEstimatedPosition());
-  //SmartDashboard.putData("field",field2d);
-
-    SmartDashboard.putNumber("odom_x",odometry.getEstimatedPosition().getX());
-    SmartDashboard.putNumber("odom_y",odometry.getEstimatedPosition().getY());
-    SmartDashboard.putNumber("odom_deg",odometry.getEstimatedPosition().getRotation().getDegrees());
-
 
     SmartDashboard.putNumberArray("odometry",new double[]{
             odometry.getEstimatedPosition().getX(),
@@ -304,41 +296,13 @@ updatePoseFromVision();
             odometry.getEstimatedPosition().getRotation().getRadians()
     });
 
-
-
-
-    SmartDashboard.putNumber("closestNodeY",getClosestNodeY());
+    stateController.feedRobotPose(odometry.getEstimatedPosition());
 
   }
 
-  public double getClosestNodeY(){
-    double closestY = nodeYValues[0];
-    double smallestDist = Math.abs(nodeYValues[0] - odometry.getEstimatedPosition().getY());
 
-    for(int i = 0; i< nodeYValues.length; i++){
-      double dist = Math.abs(nodeYValues[i] - odometry.getEstimatedPosition().getY());
-      if(dist<smallestDist){
-        smallestDist = dist;
-        closestY = nodeYValues[i];
-      }
-    }
 
-    return closestY;
-  }
 
-  public Pose2d getClosestNode(){
-    double closestDist = Math.hypot(odometry.getEstimatedPosition().getX() - Constants.FieldConstants.alignmentPoses[0].getX(),odometry.getEstimatedPosition().getY() -  Constants.FieldConstants.alignmentPoses[0].getY());
-    Pose2d output = Constants.FieldConstants.alignmentPoses[0];
-
-    for(int i = 0; i<alignmentPoses.length; i++){
-      double dist = Math.hypot(odometry.getEstimatedPosition().getX() - Constants.FieldConstants.alignmentPoses[i].getX(),odometry.getEstimatedPosition().getY() -  Constants.FieldConstants.alignmentPoses[i].getY());
-      if(dist<closestDist){
-        closestDist = dist;
-        output = alignmentPoses[i];
-      }
-    }
-    return output;
-  }
 
   public void resetOdometry(){
     odometry.resetPosition(pigeon.getRotation2d(),getPositions(),new Pose2d());

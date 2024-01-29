@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.Autos;
 import frc.robot.commands.drive.Alignments;
+import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 import frc.robot.subsystems.drive.VisionSubsystem;
 
@@ -29,11 +31,21 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
   CommandXboxController driver = new CommandXboxController(0);
+  CommandXboxController operator = new CommandXboxController(1);
 
   VisionSubsystem visionSub = new VisionSubsystem();
-  SwerveSubsystem swerveSubsystem = new SwerveSubsystem(visionSub);
-  RunCommand drive = new RunCommand(()->swerveSubsystem.joystickDrive(driver.getLeftX(),driver.getLeftY(),driver.getRightX()),swerveSubsystem);
+
   SendableChooser<Command> autoChooser = new SendableChooser<>();
+
+  StateControllerSub stateController = new StateControllerSub();
+  ArmSubsystem armSubsystem = new ArmSubsystem(stateController);
+
+  ClimbSubsystem climbSubsystem = new ClimbSubsystem(stateController);
+
+  SwerveSubsystem swerveSubsystem = new SwerveSubsystem(visionSub,stateController);
+
+  RunCommand drive = new RunCommand(()->swerveSubsystem.joystickDrive(driver.getLeftX(),driver.getLeftY(),driver.getRightX()),swerveSubsystem);
+
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -50,12 +62,13 @@ public class RobotContainer {
     driver.start().onTrue(new InstantCommand(swerveSubsystem::resetOdometry));
     driver.back().onTrue(new InstantCommand(swerveSubsystem::toggleFieldOriented));
 
+ // operator.a().onTrue(new InstantCommand(()->stateController.setArmState(StateControllerSub.ArmState.INTAKE)));
 
   }
 
   private void createAutos(){
     autoChooser.setDefaultOption("no auto :'( ", null);
-    autoChooser.addOption("test",Autos.testAuto());
+   // autoChooser.addOption("test",Autos.testAuto());
 
     //autoChooser = AutoBuilder.buildAutoChooser();
 

@@ -1,15 +1,23 @@
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.networktables.*;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class StateControllerSub {
-    public enum ArmState{HOLD,SPEAKER,AMP,TRAP,INTAKE}
-    public enum EFState{INTAKE,HOLD,EJECT,SHOOT}
+public class StateControllerSub extends SubsystemBase {
+
+
+
+    private NetworkTable table = NetworkTableInstance.getDefault().getTable("StateController");
+
+    public enum ArmState{HOLD,SPEAKER,AMP,TRAP,INTAKE,SOURCE}
+    public enum EFState{HOLD,INTAKE,EJECT,READY,SHOOT}
     public enum ClimbState{STOWED,READY,CLIMBED}
 
     private ArmState armState = ArmState.HOLD;
     private EFState efState = EFState.HOLD;
     private ClimbState climbState = ClimbState.STOWED;
+    private Pose2d robotPose = new Pose2d();
 
     public ArmState getArmState(){
         return armState;
@@ -28,10 +36,91 @@ public class StateControllerSub {
         return 0.0;
     }
 
-    public double getTrapArmAngle(){//TODO: arm angle in radians during trap - maybe this can be set into this sub by a lerp command or something?
+    public double getTrapArmAngle(){
+        //TODO: arm angle in radians during trap - maybe this can be set into this sub by a lerp command or something?
         //could you have a sub-path as you come out from under the stage, where its completion is passed into t?
         return 0.0;
     }
+
+    public Pose2d getRobotPose(){
+        return robotPose;
+    }
+
+    public void feedRobotPose(Pose2d pose){
+        robotPose = pose;
+    }
+
+    public void setArmState(ArmState state){
+        armState = state;
+    }
+
+
+    @Override
+    public void periodic(){
+
+        table.getEntry("odom_x").setDouble(robotPose.getX());
+        table.getEntry("odom_y").setDouble(robotPose.getY());
+        table.getEntry("odom_rad").setDouble(robotPose.getRotation().getRadians());
+
+        table.getEntry("armState").setString(armState.toString());
+        table.getEntry("efState").setString(efState.toString());
+        table.getEntry("climbState").setString(climbState.toString());
+
+    }
+
+    public void intakePressed(){
+        armState = ArmState.INTAKE;
+        efState = EFState.INTAKE;
+       // climbState = ClimbState.STOWED; //TODO: should this be here?
+    }
+    public void holdPressed(){
+        armState = ArmState.HOLD;
+        efState = EFState.HOLD;
+    }
+    public void ejectPressed(){
+        armState = ArmState.HOLD;
+        efState = EFState.EJECT;
+    }
+    public void readyToShootPressed(){
+        armState = ArmState.HOLD;
+        efState = EFState.READY;
+    }
+
+    public void raiseClimbPressed(){
+        climbState = ClimbState.READY;
+    }
+    public void climbPressed(){
+        climbState = ClimbState.CLIMBED;
+    }
+    public void stowPressed(){
+        climbState = ClimbState.STOWED;
+    }
+
+    public void speakerPressed(){
+        armState = ArmState.SPEAKER;
+        efState = EFState.HOLD;
+    }
+    public void ampPressed(){
+        armState = ArmState.AMP;
+        efState = EFState.HOLD;
+    }
+    public void trapPressed(){
+        armState = ArmState.TRAP;
+        efState = EFState.HOLD;
+    }
+
+    public void sourcePressed(){
+        armState = ArmState.SOURCE;
+        efState = EFState.INTAKE;
+    }
+
+    public void shootPressed(){
+        efState = EFState.SHOOT;
+    }
+
+    
+
+
 
 
 

@@ -23,9 +23,6 @@ public class Autos {
 
     }
 
-    public static Command testAuto(){
-        return new PathPlannerAuto("New Auto");
-    }
 
 
     public static Command ballerAuto(SwerveSubsystem swerveSubsystem){
