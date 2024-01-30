@@ -27,7 +27,12 @@ public class ArmSubsystem extends SubsystemBase {
             case SPEAKER -> setAngleRad(stateControllerSub.getSpeakerAngle());
             case AMP -> setAngleRad(ampRad);
             case TRAP -> setAngleRad(stateControllerSub.getTrapArmAngle());
-            case INTAKE -> setAngleRad(intakeRad);
+            case INTAKE -> {
+//                if(stateControllerSub.getObjective() == StateControllerSub.Objective.SOURCE)
+//                    setAngleRad(sourceRad);
+//                else
+                    setAngleRad(intakeRad);
+            }
         }
 
         NetworkTableInstance.getDefault().getTable("StateController").getEntry("armAngle").setDouble(getArmAngle());

@@ -58,6 +58,8 @@ public class StateControllerSub extends SubsystemBase {
         armState = state;
     }
 
+    public Objective getObjective(){return objective;}
+
 
     @Override
     public void periodic(){
@@ -76,6 +78,7 @@ public class StateControllerSub extends SubsystemBase {
     }
 
     public void intakePressed(){
+
         armState = ArmState.INTAKE;
         efState = EFState.INTAKE;
        // climbState = ClimbState.STOWED; //TODO: should this be here?
@@ -85,12 +88,20 @@ public class StateControllerSub extends SubsystemBase {
         efState = EFState.HOLD;
     }
     public void ejectPressed(){
-        armState = ArmState.HOLD;
-        efState = EFState.EJECT;
+        //armState = ArmState.HOLD;
+        //efState = EFState.EJECT;
     }
     public void readyToShootPressed(){
-        armState = ArmState.HOLD;
+       // armState = ArmState.HOLD;
         efState = EFState.READY;
+        switch (objective) {
+            case AMP -> armState = ArmState.AMP;
+            case SPEAKER -> armState = ArmState.SPEAKER;
+            case TRAP -> armState = ArmState.TRAP;
+            case SOURCE -> armState = ArmState.SOURCE;
+        }
+
+      //  efState = EFState.READY;
     }
 
     public void raiseClimbPressed(){
@@ -105,23 +116,24 @@ public class StateControllerSub extends SubsystemBase {
 
     public void speakerPressed(){
         objective = Objective.SPEAKER;
-        efState = EFState.HOLD;
+       // efState = EFState.HOLD;
     }
     public void ampPressed(){
         objective = Objective.AMP;
-        efState = EFState.HOLD;
+       // efState = EFState.HOLD;
     }
     public void trapPressed(){
         objective = Objective.TRAP;
-        efState = EFState.HOLD;
+       // efState = EFState.HOLD;
     }
 
     public void sourcePressed(){
         objective = Objective.SOURCE;
-        efState = EFState.INTAKE;
+       // efState = EFState.INTAKE;
     }
 
     public void shootPressed(){
+        readyToShootPressed();
         efState = EFState.SHOOT;
     }
 

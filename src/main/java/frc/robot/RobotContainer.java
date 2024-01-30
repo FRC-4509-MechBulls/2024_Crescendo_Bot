@@ -76,6 +76,8 @@ public class RobotContainer {
     operator.povDown().onTrue(new InstantCommand(stateController::speakerPressed));
     operator.povLeft().onTrue(new InstantCommand(stateController::trapPressed));
 
+    operator.leftTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));
+
  // operator.a().onTrue(new InstantCommand(()->stateController.setArmState(StateControllerSub.ArmState.INTAKE)));
 
   }

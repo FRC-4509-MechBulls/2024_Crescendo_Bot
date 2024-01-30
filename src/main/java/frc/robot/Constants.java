@@ -22,11 +22,26 @@ import java.util.ArrayList;
  */
 public final class Constants {
 
+  public static class EFCConstants{
+    public static final double intakeSpeed = 0.5;
+    public static final double outtakeSpeed = -0.5;
+    public static final double outtakeShooterVelocity = -1;
+
+    public static final double ampShooterVelocity = 0;
+
+    public static final double feedToShooterSpeed = 0.75;
+
+  }
+
   public static class ArmConstants{
     public static final double holdingRad = Units.degreesToRadians(20.0);
     public static final double ampRad = Units.degreesToRadians(95.0);
+
+    public static final double sourceRad = Units.degreesToRadians(95.0);
     public static final double intakeRad = Units.degreesToRadians(0.0);
   }
+
+
 
   public static class AutoConstants {
     public static final double translationkP = 2;
