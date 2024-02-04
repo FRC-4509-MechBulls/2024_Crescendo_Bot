@@ -1,7 +1,11 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class StateControllerSub extends SubsystemBase {
@@ -22,6 +26,7 @@ public class StateControllerSub extends SubsystemBase {
     Objective objective = Objective.SPEAKER;
     SelectedTrap selectedTrap = SelectedTrap.AMP;
     private Pose2d robotPose = new Pose2d();
+    private double armAngleRad = 0.0;
 
     public ArmState getArmState(){
         return armState;
@@ -34,7 +39,7 @@ public class StateControllerSub extends SubsystemBase {
     }
 
     public double getSpeakerAngle(){ //TODO: arm angle in radians
-        return 0.0;
+        return Units.degreesToRadians(40);
     }
     public double getSpeakerFlywheelVel(){ //TODO: flywheel velocity in radians per second
         return 0.0;
@@ -61,6 +66,17 @@ public class StateControllerSub extends SubsystemBase {
     public Objective getObjective(){return objective;}
 
 
+    public StateControllerSub(){
+        SmartDashboard.putNumber("x",0);
+        SmartDashboard.putNumber("y",0);
+        SmartDashboard.putNumber("z",0);
+
+        SmartDashboard.putNumber("x_r",0);
+        SmartDashboard.putNumber("y_r",0);
+        SmartDashboard.putNumber("z_r",0);
+
+    }
+
     @Override
     public void periodic(){
 
@@ -73,6 +89,26 @@ public class StateControllerSub extends SubsystemBase {
         table.getEntry("climbState").setString(climbState.toString());
         table.getEntry("objective").setString(objective.toString());
         table.getEntry("selectedTrap").setString(selectedTrap.toString());
+
+        //get an x y and z from smartDashboard
+       double x = SmartDashboard.getNumber("x",0);
+         double y = SmartDashboard.getNumber("y",0);
+            double z = SmartDashboard.getNumber("z",0);
+
+            double x_r = SmartDashboard.getNumber("x_r",0);
+            double y_r = SmartDashboard.getNumber("y_r",0);
+            double z_r = SmartDashboard.getNumber("z_r",0);
+
+
+
+
+
+        Pose3d armPose = new Pose3d(0.24,0,0.21, new Rotation3d(0,armAngleRad-(Math.PI/2),0));
+        Pose3d climbPose = new Pose3d(-0.07,0,0.14, new Rotation3d(x_r,y_r,z_r));
+
+        SmartDashboard.putNumberArray("armPose2D", new double[]{armPose.getX(),armPose.getY(),armPose.getZ(),armPose.getRotation().getQuaternion().getW(),armPose.getRotation().getQuaternion().getX(),armPose.getRotation().getQuaternion().getY(),armPose.getRotation().getQuaternion().getZ()});
+        SmartDashboard.putNumberArray("climbPose2D", new double[]{climbPose.getX(),climbPose.getY(),climbPose.getZ(),climbPose.getRotation().getQuaternion().getW(),climbPose.getRotation().getQuaternion().getX(),climbPose.getRotation().getQuaternion().getY(),climbPose.getRotation().getQuaternion().getZ()});
+
 
 
     }
@@ -102,6 +138,10 @@ public class StateControllerSub extends SubsystemBase {
         }
 
       //  efState = EFState.READY;
+    }
+
+    public void setArmAngleRad(double angle){
+        armAngleRad = angle;
     }
 
     public void raiseClimbPressed(){
