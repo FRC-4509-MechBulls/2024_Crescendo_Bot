@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.441414260288271,
-      "y": 5.53650223579517
+      "x": 1.35,
+      "y": 7.22
     },
-    "rotation": 180.0
+    "rotation": 90.0
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "setObjectiveSpeaker"
+            "name": "setObjectiveAmp"
           }
         },
         {
@@ -24,9 +24,15 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "ampstart"
+          }
+        },
+        {
           "type": "wait",
           "data": {
-            "waitTime": 0.75
+            "waitTime": 0.7
           }
         },
         {
@@ -38,7 +44,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.3
+            "waitTime": 0.2
           }
         },
         {
@@ -50,13 +56,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "0"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.0
+            "pathName": "amp0"
           }
         },
         {
@@ -68,7 +68,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "1"
+            "pathName": "amp1"
           }
         },
         {
@@ -80,7 +80,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.15
+            "waitTime": 0.2
           }
         },
         {
@@ -92,13 +92,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "2"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.0
+            "pathName": "amp2"
           }
         },
         {
@@ -110,7 +104,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "3"
+            "pathName": "amp3"
           }
         },
         {
@@ -122,7 +116,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.15
+            "waitTime": 0.2
           }
         },
         {
@@ -134,7 +128,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "4"
+            "pathName": "amp4"
           }
         },
         {
@@ -146,7 +140,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "5"
+            "pathName": "amp5"
           }
         },
         {
@@ -156,35 +150,21 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "wait",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "6"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.3
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "intakeMode"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "holdMode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "amp6"
           }
         }
       ]

@@ -43,7 +43,7 @@ public final class Constants {
 
   public static class ArmConstants{
     public static final double holdingRad = Units.degreesToRadians(20.0);
-    public static final double ampRad = Units.degreesToRadians(95.0);
+    public static final double ampRad = Units.degreesToRadians(100);
 
     public static final double sourceRad = Units.degreesToRadians(95.0);
     public static final double intakeRad = Units.degreesToRadians(6);
