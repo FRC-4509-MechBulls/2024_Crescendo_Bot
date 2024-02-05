@@ -1,12 +1,21 @@
 package frc.robot;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.MBUtils;
+
+import java.util.Optional;
+
+import static frc.robot.Constants.ShootingTables;
 
 public class StateControllerSub extends SubsystemBase {
 
@@ -38,11 +47,31 @@ public class StateControllerSub extends SubsystemBase {
         return climbState;
     }
 
+    private double distanceToMySpeaker(){
+        Translation2d speakerTranslation = AllianceFlipUtil.apply(FieldConstants.Speaker.centerSpeakerOpening.getTranslation());
+        return Math.hypot(speakerTranslation.getX()-robotPose.getX(),speakerTranslation.getY()-robotPose.getY());
+    }
+
     public double getSpeakerAngle(){ //TODO: arm angle in radians
-        return Units.degreesToRadians(40);
+        if(SmartDashboard.getBoolean("tuningMode",true))
+            return Units.degreesToRadians(SmartDashboard.getNumber("tuningAngle",90));
+
+
+        Optional<Double> angle = MBUtils.interpolate(ShootingTables.dist,ShootingTables.angle, distanceToMySpeaker());
+        if(angle.isPresent())
+            return Units.degreesToRadians(angle.get());
+
+        return Units.degreesToRadians(90);
     }
     public double getSpeakerFlywheelVel(){ //TODO: flywheel velocity in radians per second
-        return 0.0;
+        if(SmartDashboard.getBoolean("tuningMode",true))
+            return SmartDashboard.getNumber("tuningFlywheelVel",10);
+
+        Optional<Double> vel = MBUtils.interpolate(ShootingTables.dist,ShootingTables.velocity, distanceToMySpeaker());
+        if(vel.isPresent())
+            return Units.degreesToRadians(vel.get());
+
+        return Units.degreesToRadians(10);
     }
 
     public double getTrapArmAngle(){
@@ -67,19 +96,49 @@ public class StateControllerSub extends SubsystemBase {
 
 
     public StateControllerSub(){
-        SmartDashboard.putNumber("x",0);
-        SmartDashboard.putNumber("y",0);
-        SmartDashboard.putNumber("z",0);
+        NamedCommands.registerCommand("intakeMode",new InstantCommand(this::intakePressed));
+        NamedCommands.registerCommand("holdMode",new InstantCommand(this::holdPressed));
+        NamedCommands.registerCommand("setObjectiveSpeaker",new InstantCommand(this::speakerPressed));
+        NamedCommands.registerCommand("readyToShootMode",new InstantCommand(this::readyToShootPressed));
+        NamedCommands.registerCommand("ejectMode",new InstantCommand(this::ejectPressed));
 
-        SmartDashboard.putNumber("x_r",0);
-        SmartDashboard.putNumber("y_r",0);
-        SmartDashboard.putNumber("z_r",0);
+        SmartDashboard.putBoolean("tuningMode",false);
+        SmartDashboard.putNumber("tuningAngle",90);
+        SmartDashboard.putNumber("tuningFlywheelVel",10);
+
+
 
     }
+
+    double climbAngle = 0.0;
+
 
     @Override
     public void periodic(){
 
+        publishTableEntries();
+
+        //get an x y and z from smartDashboard
+
+        if(climbState == ClimbState.STOWED)
+            climbAngle += (Units.degreesToRadians(-48) - climbAngle) * 0.1;
+        else
+            climbAngle += (Units.degreesToRadians(0) - climbAngle) * 0.1;
+
+
+
+        Pose3d armPose = new Pose3d(0.24,0,0.21, new Rotation3d(0,armAngleRad-(Math.PI/2),0));
+        Pose3d climbPose = new Pose3d(-0.07,0,0.14, new Rotation3d(0,climbAngle,0));
+
+        SmartDashboard.putNumberArray("armPose2D", new double[]{armPose.getX(),armPose.getY(),armPose.getZ(),armPose.getRotation().getQuaternion().getW(),armPose.getRotation().getQuaternion().getX(),armPose.getRotation().getQuaternion().getY(),armPose.getRotation().getQuaternion().getZ()});
+        SmartDashboard.putNumberArray("climbPose2D", new double[]{climbPose.getX(),climbPose.getY(),climbPose.getZ(),climbPose.getRotation().getQuaternion().getW(),climbPose.getRotation().getQuaternion().getX(),climbPose.getRotation().getQuaternion().getY(),climbPose.getRotation().getQuaternion().getZ()});
+
+
+        SmartDashboard.putNumber("distanceToMySpeaker",distanceToMySpeaker());
+      //  SmartDashboard.putNumber("robotX",robotPose.getX());
+    }
+
+    public void publishTableEntries(){
         table.getEntry("odom_x").setDouble(robotPose.getX());
         table.getEntry("odom_y").setDouble(robotPose.getY());
         table.getEntry("odom_rad").setDouble(robotPose.getRotation().getRadians());
@@ -89,28 +148,6 @@ public class StateControllerSub extends SubsystemBase {
         table.getEntry("climbState").setString(climbState.toString());
         table.getEntry("objective").setString(objective.toString());
         table.getEntry("selectedTrap").setString(selectedTrap.toString());
-
-        //get an x y and z from smartDashboard
-       double x = SmartDashboard.getNumber("x",0);
-         double y = SmartDashboard.getNumber("y",0);
-            double z = SmartDashboard.getNumber("z",0);
-
-            double x_r = SmartDashboard.getNumber("x_r",0);
-            double y_r = SmartDashboard.getNumber("y_r",0);
-            double z_r = SmartDashboard.getNumber("z_r",0);
-
-
-
-
-
-        Pose3d armPose = new Pose3d(0.24,0,0.21, new Rotation3d(0,armAngleRad-(Math.PI/2),0));
-        Pose3d climbPose = new Pose3d(-0.07,0,0.14, new Rotation3d(x_r,y_r,z_r));
-
-        SmartDashboard.putNumberArray("armPose2D", new double[]{armPose.getX(),armPose.getY(),armPose.getZ(),armPose.getRotation().getQuaternion().getW(),armPose.getRotation().getQuaternion().getX(),armPose.getRotation().getQuaternion().getY(),armPose.getRotation().getQuaternion().getZ()});
-        SmartDashboard.putNumberArray("climbPose2D", new double[]{climbPose.getX(),climbPose.getY(),climbPose.getZ(),climbPose.getRotation().getQuaternion().getW(),climbPose.getRotation().getQuaternion().getX(),climbPose.getRotation().getQuaternion().getY(),climbPose.getRotation().getQuaternion().getZ()});
-
-
-
     }
 
     public void intakePressed(){

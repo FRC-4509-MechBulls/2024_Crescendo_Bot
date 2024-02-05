@@ -22,6 +22,14 @@ import java.util.ArrayList;
  */
 public final class Constants {
 
+  public static class ShootingTables{
+    public static final double[] dist = {0, 1.37, 1.7, 2.09, 2.32, 3.08, 3.81, 20};
+    public static final double[] angle = {18.38, 18.38, 22.19, 25.76, 32.9, 37.67, 42.67, 42.67};
+    public static final double[] velocity = {0,0,0,0,0,0,0,0};
+
+
+  }
+
   public static class EFCConstants{
     public static final double intakeSpeed = 0.5;
     public static final double outtakeSpeed = -0.5;
@@ -38,7 +46,7 @@ public final class Constants {
     public static final double ampRad = Units.degreesToRadians(95.0);
 
     public static final double sourceRad = Units.degreesToRadians(95.0);
-    public static final double intakeRad = Units.degreesToRadians(0.0);
+    public static final double intakeRad = Units.degreesToRadians(6);
   }
 
 

@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import frc.robot.MBUtils;
+import frc.robot.util.MBUtils;
 import frc.robot.Robot;
 import frc.robot.StateControllerSub;
 import org.photonvision.EstimatedRobotPose;
@@ -282,6 +282,8 @@ void updatePoseFromVision(){
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    stateController.feedRobotPose(odometry.getEstimatedPosition());
+
 
     if(Robot.isSimulation())
       simDriveUpdate();
@@ -296,7 +298,6 @@ updatePoseFromVision();
             odometry.getEstimatedPosition().getRotation().getRadians()
     });
 
-    stateController.feedRobotPose(odometry.getEstimatedPosition());
 
   }
 

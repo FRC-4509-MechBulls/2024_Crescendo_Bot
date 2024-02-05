@@ -1,4 +1,6 @@
-package frc.robot;
+package frc.robot.util;
+
+import java.util.Optional;
 
 public class MBUtils {
 
@@ -74,7 +76,7 @@ public class MBUtils {
         return slerp(value1, value2, easeInOut(t, aggression));
     }
 
-    public static double interpolate(double[] xValues, double[] yValues, double x) {
+    public static Optional<Double> interpolate(double[] xValues, double[] yValues, double x) {
         // Ensure the arrays have the same length
         if (xValues.length != yValues.length) {
             throw new IllegalArgumentException("xValues and yValues must have the same length.");
@@ -92,20 +94,20 @@ public class MBUtils {
             }
         }
 
-        // If indices found, interpolate. Otherwise, return -1 (or any other error value).
+        //If indices found, perform interpolation. Otherwise, return an empty Optional.
         if (indexBelow != -1) {
             double x1 = xValues[indexBelow];
             double x2 = xValues[indexAbove];
             double y1 = yValues[indexBelow];
             double y2 = yValues[indexAbove];
 
-            return y1 + ((x - x1) / (x2 - x1)) * (y2 - y1);
+            double interpolatedValue = y1 + ((x - x1) / (x2 - x1)) * (y2 - y1);
+            return Optional.of(interpolatedValue);
         } else {
-            // You can throw an exception or return a default/error value.
-            // In this example, we return 0 to indicate an error.
-            return 0;
+            return Optional.empty();
         }
     }
+
 
 
 }

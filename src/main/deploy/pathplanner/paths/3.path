@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.2784981527014048,
+        "y": 7.005070468096187
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.1756983764414763,
+        "y": 6.329529081240632
+      },
+      "isLocked": false,
+      "linkedName": "speakerauto2"
+    },
+    {
+      "anchor": {
+        "x": 1.4707856249343993,
+        "y": 5.53650223579517
+      },
+      "prevControl": {
+        "x": 2.6015831638103357,
+        "y": 5.507130871149041
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "speakerauto0"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "4 speaker auto",
+  "previewStartingState": {
+    "rotation": 180.0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}
