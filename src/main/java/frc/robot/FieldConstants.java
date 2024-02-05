@@ -7,9 +7,6 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import java.io.IOException;
 
-//from team 6328 <3
-//https://github.com/Mechanical-Advantage/RobotCode2024/blob/kitbot-swerve/src/main/java/frc/robot/FieldConstants.java
-
 /**
  * Contains various field dimensions and useful reference points. Dimensions are in meters, and sets
  * of corners start in the lower left moving clockwise. <b>All units in Meters</b> <br>
@@ -29,7 +26,7 @@ public class FieldConstants {
   public static double startingLineX = Units.inchesToMeters(74.111);
 
   public static Translation2d ampCenter =
-      new Translation2d(Units.inchesToMeters(72.455), Units.inchesToMeters(322.996));
+          new Translation2d(Units.inchesToMeters(72.455), Units.inchesToMeters(322.996));
 
   /** Staging locations for each note */
   public static final class StagingLocations {
@@ -49,7 +46,7 @@ public class FieldConstants {
     static {
       for (int i = 0; i < centerlineTranslations.length; i++) {
         centerlineTranslations[i] =
-            new Translation2d(centerlineX, centerlineFirstY + (i * centerlineSeparationY));
+                new Translation2d(centerlineX, centerlineFirstY + (i * centerlineSeparationY));
       }
     }
 
@@ -65,26 +62,26 @@ public class FieldConstants {
 
     /** Center of the speaker opening (blue alliance) */
     public static Pose2d centerSpeakerOpening =
-        new Pose2d(0.0, fieldWidth - Units.inchesToMeters(104.0), new Rotation2d());
+            new Pose2d(0.0, fieldWidth - Units.inchesToMeters(104.0), new Rotation2d());
   }
 
   // corners (blue alliance origin)
   public static Translation3d topRightSpeaker =
-      new Translation3d(
-          Units.inchesToMeters(18.055),
-          Units.inchesToMeters(238.815),
-          Units.inchesToMeters(13.091));
+          new Translation3d(
+                  Units.inchesToMeters(18.055),
+                  Units.inchesToMeters(238.815),
+                  Units.inchesToMeters(13.091));
 
   public static Translation3d topLeftSpeaker =
-      new Translation3d(
-          Units.inchesToMeters(18.055),
-          Units.inchesToMeters(197.765),
-          Units.inchesToMeters(83.091));
+          new Translation3d(
+                  Units.inchesToMeters(18.055),
+                  Units.inchesToMeters(197.765),
+                  Units.inchesToMeters(83.091));
 
   public static Translation3d bottomRightSpeaker =
-      new Translation3d(0.0, Units.inchesToMeters(238.815), Units.inchesToMeters(78.324));
+          new Translation3d(0.0, Units.inchesToMeters(238.815), Units.inchesToMeters(78.324));
   public static Translation3d bottomLeftSpeaker =
-      new Translation3d(0.0, Units.inchesToMeters(197.765), Units.inchesToMeters(78.324));
+          new Translation3d(0.0, Units.inchesToMeters(197.765), Units.inchesToMeters(78.324));
 
   public static double aprilTagWidth = Units.inchesToMeters(6.50);
   public static AprilTagFieldLayout aprilTags;

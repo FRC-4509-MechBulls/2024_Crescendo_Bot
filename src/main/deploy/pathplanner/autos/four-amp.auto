@@ -1,0 +1,175 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.35,
+      "y": 7.22
+    },
+    "rotation": 90.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "setObjectiveAmp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "readyToShootMode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ampstart"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.7
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ejectMode"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeMode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "amp0"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "readyToShootMode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "amp1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ejectMode"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeMode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "amp2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "readyToShootMode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "amp3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ejectMode"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeMode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "amp4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "readyToShootMode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "amp5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ejectMode"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "holdMode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "amp6"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

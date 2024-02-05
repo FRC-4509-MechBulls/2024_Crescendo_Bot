@@ -1,0 +1,195 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.441414260288271,
+      "y": 5.53650223579517
+    },
+    "rotation": 180.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "setObjectiveSpeaker"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "readyToShootMode"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.75
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ejectMode"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.3
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeMode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "speaker0"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "readyToShootMode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "speaker1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ejectMode"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.15
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeMode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "speaker2"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "readyToShootMode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "speaker3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ejectMode"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.15
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeMode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "speaker4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "readyToShootMode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "speaker5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ejectMode"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "speaker6"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.3
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "intakeMode"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

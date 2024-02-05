@@ -19,7 +19,7 @@ public class ArmSubsystem extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         if(Robot.isSimulation())
-            simRad += (setpointRad - simRad) * 0.1;
+            simRad += (setpointRad - simRad) * 0.1; //TODO: move to simulation periodic?
 
 
         switch (stateControllerSub.getArmState()) {
@@ -36,6 +36,8 @@ public class ArmSubsystem extends SubsystemBase {
         }
 
         NetworkTableInstance.getDefault().getTable("StateController").getEntry("armAngle").setDouble(getArmAngle());
+
+        stateControllerSub.setArmAngleRad(getArmAngle());
 
     }
 

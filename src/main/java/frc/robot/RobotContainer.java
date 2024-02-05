@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -30,6 +31,8 @@ import frc.robot.subsystems.drive.VisionSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
+  StateControllerSub stateController = new StateControllerSub(); //this MUST be created before any pathplanner commands
+
   CommandXboxController driver = new CommandXboxController(0);
   CommandXboxController operator = new CommandXboxController(1);
 
@@ -37,7 +40,7 @@ public class RobotContainer {
 
   SendableChooser<Command> autoChooser = new SendableChooser<>();
 
-  StateControllerSub stateController = new StateControllerSub();
+
   ArmSubsystem armSubsystem = new ArmSubsystem(stateController);
 
   ClimbSubsystem climbSubsystem = new ClimbSubsystem(stateController);
@@ -78,12 +81,18 @@ public class RobotContainer {
 
     operator.leftTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));
 
+
+
  // operator.a().onTrue(new InstantCommand(()->stateController.setArmState(StateControllerSub.ArmState.INTAKE)));
 
   }
 
   private void createAutos(){
     autoChooser.setDefaultOption("no auto :'( ", null);
+
+    autoChooser.addOption("four-speaker",new PathPlannerAuto("four-speaker"));
+    autoChooser.addOption("four-amp",new PathPlannerAuto("four-amp"));
+    autoChooser.addOption("two-amp-speaker",new PathPlannerAuto("two-amp-two-speaker"));
    // autoChooser.addOption("test",Autos.testAuto());
 
     //autoChooser = AutoBuilder.buildAutoChooser();
