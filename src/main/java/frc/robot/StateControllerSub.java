@@ -137,6 +137,18 @@ public class StateControllerSub extends SubsystemBase {
 
         SmartDashboard.putNumber("distanceToMySpeaker",distanceToMySpeaker());
       //  SmartDashboard.putNumber("robotX",robotPose.getX());
+
+        if(efState == EFState.READY || efState == EFState.SHOOT) {
+            switch (objective) {
+                case AMP -> armState = ArmState.AMP;
+                case SPEAKER -> armState = ArmState.SPEAKER;
+                case TRAP -> armState = ArmState.TRAP;
+                case SOURCE -> armState = ArmState.SOURCE;
+            }
+        }
+
+        SmartDashboard.putNumber("distanceToObjective",distanceToObjective());
+
     }
 
     public void publishTableEntries(){
@@ -168,12 +180,6 @@ public class StateControllerSub extends SubsystemBase {
     public void readyToShootPressed(){
        // armState = ArmState.HOLD;
         efState = EFState.READY;
-        switch (objective) {
-            case AMP -> armState = ArmState.AMP;
-            case SPEAKER -> armState = ArmState.SPEAKER;
-            case TRAP -> armState = ArmState.TRAP;
-            case SOURCE -> armState = ArmState.SOURCE;
-        }
 
       //  efState = EFState.READY;
     }
