@@ -47,6 +47,21 @@ public class StateControllerSub extends SubsystemBase {
         return climbState;
     }
 
+
+    private double distanceToObjective(){
+        Translation2d objectiveTranslation = new Translation2d();
+        switch (objective){
+            case AMP -> objectiveTranslation = FieldConstants.ampCenter;
+            case SPEAKER -> objectiveTranslation = FieldConstants.Speaker.centerSpeakerOpening.getTranslation();
+            case TRAP -> objectiveTranslation = new Translation2d(FieldConstants.podiumX, FieldConstants.fieldWidth/2.0);
+            case SOURCE -> objectiveTranslation = FieldConstants.sourceCenterRough;
+        }
+
+        objectiveTranslation = AllianceFlipUtil.apply(objectiveTranslation);
+        return Math.hypot(objectiveTranslation.getX()-robotPose.getX(),objectiveTranslation.getY()-robotPose.getY());
+        }
+
+
     private double distanceToMySpeaker(){
         Translation2d speakerTranslation = AllianceFlipUtil.apply(FieldConstants.Speaker.centerSpeakerOpening.getTranslation());
         return Math.hypot(speakerTranslation.getX()-robotPose.getX(),speakerTranslation.getY()-robotPose.getY());
