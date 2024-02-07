@@ -99,7 +99,7 @@ StateControllerSub stateController;
             },
             this // Reference to this subsystem to set requirements
     );
-    PPHolonomicDriveController
+    PPHolonomicDriveController.setRotationTargetOverride(stateController::getRotationTargetOverride);
   }
 
 

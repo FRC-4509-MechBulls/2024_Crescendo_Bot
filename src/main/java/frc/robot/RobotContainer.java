@@ -70,9 +70,9 @@ public class RobotContainer {
     operator.x().onTrue(new InstantCommand(stateController::ejectPressed));
     operator.y().onTrue(new InstantCommand(stateController::readyToShootPressed));
 
-    operator.leftBumper().onTrue(new InstantCommand(stateController::stowPressed));
-    operator.rightBumper().onTrue(new InstantCommand(stateController::raiseClimbPressed));
-    operator.rightTrigger(0.5).onTrue(new InstantCommand(stateController::climbPressed));
+   // operator.leftBumper().onTrue(new InstantCommand(stateController::stowPressed));
+   // operator.rightBumper().onTrue(new InstantCommand(stateController::raiseClimbPressed));
+   // operator.rightTrigger(0.5).onTrue(new InstantCommand(stateController::climbPressed));
 
     operator.povUp().onTrue(new InstantCommand(stateController::sourcePressed));
     operator.povRight().onTrue(new InstantCommand(stateController::ampPressed));
@@ -82,6 +82,15 @@ public class RobotContainer {
     operator.leftTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));
 
 
+    driver.rightTrigger(0.5).onTrue(new InstantCommand(stateController::scheduleAlignmentCommand,swerveSubsystem));
+    driver.rightTrigger(0.5).onFalse(swerveSubsystem.getDefaultCommand());
+
+
+    driver.leftTrigger(0.5).onTrue(new InstantCommand(()->stateController.setLoweredHoldMode(true)));
+    driver.leftTrigger(0.5).onFalse(new InstantCommand(()->stateController.setLoweredHoldMode(false)));
+
+    driver.rightTrigger(0.5).onTrue(new InstantCommand(()->stateController.setLoweredHoldMode(true)));
+    driver.rightTrigger(0.5).onFalse(new InstantCommand(()->stateController.setLoweredHoldMode(false)));
 
  // operator.a().onTrue(new InstantCommand(()->stateController.setArmState(StateControllerSub.ArmState.INTAKE)));
 

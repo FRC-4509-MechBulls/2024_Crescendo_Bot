@@ -1,15 +1,13 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.drive.Alignments;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.MBUtils;
 
@@ -25,15 +23,19 @@ public class StateControllerSub extends SubsystemBase {
 
     public enum ArmState{HOLD,SPEAKER,AMP,TRAP,INTAKE,SOURCE}
     public enum EFState{HOLD,INTAKE,EJECT,READY,SHOOT}
-    public enum ClimbState{STOWED,READY,CLIMBED}
+    public enum ClimbState{DOWN,READY,CLIMBED}
     public enum Objective{SPEAKER,AMP,SOURCE,TRAP}
     public enum SelectedTrap{AMP,SOURCE,REAR}
 
+    public enum LoweredHoldMode {LOWERED,NOT_LOWERED}
+
     private ArmState armState = ArmState.HOLD;
     private EFState efState = EFState.HOLD;
-    private ClimbState climbState = ClimbState.STOWED;
+    private ClimbState climbState = ClimbState.READY;
     Objective objective = Objective.SPEAKER;
     SelectedTrap selectedTrap = SelectedTrap.AMP;
+
+    LoweredHoldMode loweredHoldMode = LoweredHoldMode.NOT_LOWERED;
     private Pose2d robotPose = new Pose2d();
     private double armAngleRad = 0.0;
 
@@ -47,15 +49,47 @@ public class StateControllerSub extends SubsystemBase {
         return climbState;
     }
 
+    public Optional<Rotation2d> getRotationTargetOverride(){
+        if(objective == Objective.SOURCE && distanceToObjective(Objective.SOURCE) > 2.5)
+            return Optional.of(AllianceFlipUtil.apply(Rotation2d.fromDegrees(0)));
 
-    private double distanceToObjective(){
-        Translation2d objectiveTranslation = new Translation2d();
-        switch (objective){
-            case AMP -> objectiveTranslation = FieldConstants.ampCenter;
-            case SPEAKER -> objectiveTranslation = FieldConstants.Speaker.centerSpeakerOpening.getTranslation();
-            case TRAP -> objectiveTranslation = new Translation2d(FieldConstants.podiumX, FieldConstants.fieldWidth/2.0);
-            case SOURCE -> objectiveTranslation = FieldConstants.sourceCenterRough;
-        }
+        if(objective == Objective.AMP && distanceToObjective(Objective.AMP) > 3)
+            return Optional.of(AllianceFlipUtil.apply(Rotation2d.fromDegrees(180)));
+
+        return Optional.empty();
+    }
+
+
+
+    public void scheduleAlignmentCommand(){
+        loweredHoldMode = LoweredHoldMode.LOWERED;
+        armState = ArmState.HOLD;
+
+
+
+        if(objective == Objective.AMP)
+            Alignments.ampAlign.schedule();
+        if(objective == Objective.SOURCE)
+            Alignments.sourceAlign().schedule();
+
+    }
+
+    public void setLoweredHoldMode(boolean lowered){
+        if(lowered)
+            loweredHoldMode = LoweredHoldMode.LOWERED;
+        else
+            loweredHoldMode = LoweredHoldMode.NOT_LOWERED;
+    }
+
+
+
+    private double distanceToObjective(Objective objective){
+        Translation2d objectiveTranslation = switch (objective) {
+            case AMP -> FieldConstants.ampCenter;
+            case SPEAKER -> FieldConstants.Speaker.centerSpeakerOpening.getTranslation();
+            case TRAP -> new Translation2d(FieldConstants.podiumX, FieldConstants.fieldWidth / 2.0);
+            case SOURCE -> FieldConstants.sourceCenterRough;
+        };
 
         objectiveTranslation = AllianceFlipUtil.apply(objectiveTranslation);
         return Math.hypot(objectiveTranslation.getX()-robotPose.getX(),objectiveTranslation.getY()-robotPose.getY());
@@ -65,6 +99,12 @@ public class StateControllerSub extends SubsystemBase {
     private double distanceToMySpeaker(){
         Translation2d speakerTranslation = AllianceFlipUtil.apply(FieldConstants.Speaker.centerSpeakerOpening.getTranslation());
         return Math.hypot(speakerTranslation.getX()-robotPose.getX(),speakerTranslation.getY()-robotPose.getY());
+    }
+
+    public double getHoldAngle(){
+        if(loweredHoldMode == LoweredHoldMode.LOWERED)
+            return Constants.ArmConstants.holdingRadLow;
+        return Constants.ArmConstants.holdingRadSafe;
     }
 
     public double getSpeakerAngle(){ //TODO: arm angle in radians
@@ -136,7 +176,7 @@ public class StateControllerSub extends SubsystemBase {
 
         //get an x y and z from smartDashboard
 
-        if(climbState == ClimbState.STOWED)
+        if(climbState == ClimbState.DOWN)
             climbAngle += (Units.degreesToRadians(-48) - climbAngle) * 0.1;
         else
             climbAngle += (Units.degreesToRadians(0) - climbAngle) * 0.1;
@@ -162,7 +202,14 @@ public class StateControllerSub extends SubsystemBase {
             }
         }
 
-        SmartDashboard.putNumber("distanceToObjective",distanceToObjective());
+        SmartDashboard.putNumber("distToObjective",distanceToObjective(objective));
+
+        if(loweredHoldMode == LoweredHoldMode.LOWERED){
+            climbState = ClimbState.DOWN;
+        }else{
+            if(climbState == ClimbState.DOWN)
+                climbState = ClimbState.READY;
+        }
 
     }
 
@@ -176,6 +223,8 @@ public class StateControllerSub extends SubsystemBase {
         table.getEntry("climbState").setString(climbState.toString());
         table.getEntry("objective").setString(objective.toString());
         table.getEntry("selectedTrap").setString(selectedTrap.toString());
+
+        table.getEntry("loweredMode").setString(loweredHoldMode.toString());
     }
 
     public void intakePressed(){
@@ -203,15 +252,7 @@ public class StateControllerSub extends SubsystemBase {
         armAngleRad = angle;
     }
 
-    public void raiseClimbPressed(){
-        climbState = ClimbState.READY;
-    }
-    public void climbPressed(){
-        climbState = ClimbState.CLIMBED;
-    }
-    public void stowPressed(){
-        climbState = ClimbState.STOWED;
-    }
+
 
     public void speakerPressed(){
         objective = Objective.SPEAKER;

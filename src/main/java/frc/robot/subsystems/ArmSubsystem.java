@@ -23,7 +23,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 
         switch (stateControllerSub.getArmState()) {
-            case HOLD -> setAngleRad(holdingRad);
+            case HOLD -> setAngleRad(stateControllerSub.getHoldAngle());
             case SPEAKER -> setAngleRad(stateControllerSub.getSpeakerAngle());
             case AMP -> setAngleRad(ampRad);
             case TRAP -> setAngleRad(stateControllerSub.getTrapArmAngle());

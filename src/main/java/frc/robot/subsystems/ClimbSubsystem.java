@@ -23,7 +23,7 @@ StateControllerSub stateControllerSub;
             simMeters += (setpointMeters - simMeters) * 0.1;
 
         switch (stateControllerSub.getClimbState()){
-            case STOWED:
+            case DOWN:
                 extendPneumatic();
                  retractClaw();
                 break;
