@@ -21,19 +21,24 @@ public class ArmSubsystem extends SubsystemBase {
         if(Robot.isSimulation())
             simRad += (setpointRad - simRad) * 0.1; //TODO: move to simulation periodic?
 
+        if(stateControllerSub.getDuckMode() == StateControllerSub.DuckMode.DUCKING){
+            if(stateControllerSub.getArmState() == StateControllerSub.ArmState.INTAKE)
+                setAngleRad(intakeRad); //ugh, spaghetti
+            else
+                setAngleRad(duckingRad);
+        }
 
-        switch (stateControllerSub.getArmState()) {
-            case HOLD -> setAngleRad(stateControllerSub.getHoldAngle());
-            case SPEAKER -> setAngleRad(stateControllerSub.getSpeakerAngle());
-            case AMP -> setAngleRad(ampRad);
-            case TRAP -> setAngleRad(stateControllerSub.getTrapArmAngle());
-            case INTAKE -> {
-//                if(stateControllerSub.getObjective() == StateControllerSub.Objective.SOURCE)
-//                    setAngleRad(sourceRad);
-//                else
-                    setAngleRad(intakeRad);
+        else{
+            switch (stateControllerSub.getArmState()) {
+                case HOLD -> setAngleRad(stateControllerSub.getHoldAngle());
+                case SPEAKER -> setAngleRad(stateControllerSub.getSpeakerAngle());
+                case AMP -> setAngleRad(ampRad);
+                case TRAP -> setAngleRad(stateControllerSub.getTrapArmAngle());
+                case INTAKE -> setAngleRad(intakeRad);
+
             }
         }
+
 
         NetworkTableInstance.getDefault().getTable("StateController").getEntry("armAngle").setDouble(getArmAngle());
 

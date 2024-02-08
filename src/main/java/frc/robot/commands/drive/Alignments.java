@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.FieldConstants;
 import frc.robot.util.AllianceFlipUtil;
 
 public class Alignments {
@@ -34,6 +35,14 @@ public class Alignments {
         return AutoBuilder.pathfindToPose(pose,constraints,0);
 
     }
+
+    public static Command speakerAlign(){
+        Pose2d pose = new Pose2d(1.75,FieldConstants.Speaker.centerSpeakerOpening.getY(), Rotation2d.fromDegrees(180));
+        pose = AllianceFlipUtil.apply(pose);
+        return AutoBuilder.pathfindToPose(pose,constraints,0);
+    }
+
+
 
 
 }

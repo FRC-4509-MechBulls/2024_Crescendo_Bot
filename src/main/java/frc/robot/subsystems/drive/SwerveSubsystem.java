@@ -25,11 +25,13 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import frc.robot.FieldConstants;
 import frc.robot.util.MBUtils;
 import frc.robot.Robot;
 import frc.robot.StateControllerSub;
 import org.photonvision.EstimatedRobotPose;
 
+import java.lang.reflect.Field;
 import java.util.Optional;
 
 import static frc.robot.Constants.AutoConstants.*;
@@ -128,6 +130,11 @@ StateControllerSub stateController;
 
     if(Math.abs(rad)<controllerDeadband)
       rad = 0;
+
+    if(stateController.alignWhenClose() && stateController.getArmState() != StateControllerSub.ArmState.INTAKE && stateController.getArmState() != StateControllerSub.ArmState.HOLD)
+      rad+=MBUtils.clamp(stateController.alignWhenCloseAngDiff() * alignmentkP,1);
+
+    SmartDashboard.putNumber("rad",rad);
 
 
   rad*=1+controllerDeadband;
@@ -264,6 +271,8 @@ void simDriveUpdate(){
     rearLeft.setStateWithoutDeadband(states[2]);
     rearRight.setStateWithoutDeadband(states[3]);
   }
+
+
 
 
 

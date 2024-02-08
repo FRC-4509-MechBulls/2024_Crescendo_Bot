@@ -27,7 +27,7 @@ public class StateControllerSub extends SubsystemBase {
     public enum Objective{SPEAKER,AMP,SOURCE,TRAP}
     public enum SelectedTrap{AMP,SOURCE,REAR}
 
-    public enum LoweredHoldMode {LOWERED,NOT_LOWERED}
+    public enum DuckMode {DUCKING,NOT_LOWERED}
 
     private ArmState armState = ArmState.HOLD;
     private EFState efState = EFState.HOLD;
@@ -35,7 +35,11 @@ public class StateControllerSub extends SubsystemBase {
     Objective objective = Objective.SPEAKER;
     SelectedTrap selectedTrap = SelectedTrap.AMP;
 
-    LoweredHoldMode loweredHoldMode = LoweredHoldMode.NOT_LOWERED;
+    DuckMode duckMode = DuckMode.NOT_LOWERED;
+
+    boolean alignWhenClose = true;
+
+
     private Pose2d robotPose = new Pose2d();
     private double armAngleRad = 0.0;
 
@@ -62,7 +66,7 @@ public class StateControllerSub extends SubsystemBase {
 
 
     public void scheduleAlignmentCommand(){
-        loweredHoldMode = LoweredHoldMode.LOWERED;
+        duckMode = DuckMode.DUCKING;
         armState = ArmState.HOLD;
 
 
@@ -71,28 +75,42 @@ public class StateControllerSub extends SubsystemBase {
             Alignments.ampAlign.schedule();
         if(objective == Objective.SOURCE)
             Alignments.sourceAlign().schedule();
+        if(objective == Objective.SPEAKER)
+            Alignments.speakerAlign().schedule();
 
     }
 
-    public void setLoweredHoldMode(boolean lowered){
+    public void setDuckMode(boolean lowered){
         if(lowered)
-            loweredHoldMode = LoweredHoldMode.LOWERED;
+            duckMode = DuckMode.DUCKING;
         else
-            loweredHoldMode = LoweredHoldMode.NOT_LOWERED;
+            duckMode = DuckMode.NOT_LOWERED;
+    }
+
+    public DuckMode getDuckMode(){
+        return duckMode;
     }
 
 
 
     private double distanceToObjective(Objective objective){
-        Translation2d objectiveTranslation = switch (objective) {
-            case AMP -> FieldConstants.ampCenter;
-            case SPEAKER -> FieldConstants.Speaker.centerSpeakerOpening.getTranslation();
-            case TRAP -> new Translation2d(FieldConstants.podiumX, FieldConstants.fieldWidth / 2.0);
-            case SOURCE -> FieldConstants.sourceCenterRough;
-        };
-
-        objectiveTranslation = AllianceFlipUtil.apply(objectiveTranslation);
+            Translation2d objectiveTranslation = positionOfObjective(objective);
         return Math.hypot(objectiveTranslation.getX()-robotPose.getX(),objectiveTranslation.getY()-robotPose.getY());
+        }
+
+        private Translation2d positionOfObjective(Objective objective) {
+            Translation2d objectiveTranslation = switch (objective) {
+                case AMP -> FieldConstants.ampCenter;
+                case SPEAKER -> FieldConstants.Speaker.centerSpeakerOpening.getTranslation();
+                case TRAP -> new Translation2d(FieldConstants.podiumX, FieldConstants.fieldWidth / 2.0);
+                case SOURCE -> FieldConstants.sourceCenterRough;
+            };
+            return AllianceFlipUtil.apply(objectiveTranslation);
+        }
+
+        private double angleToObjective(Objective objective){
+            Translation2d objectiveTranslation = positionOfObjective(objective);
+            return Math.atan2(objectiveTranslation.getY()-robotPose.getY(),objectiveTranslation.getX()-robotPose.getX());
         }
 
 
@@ -101,9 +119,9 @@ public class StateControllerSub extends SubsystemBase {
         return Math.hypot(speakerTranslation.getX()-robotPose.getX(),speakerTranslation.getY()-robotPose.getY());
     }
 
-    public double getHoldAngle(){
-        if(loweredHoldMode == LoweredHoldMode.LOWERED)
-            return Constants.ArmConstants.holdingRadLow;
+    public double getHoldAngle(){ // this is redundant now :)
+//        if(duckMode == DuckMode.DUCKING)
+//            return Constants.ArmConstants.duckingRad;
         return Constants.ArmConstants.holdingRadSafe;
     }
 
@@ -204,13 +222,29 @@ public class StateControllerSub extends SubsystemBase {
 
         SmartDashboard.putNumber("distToObjective",distanceToObjective(objective));
 
-        if(loweredHoldMode == LoweredHoldMode.LOWERED){
+        if(duckMode == DuckMode.DUCKING){
             climbState = ClimbState.DOWN;
         }else{
             if(climbState == ClimbState.DOWN)
                 climbState = ClimbState.READY;
         }
 
+        SmartDashboard.putBoolean("alignToObjective",alignWhenClose);
+
+    }
+
+    public boolean alignWhenClose() {
+        return alignWhenClose;
+    }
+
+    public double alignWhenCloseAngDiff() {
+        return MBUtils.angleDiffRad(angleToObjective(objective),robotPose.getRotation().getRadians());
+    }
+
+
+
+    public void toggleAlignWhenClose() {
+        this.alignWhenClose = !this.alignWhenClose;
     }
 
     public void publishTableEntries(){
@@ -224,7 +258,7 @@ public class StateControllerSub extends SubsystemBase {
         table.getEntry("objective").setString(objective.toString());
         table.getEntry("selectedTrap").setString(selectedTrap.toString());
 
-        table.getEntry("loweredMode").setString(loweredHoldMode.toString());
+        table.getEntry("loweredMode").setString(duckMode.toString());
     }
 
     public void intakePressed(){

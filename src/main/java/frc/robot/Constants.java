@@ -38,7 +38,7 @@ public final class Constants {
   }
 
   public static class ArmConstants{
-    public static final double holdingRadLow = Units.degreesToRadians(20.0);
+    public static final double duckingRad = Units.degreesToRadians(20.0);
     public static final double holdingRadSafe = Units.degreesToRadians(70.0);
     public static final double ampRad = Units.degreesToRadians(100);
 
@@ -73,6 +73,8 @@ public final class Constants {
   }
 
   public static final class DriveConstants{
+
+    public static final double alignmentkP = 1.5;
 
     /*Physical Characteristics*/
     public static final double TRACK_WIDTH = Units.inchesToMeters(23.625); //need to find
