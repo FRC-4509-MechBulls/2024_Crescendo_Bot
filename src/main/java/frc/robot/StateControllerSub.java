@@ -12,6 +12,7 @@ import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.MBUtils;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static frc.robot.Constants.ShootingTables;
 
@@ -80,6 +81,7 @@ public class StateControllerSub extends SubsystemBase {
 
     }
 
+    @Deprecated
     public void setDuckMode(boolean lowered){
         if(lowered)
             duckMode = DuckMode.DUCKING;
@@ -167,8 +169,10 @@ public class StateControllerSub extends SubsystemBase {
 
     public Objective getObjective(){return objective;}
 
+Supplier<Boolean> forceDuck;
 
-    public StateControllerSub(){
+
+    public StateControllerSub(Supplier<Boolean> forceDuck){
         NamedCommands.registerCommand("intakeMode",new InstantCommand(this::intakePressed));
         NamedCommands.registerCommand("holdMode",new InstantCommand(this::holdPressed));
         NamedCommands.registerCommand("setObjectiveSpeaker",new InstantCommand(this::speakerPressed));
@@ -181,7 +185,7 @@ public class StateControllerSub extends SubsystemBase {
         SmartDashboard.putNumber("tuningFlywheelVel",10);
 
 
-
+        this.forceDuck = forceDuck;
     }
 
     double climbAngle = 0.0;
@@ -230,6 +234,11 @@ public class StateControllerSub extends SubsystemBase {
         }
 
         SmartDashboard.putBoolean("alignToObjective",alignWhenClose);
+
+        if(forceDuck.get())
+            duckMode = DuckMode.DUCKING;
+        else
+            duckMode = DuckMode.NOT_LOWERED;
 
     }
 

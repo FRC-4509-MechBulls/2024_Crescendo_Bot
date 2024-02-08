@@ -25,10 +25,12 @@ import frc.robot.subsystems.drive.VisionSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
-  StateControllerSub stateController = new StateControllerSub(); //this MUST be created before any pathplanner commands
 
   CommandXboxController driver = new CommandXboxController(0);
   CommandXboxController operator = new CommandXboxController(1);
+
+  StateControllerSub stateController = new StateControllerSub(()->driver.getLeftTriggerAxis()>0.5 || driver.getRightTriggerAxis()>0.5); //this MUST be created before any pathplanner commands
+
 
   VisionSubsystem visionSub = new VisionSubsystem();
 
@@ -76,15 +78,17 @@ public class RobotContainer {
     operator.leftTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));
 
 
-    driver.rightTrigger(0.5).onTrue(new InstantCommand(stateController::scheduleAlignmentCommand,swerveSubsystem));
-    driver.rightTrigger(0.5).onFalse(swerveSubsystem.getDefaultCommand());
+    driver.leftTrigger(0.5).onTrue(new InstantCommand(stateController::scheduleAlignmentCommand,swerveSubsystem));
+    driver.leftTrigger(0.5).onFalse(swerveSubsystem.getDefaultCommand());
+
+    driver.x().onTrue(new InstantCommand(stateController::shootPressed));
 
 
-    driver.leftTrigger(0.5).onTrue(new InstantCommand(()->stateController.setDuckMode(true)));
-    driver.leftTrigger(0.5).onFalse(new InstantCommand(()->stateController.setDuckMode(false)));
+   // driver.leftTrigger(0.5).onTrue(new InstantCommand(()->stateController.setDuckMode(true)));
+    //driver.leftTrigger(0.5).onFalse(new InstantCommand(()->stateController.setDuckMode(false)));
 
-    driver.rightTrigger(0.5).onTrue(new InstantCommand(()->stateController.setDuckMode(true)));
-    driver.rightTrigger(0.5).onFalse(new InstantCommand(()->stateController.setDuckMode(false)));
+   // driver.rightTrigger(0.5).onTrue(new InstantCommand(()->stateController.setDuckMode(true)));
+   // driver.rightTrigger(0.5).onFalse(new InstantCommand(()->stateController.setDuckMode(false)));
 
     driver.a().onTrue(new InstantCommand(stateController::toggleAlignWhenClose));
 
