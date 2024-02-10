@@ -11,8 +11,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
+import frc.robot.subsystems.EFSubsystem;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 import frc.robot.subsystems.drive.VisionSubsystem;
 
@@ -38,6 +40,8 @@ public class RobotContainer {
 
 
   ArmSubsystem armSubsystem = new ArmSubsystem(stateController);
+
+  EFSubsystem efSub = new EFSubsystem(stateController);
 
   ClimbSubsystem climbSubsystem = new ClimbSubsystem(stateController);
 
@@ -81,7 +85,7 @@ public class RobotContainer {
     driver.leftTrigger(0.5).onTrue(new InstantCommand(stateController::scheduleAlignmentCommand,swerveSubsystem));
     driver.leftTrigger(0.5).onFalse(swerveSubsystem.getDefaultCommand());
 
-    driver.x().onTrue(new InstantCommand(stateController::shootPressed));
+   //TODO driver.x().onTrue(new InstantCommand(stateController::shootPressed));
 
 
    // driver.leftTrigger(0.5).onTrue(new InstantCommand(()->stateController.setDuckMode(true)));
@@ -90,7 +94,12 @@ public class RobotContainer {
    // driver.rightTrigger(0.5).onTrue(new InstantCommand(()->stateController.setDuckMode(true)));
    // driver.rightTrigger(0.5).onFalse(new InstantCommand(()->stateController.setDuckMode(false)));
 
-    driver.a().onTrue(new InstantCommand(stateController::toggleAlignWhenClose));
+   //TODO driver.a().onTrue(new InstantCommand(stateController::toggleAlignWhenClose));
+
+    driver.x().whileTrue(efSub.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    driver.y().whileTrue(efSub.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    driver.a().whileTrue(efSub.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    driver.b().whileTrue(efSub.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
  // operator.a().onTrue(new InstantCommand(()->stateController.setArmState(StateControllerSub.ArmState.INTAKE)));
 

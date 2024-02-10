@@ -27,6 +27,13 @@ public final class Constants {
   }
 
   public static class EFCConstants{
+
+    public static final int intakeMasterID = 20;
+    public static final int intakeFollowerID = 21;
+
+    public static final int shooterMasterID = 22;
+    public static final int shooterFollowerID = 23;
+
     public static final double intakeSpeed = 0.5;
     public static final double outtakeSpeed = -0.5;
     public static final double outtakeShooterVelocity = -1;
