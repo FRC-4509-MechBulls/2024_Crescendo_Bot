@@ -45,9 +45,15 @@ public class EFSubsystem extends SubsystemBase {
 
         shooterFollower.follow(shooterMaster,true);
 
-        shooterMaster.getPIDController().setP(0.00075158,0);
+        shooterMaster.getPIDController().setP(0.00010225,0);
         shooterMaster.getPIDController().setI(0,0);
         shooterMaster.getPIDController().setD(0,0);
+
+        shooterMaster.enableVoltageCompensation(12);
+
+
+
+        shooterMaster.getEncoder().setVelocityConversionFactor(1.0/60);
 
 
         shooterMaster.burnFlash();
@@ -59,6 +65,11 @@ public class EFSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+
+        SmartDashboard.putNumber("shooterVoltage",shooterMaster.getAppliedOutput() * shooterMaster.getVoltageCompensationNominalVoltage());
+
+
+
         // This method will be called once per scheduler run
         switch (stateControllerSub.getEFState()){
             case HOLD:
@@ -91,13 +102,15 @@ break;
     setShooterVelocity(SmartDashboard.getNumber("shooterVelocity",0));
     SmartDashboard.putNumber("shooterVelocityMeasured",shooterMaster.getEncoder().getVelocity());
 
+
     }
 
 
-SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.0,0.044816,0.94161);
+SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.0,0.11746,0.037681);
     void setShooterVelocity(double velocity){
-      //  double ff = feedforward.calculate(velocity);
-      //  shooterMaster.getPIDController().setReference(velocity, ControlType.kVelocity,0,ff);
+        double ff = feedforward.calculate(velocity);
+        SmartDashboard.putNumber("ff",ff);
+        shooterMaster.getPIDController().setReference(velocity, ControlType.kVelocity,0,ff);
     }
 
 
@@ -107,7 +120,7 @@ SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.0,0.044816,0.9
     }
 
     void logShooterData(SysIdRoutineLog log){
-        log.motor("shooter").voltage(Volts.of(shooterMaster.getBusVoltage())).angularVelocity(RadiansPerSecond.of(shooterMaster.getEncoder().getVelocity()/60.0*Math.PI*2)).angularPosition(Rotations.of(shooterMaster.getEncoder().getPosition()));
+        log.motor("shooter").voltage(Volts.of(shooterMaster.getAppliedOutput() * shooterMaster.getVoltageCompensationNominalVoltage())).angularVelocity(RotationsPerSecond.of(shooterMaster.getEncoder().getVelocity())).angularPosition(Rotations.of(shooterMaster.getEncoder().getPosition()));
     }
 
     SysIdRoutine shooterRoutine = new SysIdRoutine(new SysIdRoutine.Config(), new SysIdRoutine.Mechanism(this::voltageDriveShooter,this::logShooterData,this));
