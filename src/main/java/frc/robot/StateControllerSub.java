@@ -81,13 +81,7 @@ public class StateControllerSub extends SubsystemBase {
 
     }
 
-    @Deprecated
-    public void setDuckMode(boolean lowered){
-        if(lowered)
-            duckMode = DuckMode.DUCKING;
-        else
-            duckMode = DuckMode.NOT_LOWERED;
-    }
+
 
     public DuckMode getDuckMode(){
         return duckMode;
