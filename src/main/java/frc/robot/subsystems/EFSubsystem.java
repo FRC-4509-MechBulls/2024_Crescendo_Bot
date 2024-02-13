@@ -24,8 +24,8 @@ public class EFSubsystem extends SubsystemBase {
     TalonFX intakeMaster = new TalonFX(intakeMasterID);
     TalonFX intakeFollower = new TalonFX(intakeFollowerID);
 
-    CANSparkMax shooterMaster = new CANSparkMax(shooterMasterID, CANSparkMax.MotorType.kBrushless);
-    CANSparkMax shooterFollower = new CANSparkMax(shooterFollowerID, CANSparkMax.MotorType.kBrushless);
+    CANSparkMax upperShooter = new CANSparkMax(shooterMasterID, CANSparkMax.MotorType.kBrushless);
+    CANSparkMax lowerShooter = new CANSparkMax(shooterFollowerID, CANSparkMax.MotorType.kBrushless);
 
 
     public EFSubsystem(StateControllerSub stateControllerSub) {
@@ -35,28 +35,44 @@ public class EFSubsystem extends SubsystemBase {
         intakeMaster.configFactoryDefault(1000);
         intakeFollower.configFactoryDefault(1000);
 
-
-        shooterMaster.restoreFactoryDefaults();
-        shooterFollower.restoreFactoryDefaults();
-
+        intakeMaster.configSupplyCurrentLimit(new com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration(true, 40, 45, 100));
+        //TODO current limits?
         intakeFollower.follow(intakeMaster,FollowerType.PercentOutput);
         intakeFollower.setInverted(true);
 
 
-        shooterFollower.follow(shooterMaster,true);
-
-        shooterMaster.getPIDController().setP(0.00010225,0);
-        shooterMaster.getPIDController().setI(0,0);
-        shooterMaster.getPIDController().setD(0,0);
-
-        shooterMaster.enableVoltageCompensation(12);
+        upperShooter.restoreFactoryDefaults();
+        lowerShooter.restoreFactoryDefaults();
 
 
+      //  shooterFollower.follow(shooterMaster,true);
 
-        shooterMaster.getEncoder().setVelocityConversionFactor(1.0/60);
+
+        upperShooter.getPIDController().setP(shooterkP,0);
+        upperShooter.getPIDController().setI(shooterkI,0);
+        upperShooter.getPIDController().setD(shooterkD,0);
+
+        lowerShooter.getPIDController().setP(shooterkP,0);
+        lowerShooter.getPIDController().setI(shooterkI,0);
+        lowerShooter.getPIDController().setD(shooterkD,0);
 
 
-        shooterMaster.burnFlash();
+
+
+        upperShooter.enableVoltageCompensation(12);
+        lowerShooter.enableVoltageCompensation(12);
+
+        upperShooter.setSmartCurrentLimit(40);
+        lowerShooter.setSmartCurrentLimit(40);
+
+
+
+        upperShooter.getEncoder().setVelocityConversionFactor(1.0/60);
+        lowerShooter.getEncoder().setVelocityConversionFactor(1.0/60);
+
+
+        upperShooter.burnFlash();
+        lowerShooter.burnFlash();
 
         SmartDashboard.putNumber("shooterVelocity",0);
 
@@ -66,7 +82,7 @@ public class EFSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-        SmartDashboard.putNumber("shooterVoltage",shooterMaster.getAppliedOutput() * shooterMaster.getVoltageCompensationNominalVoltage());
+        SmartDashboard.putNumber("shooterVoltage", upperShooter.getAppliedOutput() * upperShooter.getVoltageCompensationNominalVoltage());
 
 
 
@@ -100,27 +116,28 @@ break;
     void setMotors(double intakePower, double shooterVelocity){ //positive is intake and shoot
         //TODO: implement this
     setShooterVelocity(SmartDashboard.getNumber("shooterVelocity",0));
-    SmartDashboard.putNumber("shooterVelocityMeasured",shooterMaster.getEncoder().getVelocity());
+    SmartDashboard.putNumber("shooterVelocityMeasured", upperShooter.getEncoder().getVelocity());
 
 
     }
 
 
-SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.0,0.11746,0.037681);
+SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.0,shooterkV,shooterkA);
     void setShooterVelocity(double velocity){
         double ff = feedforward.calculate(velocity);
         SmartDashboard.putNumber("ff",ff);
-        shooterMaster.getPIDController().setReference(velocity, ControlType.kVelocity,0,ff);
+        upperShooter.getPIDController().setReference(velocity, ControlType.kVelocity,0,ff);
+        lowerShooter.getPIDController().setReference(velocity, ControlType.kVelocity,0,ff);
     }
 
 
 
     void voltageDriveShooter(Measure<Voltage> voltage){
-        shooterMaster.setVoltage(voltage.in(Volts));
+        upperShooter.setVoltage(voltage.in(Volts));
     }
 
     void logShooterData(SysIdRoutineLog log){
-        log.motor("shooter").voltage(Volts.of(shooterMaster.getAppliedOutput() * shooterMaster.getVoltageCompensationNominalVoltage())).angularVelocity(RotationsPerSecond.of(shooterMaster.getEncoder().getVelocity())).angularPosition(Rotations.of(shooterMaster.getEncoder().getPosition()));
+        log.motor("shooter").voltage(Volts.of(upperShooter.getAppliedOutput() * upperShooter.getVoltageCompensationNominalVoltage())).angularVelocity(RotationsPerSecond.of(upperShooter.getEncoder().getVelocity())).angularPosition(Rotations.of(upperShooter.getEncoder().getPosition()));
     }
 
     SysIdRoutine shooterRoutine = new SysIdRoutine(new SysIdRoutine.Config(), new SysIdRoutine.Mechanism(this::voltageDriveShooter,this::logShooterData,this));
