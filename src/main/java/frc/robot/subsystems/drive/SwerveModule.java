@@ -78,6 +78,8 @@ public class SwerveModule extends SubsystemBase {
         turningMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
         turningMotor.setInverted(true);
 
+
+
         StatorCurrentLimitConfiguration turningStatorConfig = new StatorCurrentLimitConfiguration(false,40,40,0);
         SupplyCurrentLimitConfiguration turningSupplyConfig = new SupplyCurrentLimitConfiguration(true,20,30,50);
 
@@ -141,7 +143,7 @@ public class SwerveModule extends SubsystemBase {
         double delta = state.angle.getRadians() - getAngle(); //error
         double deltaConverted = delta % Math.PI; //error converted to representative of the actual gap; error > pi indicates we aren't taking the shortest route to setpoint, but rather doing one or more 180* rotations.this is caused by the discontinuity of numbers(pi is the same location as -pi, yet -pi is less than pi)
         double setAngle = Math.abs(deltaConverted) < (Math.PI / 2) ? getAngle() + deltaConverted : getAngle() - ((deltaConverted/Math.abs(deltaConverted)) * (Math.PI-Math.abs(deltaConverted))); //makes set angle +/- 1/2pi of our current position(capable of pointing all directions)
-
+    
 
         turningMotor.set(ControlMode.Position,radToTurning(setAngle));
         driveMotor.set(ControlMode.Velocity, driveMetersPerSecondToFalcon(state.speedMetersPerSecond));

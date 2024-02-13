@@ -4,13 +4,9 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
-
-import java.util.ArrayList;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -42,7 +38,8 @@ public final class Constants {
   }
 
   public static class ArmConstants{
-    public static final double holdingRad = Units.degreesToRadians(20.0);
+    public static final double duckingRad = Units.degreesToRadians(20.0);
+    public static final double holdingRadSafe = Units.degreesToRadians(70.0);
     public static final double ampRad = Units.degreesToRadians(100);
 
     public static final double sourceRad = Units.degreesToRadians(95.0);
@@ -76,6 +73,8 @@ public final class Constants {
   }
 
   public static final class DriveConstants{
+
+    public static final double alignmentkP = 1.5;
 
     /*Physical Characteristics*/
     public static final double TRACK_WIDTH = Units.inchesToMeters(23.625); //need to find

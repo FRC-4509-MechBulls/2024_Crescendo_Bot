@@ -44,6 +44,18 @@ public class MBUtils {
         return ang2-ang1;
     }
 
+    public static double angleDiffRad(double ang1, double ang2){
+        // Convert angle difference condition from 180 degrees to PI radians
+        if(Math.abs(ang1 - ang2) > Math.PI){
+            if(ang1 > ang2)
+                return -ang1 + ang2 + 2 * Math.PI; // 360 degrees is equivalent to 2*PI radians
+            else
+                return -ang1 + ang2 - 2 * Math.PI;
+        }
+        return ang2 - ang1;
+    }
+
+
     public static double clamp(double input, double min, double max){
         if(input>max) input = max;
         if(input<min) input = min;

@@ -65,6 +65,8 @@ public class FieldConstants {
             new Pose2d(0.0, fieldWidth - Units.inchesToMeters(104.0), new Rotation2d());
   }
 
+  public static final Translation2d sourceCenterRough = new Translation2d(15.65,0.552);
+
   // corners (blue alliance origin)
   public static Translation3d topRightSpeaker =
           new Translation3d(

@@ -4,19 +4,13 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.Autos;
-import frc.robot.commands.drive.Alignments;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.drive.SwerveSubsystem;
@@ -31,10 +25,12 @@ import frc.robot.subsystems.drive.VisionSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
-  StateControllerSub stateController = new StateControllerSub(); //this MUST be created before any pathplanner commands
 
   CommandXboxController driver = new CommandXboxController(0);
   CommandXboxController operator = new CommandXboxController(1);
+
+  StateControllerSub stateController = new StateControllerSub(()->driver.getLeftTriggerAxis()>0.5 || driver.getRightTriggerAxis()>0.5); //this MUST be created before any pathplanner commands
+
 
   VisionSubsystem visionSub = new VisionSubsystem();
 
@@ -70,9 +66,9 @@ public class RobotContainer {
     operator.x().onTrue(new InstantCommand(stateController::ejectPressed));
     operator.y().onTrue(new InstantCommand(stateController::readyToShootPressed));
 
-    operator.leftBumper().onTrue(new InstantCommand(stateController::stowPressed));
-    operator.rightBumper().onTrue(new InstantCommand(stateController::raiseClimbPressed));
-    operator.rightTrigger(0.5).onTrue(new InstantCommand(stateController::climbPressed));
+   // operator.leftBumper().onTrue(new InstantCommand(stateController::stowPressed));
+   // operator.rightBumper().onTrue(new InstantCommand(stateController::raiseClimbPressed));
+   // operator.rightTrigger(0.5).onTrue(new InstantCommand(stateController::climbPressed));
 
     operator.povUp().onTrue(new InstantCommand(stateController::sourcePressed));
     operator.povRight().onTrue(new InstantCommand(stateController::ampPressed));
@@ -82,6 +78,19 @@ public class RobotContainer {
     operator.leftTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));
 
 
+    driver.leftTrigger(0.5).onTrue(new InstantCommand(stateController::scheduleAlignmentCommand,swerveSubsystem));
+    driver.leftTrigger(0.5).onFalse(swerveSubsystem.getDefaultCommand());
+
+    driver.x().onTrue(new InstantCommand(stateController::shootPressed));
+
+
+   // driver.leftTrigger(0.5).onTrue(new InstantCommand(()->stateController.setDuckMode(true)));
+    //driver.leftTrigger(0.5).onFalse(new InstantCommand(()->stateController.setDuckMode(false)));
+
+   // driver.rightTrigger(0.5).onTrue(new InstantCommand(()->stateController.setDuckMode(true)));
+   // driver.rightTrigger(0.5).onFalse(new InstantCommand(()->stateController.setDuckMode(false)));
+
+    driver.a().onTrue(new InstantCommand(stateController::toggleAlignWhenClose));
 
  // operator.a().onTrue(new InstantCommand(()->stateController.setArmState(StateControllerSub.ArmState.INTAKE)));
 
