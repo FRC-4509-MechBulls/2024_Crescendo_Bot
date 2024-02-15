@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.revrobotics.CANSparkMax;
@@ -115,6 +116,7 @@ break;
 
     void setMotors(double intakePower, double shooterVelocity){ //positive is intake and shoot
         //TODO: implement this
+        intakeMaster.set(ControlMode.PercentOutput,intakePower);
     setShooterVelocity(SmartDashboard.getNumber("shooterVelocity",0));
     SmartDashboard.putNumber("shooterVelocityMeasured", upperShooter.getEncoder().getVelocity());
 
