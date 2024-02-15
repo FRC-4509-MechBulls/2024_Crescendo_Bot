@@ -131,8 +131,6 @@ StateControllerSub stateController;
     if(Math.abs(rad)<controllerDeadband)
       rad = 0;
 
-    if(stateController.alignWhenClose() && stateController.getArmState() != StateControllerSub.ArmState.INTAKE && stateController.getArmState() != StateControllerSub.ArmState.HOLD)
-      rad+=MBUtils.clamp(stateController.alignWhenCloseAngDiff() * alignmentkP,1);
 
     SmartDashboard.putNumber("rad",rad);
 
@@ -155,6 +153,14 @@ StateControllerSub stateController;
 
   double dir = Math.atan2(joystickY,joystickX);
 
+    if(rad>0){
+      rad = Math.pow(rad,turnExponent) * turnMaxSpeed;
+    }else{
+      rad = -Math.pow(-rad,turnExponent) * turnMaxSpeed;
+    }
+
+    hypot = Math.pow(hypot,driveExponent) * driveMaxSpeed;
+
   //field oriented :p
     //oriented to 180 degrees
     double zeroHeading = 0;
@@ -164,19 +170,19 @@ StateControllerSub stateController;
   if(beFieldOriented)
     dir+=odometry.getEstimatedPosition().getRotation().getRadians() + zeroHeading;
 
-  hypot = Math.pow(hypot,driveExponent) * driveMaxSpeed;
+
 
   joystickX = hypot*Math.cos(dir);
   joystickY = hypot*Math.sin(dir);
 
-  if(rad>0){
-    rad = Math.pow(rad,turnExponent) * turnMaxSpeed;
-  }else{
-    rad = -Math.pow(-rad,turnExponent) * turnMaxSpeed;
-  }
 
 
-/* Angular adjustment stuff */
+    if(stateController.alignWhenClose() && stateController.getArmState() != StateControllerSub.ArmState.INTAKE && stateController.getArmState() != StateControllerSub.ArmState.HOLD)
+      rad+=MBUtils.clamp(stateController.alignWhenCloseAngDiff() * alignmentkP,1);
+
+
+
+    /* Angular adjustment stuff */
 //  if(Math.abs(rad)>radPerSecondDeadband || lastStillHeading.getDegrees() == 0){
 //    lastStillHeading = Rotation2d.fromDegrees(pigeon.getAngle());
 //  }

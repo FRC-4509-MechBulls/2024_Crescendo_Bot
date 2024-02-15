@@ -38,7 +38,7 @@ public class StateControllerSub extends SubsystemBase {
 
     DuckMode duckMode = DuckMode.NOT_LOWERED;
 
-    boolean alignWhenClose = true;
+    boolean alignWhenClose = false;
 
 
     private Pose2d robotPose = new Pose2d();
