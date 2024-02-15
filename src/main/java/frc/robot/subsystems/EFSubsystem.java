@@ -39,7 +39,7 @@ public class EFSubsystem extends SubsystemBase {
         intakeMaster.configSupplyCurrentLimit(new com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration(true, 40, 45, 100));
         //TODO current limits?
         intakeFollower.follow(intakeMaster,FollowerType.PercentOutput);
-        intakeFollower.setInverted(true);
+        intakeFollower.setInverted(false);
 
 
         upperShooter.restoreFactoryDefaults();
@@ -71,11 +71,14 @@ public class EFSubsystem extends SubsystemBase {
         upperShooter.getEncoder().setVelocityConversionFactor(1.0/60);
         lowerShooter.getEncoder().setVelocityConversionFactor(1.0/60);
 
+        upperShooter.setInverted(true);
+        lowerShooter.setInverted(true);
+
 
         upperShooter.burnFlash();
         lowerShooter.burnFlash();
 
-        SmartDashboard.putNumber("shooterVelocity",0);
+     //   SmartDashboard.putNumber("shooterVelocity",0);
 
 
     }
@@ -84,6 +87,7 @@ public class EFSubsystem extends SubsystemBase {
     public void periodic() {
 
         SmartDashboard.putNumber("shooterVoltage", upperShooter.getAppliedOutput() * upperShooter.getVoltageCompensationNominalVoltage());
+        SmartDashboard.putNumber("shooterVelocityMeasured", upperShooter.getEncoder().getVelocity());
 
 
 
@@ -101,13 +105,15 @@ public class EFSubsystem extends SubsystemBase {
             case READY:
             case SHOOT:
                 double flywheelVel = 0;
+                double intakeSpeed = 0;
                 if(stateControllerSub.getEFState() == StateControllerSub.EFState.SHOOT)
-                    switch (stateControllerSub.getObjective()) {
-                        case AMP -> flywheelVel = ampShooterVelocity;
-                        case SPEAKER -> flywheelVel = stateControllerSub.getSpeakerFlywheelVel();
-                        case TRAP -> {} //TODO: do something here?
-                    }
-                setMotors(feedToShooterSpeed,flywheelVel);
+                    intakeSpeed=feedToShooterSpeed;
+                switch (stateControllerSub.getObjective()) {
+                    case AMP -> flywheelVel = ampShooterVelocity;
+                    case SPEAKER -> flywheelVel = stateControllerSub.getSpeakerFlywheelVel();
+                    case TRAP -> {} //TODO: do something here?
+                }
+                setMotors(intakeSpeed,flywheelVel);
 break;
         }
 
@@ -116,9 +122,9 @@ break;
 
     void setMotors(double intakePower, double shooterVelocity){ //positive is intake and shoot
         //TODO: implement this
-        intakeMaster.set(ControlMode.PercentOutput,intakePower);
-    setShooterVelocity(SmartDashboard.getNumber("shooterVelocity",0));
-    SmartDashboard.putNumber("shooterVelocityMeasured", upperShooter.getEncoder().getVelocity());
+        intakeMaster.set(ControlMode.PercentOutput,-intakePower);
+        setShooterVelocity(shooterVelocity);
+        //   setShooterVelocity(SmartDashboard.getNumber("shooterVelocity",0));
 
 
     }

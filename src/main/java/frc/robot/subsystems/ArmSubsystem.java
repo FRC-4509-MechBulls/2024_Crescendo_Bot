@@ -1,8 +1,8 @@
 package frc.robot.subsystems;
 
 
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.ControlType;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -31,21 +31,30 @@ public class ArmSubsystem extends SubsystemBase {
         armMaster.setSmartCurrentLimit(30);
       //  armMaster.setSecondaryCurrentLimit(60, 10);
 
-        armMaster.getPIDController().setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal, 0);
-       // armMaster.getEncoder().setVelocityConversionFactor(1.0/60*2*Math.PI);//rad/sec
-       // armMaster.getEncoder().setPositionConversionFactor(2*Math.PI);//rad
+        armMaster.getPIDController().setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kSCurve, 0);
 
-      //  armMaster.getPIDController().setSmartMotionMaxAccel(10, 0);
-      //  armMaster.getPIDController().setSmartMotionMaxVelocity(200, 0);
-
-        armMaster.getPIDController().setP(0.0001,0);
-
-        armMaster.getPIDController().setOutputRange(-0.3,0.3);
-
-        SmartDashboard.putNumber("armPID",0);
+        armMaster.getEncoder().setPositionConversionFactor(1.0/armGearRatio * 2*Math.PI);
+        armMaster.getEncoder().setPosition(Units.degreesToRadians(5));
 
 
+        armMaster.setIdleMode(CANSparkBase.IdleMode.kCoast);
 
+        armMaster.getEncoder().setVelocityConversionFactor(1.0/armGearRatio*2*Math.PI/60);//rad/sec
+
+        armMaster.getPIDController().setP(0.4,0);
+
+        armMaster.getPIDController().setSmartMotionMaxAccel(0.3, 0);
+        armMaster.getPIDController().setSmartMotionMaxVelocity(1, 0);
+
+
+
+
+        armMaster.getPIDController().setOutputRange(-0.5,0.5);
+
+ //       SmartDashboard.putNumber("armReference",0);
+
+
+        armMaster.burnFlash();
 
     }
 
@@ -85,11 +94,14 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     private void setAngleRad(double angle){
-        //setpointRad = angle;
+        setpointRad = angle;
         //TODO: actually command a position lol
-        setpointRad = Units.degreesToRadians(SmartDashboard.getNumber("tuningAngle",90));
+     //   setpointRad = Units.degreesToRadians(SmartDashboard.getNumber("tuningAngle",90));
+       // SmartDashboard.putNumber("measuredArmAngle",Units.radiansToDegrees(getArmAngle()));
 
-        //armMaster.getPIDController().setReference(setpointRad, ControlType.kPosition);
+       // armMaster.getPIDController().setReference(Units.degreesToRadians(SmartDashboard.getNumber("armReference",0)), CANSparkBase.ControlType.kSmartMotion);
+
+        armMaster.getPIDController().setReference(setpointRad,CANSparkBase.ControlType.kSmartMotion);
 
     }
 

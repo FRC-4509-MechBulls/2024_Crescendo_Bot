@@ -59,7 +59,7 @@ public class SwerveModule extends SubsystemBase {
 
         driveMotor.configNeutralDeadband(driveNeutralDeadband);
 
-        driveMotor.setNeutralMode(NeutralMode.Brake);
+        driveMotor.setNeutralMode(NeutralMode.Coast);
         driveMotor.setInverted(driveMotorReversed);
 
         driveMotor.configPeakOutputForward(maxDrivePower,1000);

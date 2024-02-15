@@ -316,6 +316,12 @@ updatePoseFromVision();
             odometry.getEstimatedPosition().getRotation().getRadians()
     });
 
+    SmartDashboard.putNumber("fl_head",frontLeft.getAbsoluteEncoderRad());
+    SmartDashboard.putNumber("fr_head",frontRight.getAbsoluteEncoderRad());
+    SmartDashboard.putNumber("rl_head",rearLeft.getAbsoluteEncoderRad());
+    SmartDashboard.putNumber("rr_head",rearRight.getAbsoluteEncoderRad());
+
+
 
   }
 
