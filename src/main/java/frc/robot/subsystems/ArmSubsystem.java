@@ -31,7 +31,7 @@ public class ArmSubsystem extends SubsystemBase {
         armMaster.setSmartCurrentLimit(30);
       //  armMaster.setSecondaryCurrentLimit(60, 10);
 
-        armMaster.getPIDController().setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kSCurve, 0);
+        armMaster.getPIDController().setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal, 0);
 
         armMaster.getEncoder().setPositionConversionFactor(1.0/armGearRatio * 2*Math.PI);
         armMaster.getEncoder().setPosition(Units.degreesToRadians(5));
@@ -41,10 +41,14 @@ public class ArmSubsystem extends SubsystemBase {
 
         armMaster.getEncoder().setVelocityConversionFactor(1.0/armGearRatio*2*Math.PI/60);//rad/sec
 
-        armMaster.getPIDController().setP(0.4,0);
+        armMaster.getPIDController().setP(0.6,0);
+
+        armMaster.getPIDController().setD(0.1,0);
+      //  armMaster.getPIDController().setI(0.01,0);
 
         armMaster.getPIDController().setSmartMotionMaxAccel(0.3, 0);
-        armMaster.getPIDController().setSmartMotionMaxVelocity(1, 0);
+        armMaster.getPIDController().setSmartMotionMaxVelocity(1.5, 0);
+
 
 
 

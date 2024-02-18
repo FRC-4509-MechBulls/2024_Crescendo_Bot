@@ -123,7 +123,7 @@ break;
     void setMotors(double intakePower, double shooterVelocity){ //positive is intake and shoot
         //TODO: implement this
         intakeMaster.set(ControlMode.PercentOutput,-intakePower);
-        setShooterVelocity(shooterVelocity);
+      //  setShooterVelocity(shooterVelocity); //TODO re-enable shooter once it's not physically broken :)
         //   setShooterVelocity(SmartDashboard.getNumber("shooterVelocity",0));
 
 

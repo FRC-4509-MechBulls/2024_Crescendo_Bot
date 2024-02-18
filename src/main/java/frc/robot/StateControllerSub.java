@@ -4,6 +4,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.*;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -234,6 +235,14 @@ Supplier<Boolean> forceDuck;
         else
             duckMode = DuckMode.NOT_LOWERED;
 
+
+        if(makeEFHoldTimer.hasElapsed(0.3)){
+            efState = EFState.HOLD;
+            makeEFHoldTimer.stop();
+            makeEFHoldTimer.reset();
+
+        }
+
     }
 
     public boolean alignWhenClose() {
@@ -270,9 +279,20 @@ Supplier<Boolean> forceDuck;
         efState = EFState.INTAKE;
        // climbState = ClimbState.STOWED; //TODO: should this be here?
     }
+
+    Timer makeEFHoldTimer = new Timer();
+
     public void holdPressed(){
-        armState = ArmState.HOLD;
-        efState = EFState.HOLD;
+        armState=ArmState.HOLD;
+
+        if(efState == EFState.INTAKE){
+            efState= EFState.EJECT;
+            makeEFHoldTimer.reset();
+            makeEFHoldTimer.start();
+        }else{
+            efState = EFState.HOLD;
+        }
+
     }
     public void ejectPressed(){
         //armState = ArmState.HOLD;
