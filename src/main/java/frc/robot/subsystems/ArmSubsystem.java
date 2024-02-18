@@ -6,7 +6,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.StateControllerSub;
@@ -71,13 +70,12 @@ public class ArmSubsystem extends SubsystemBase {
         if(Robot.isSimulation())
             simRad += (setpointRad - simRad) * 0.1; //TODO: move to simulation periodic?
 
-        if(stateControllerSub.getDuckMode() == StateControllerSub.DuckMode.DUCKING){
-            if(stateControllerSub.getArmState() == StateControllerSub.ArmState.INTAKE)
-                setAngleRad(intakeRad); //ugh, spaghetti
-            else
-                setAngleRad(duckingRad);
+        if(stateControllerSub.getDuckMode() == StateControllerSub.DuckMode.UNDUCK){
+          //  if(stateControllerSub.getArmState() == StateControllerSub.ArmState.INTAKE)
+          //      setAngleRad(intakeRad); //ugh, spaghetti
+          //  else
+                setAngleRad(holdingRadSafe);
         }
-
         else{
             switch (stateControllerSub.getArmState()) {
                 case HOLD -> setAngleRad(stateControllerSub.getHoldAngle());
