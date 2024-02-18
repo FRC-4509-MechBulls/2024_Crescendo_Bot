@@ -130,15 +130,15 @@ public final class Constants {
 
     public static final int frontRightDriveID = 3;
     public static final int frontRightTurningID = 7;
-    public static final double frontRightOffsetRad = 0;
+    public static final double frontRightOffsetRad = 2.33 + Math.PI/2;
 
     public static final int rearRightDriveID = 1;
     public static final int rearRightTurningID = 4;
-    public static final double rearRightOffsetRad = 0;
+    public static final double rearRightOffsetRad = 2.27 + Math.PI/2;
 
     public static final int rearLeftDriveID = 6;
     public static final int rearLeftTurningID = 5;
-    public static final double rearLeftOffsetRad = 0;
+    public static final double rearLeftOffsetRad = 2.19 + Math.PI/2;
 
 
 
