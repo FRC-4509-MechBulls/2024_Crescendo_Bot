@@ -41,13 +41,13 @@ public final class Constants {
     public static final int shooterMasterID = 22;
     public static final int shooterFollowerID = 23;
 
-    public static final double intakeSpeed = 0.25;
+    public static final double intakeSpeed = 0.7;
     public static final double outtakeSpeed = -0.4;
     public static final double outtakeShooterVelocity = 0;
 
     public static final double ampShooterVelocity = 1000;
 
-    public static final double feedToShooterSpeed = 0.25;
+    public static final double feedToShooterSpeed = 1;
 
   }
 

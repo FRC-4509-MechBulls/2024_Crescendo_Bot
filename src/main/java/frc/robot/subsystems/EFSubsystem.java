@@ -88,6 +88,7 @@ public class EFSubsystem extends SubsystemBase {
 
         SmartDashboard.putNumber("shooterVoltage", upperShooter.getAppliedOutput() * upperShooter.getVoltageCompensationNominalVoltage());
         SmartDashboard.putNumber("shooterVelocityMeasured", upperShooter.getEncoder().getVelocity());
+        SmartDashboard.putNumber("shooterVelocityMeasured_bottom", lowerShooter.getEncoder().getVelocity());
 
 
 
@@ -123,7 +124,7 @@ break;
     void setMotors(double intakePower, double shooterVelocity){ //positive is intake and shoot
         //TODO: implement this
         intakeMaster.set(ControlMode.PercentOutput,-intakePower);
-      //  setShooterVelocity(shooterVelocity); //TODO re-enable shooter once it's not physically broken :)
+        setShooterVelocity(shooterVelocity); //TODO re-enable shooter once it's not physically broken :)
         //   setShooterVelocity(SmartDashboard.getNumber("shooterVelocity",0));
 
 
