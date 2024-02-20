@@ -5,6 +5,8 @@ import com.revrobotics.ControlType;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.StateControllerSub;
@@ -58,6 +60,7 @@ StateControllerSub stateControllerSub;
         climbFollower.burnFlash();
     }
 
+    private final Solenoid m_solenoid = new Solenoid(PneumaticsModuleType.REVPH, 0);
 
 
     double setpointMeters = 0.0;//bottom
@@ -112,10 +115,10 @@ StateControllerSub stateControllerSub;
     }
 
     void extendPneumatic(){
-        //TODO: make arm go to stowed position
+        m_solenoid.set(true);
     }
     void retractPneumatic(){
-        //TODO: make arm go to ready position
+        m_solenoid.set( false);
     }
 
     void extendClaw(){
