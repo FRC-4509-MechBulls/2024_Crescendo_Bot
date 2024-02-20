@@ -35,23 +35,25 @@ public final class Constants {
     public static final double shooterkA = 0.055923;
 
 
-    public static final int intakeMasterID = 20;
-    public static final int intakeFollowerID = 21;
+    public static final int intakeMasterID = 11;
+    public static final int intakeFollowerID = 12;
 
     public static final int shooterMasterID = 22;
     public static final int shooterFollowerID = 23;
 
-    public static final double intakeSpeed = 0.5;
-    public static final double outtakeSpeed = -0.5;
-    public static final double outtakeShooterVelocity = -1;
+    public static final double intakeSpeed = 0.7;
+    public static final double outtakeSpeed = -0.4;
+    public static final double outtakeShooterVelocity = 0;
 
-    public static final double ampShooterVelocity = 0;
+    public static final double ampShooterVelocity = 1000;
 
-    public static final double feedToShooterSpeed = 0.75;
+    public static final double feedToShooterSpeed = 1;
 
   }
 
   public static class ArmConstants{
+
+    public static final double armGearRatio = (40.0/14) * 80.0;
 
     public static final int armMasterID = 30;
     public static final int armFollowerID = 31;
@@ -61,6 +63,13 @@ public final class Constants {
 
     public static final double sourceRad = Units.degreesToRadians(95.0);
     public static final double intakeRad = Units.degreesToRadians(6);
+  }
+
+  public static class ClimbConstants{
+    public static final int climbMasterID = 50;
+    public static final int climbFollowerID = 51;
+
+    public static final double rotationsInTheClimbRange = 73.2;
   }
 
 
@@ -82,7 +91,7 @@ public final class Constants {
     public static final double turnMaxSpeed = 11; //11
 
 
-    public static final double maxDrivePower = 1;
+    public static final double maxDrivePower = 0.2;
 
     public static final double controllerDeadband = 0.06;
 
@@ -122,21 +131,21 @@ public final class Constants {
 
 
     /*Motor IDs and offsets */
-    public static final int frontLeftDriveID = 1;
-    public static final int frontLeftTurningID = 4;
-    public static final double frontLeftOffsetRad = 0.945;
+    public static final int frontLeftDriveID = 8;
+    public static final int frontLeftTurningID = 2;
+    public static final double frontLeftOffsetRad = 3.80 - Math.PI/2;
 
-    public static final int frontRightDriveID = 6;
-    public static final int frontRightTurningID = 5;
-    public static final double frontRightOffsetRad = -5.1929;
+    public static final int frontRightDriveID = 3;
+    public static final int frontRightTurningID = 7;
+    public static final double frontRightOffsetRad =  2.33 + Math.PI/2;
 
-    public static final int rearRightDriveID = 3;
-    public static final int rearRightTurningID = 7;
-    public static final double rearRightOffsetRad = 2.361;
+    public static final int rearRightDriveID = 1;
+    public static final int rearRightTurningID = 4;
+    public static final double rearRightOffsetRad = 2.27 + Math.PI/2;
 
-    public static final int rearLeftDriveID = 8;
-    public static final int rearLeftTurningID = 2;
-    public static final double rearLeftOffsetRad = -2.296;
+    public static final int rearLeftDriveID = 6;
+    public static final int rearLeftTurningID = 5;
+    public static final double rearLeftOffsetRad = 2.19 + Math.PI/2;
 
 
 

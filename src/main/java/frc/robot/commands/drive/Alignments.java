@@ -14,7 +14,7 @@ public class Alignments {
 
 
     // Load the path we want to pathfind to and follow
-    static PathPlannerPath path = PathPlannerPath.fromPathFile("speaker-align");
+  //  static PathPlannerPath path = PathPlannerPath.fromPathFile("speaker-align");
 
     // Create the constraints to use while pathfinding. The constraints defined in the path will only be used for the path.
     static  PathConstraints constraints = new PathConstraints(4.5, 3.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
@@ -30,7 +30,7 @@ public class Alignments {
     );
 
     public static Command sourceAlign(){
-        Pose2d pose = new Pose2d(14,1.1, Rotation2d.fromDegrees(0));
+        Pose2d pose = new Pose2d(14,1.1, Rotation2d.fromDegrees(180));
         pose = AllianceFlipUtil.apply(pose);
         return AutoBuilder.pathfindToPose(pose,constraints,0);
 

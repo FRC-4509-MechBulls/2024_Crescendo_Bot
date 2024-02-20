@@ -4,6 +4,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.*;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,7 +29,7 @@ public class StateControllerSub extends SubsystemBase {
     public enum Objective{SPEAKER,AMP,SOURCE,TRAP}
     public enum SelectedTrap{AMP,SOURCE,REAR}
 
-    public enum DuckMode {DUCKING,NOT_LOWERED}
+    public enum DuckMode {UNDUCK, DOWN}
 
     private ArmState armState = ArmState.HOLD;
     private EFState efState = EFState.HOLD;
@@ -36,9 +37,9 @@ public class StateControllerSub extends SubsystemBase {
     Objective objective = Objective.SPEAKER;
     SelectedTrap selectedTrap = SelectedTrap.AMP;
 
-    DuckMode duckMode = DuckMode.NOT_LOWERED;
+    DuckMode duckMode = DuckMode.DOWN;
 
-    boolean alignWhenClose = true;
+    boolean alignWhenClose = false;
 
 
     private Pose2d robotPose = new Pose2d();
@@ -55,7 +56,7 @@ public class StateControllerSub extends SubsystemBase {
     }
 
     public Optional<Rotation2d> getRotationTargetOverride(){
-        if(objective == Objective.SOURCE && distanceToObjective(Objective.SOURCE) > 2.5)
+        if(objective == Objective.SOURCE && distanceToObjective(Objective.SOURCE) > 3)
             return Optional.of(AllianceFlipUtil.apply(Rotation2d.fromDegrees(0)));
 
         if(objective == Objective.AMP && distanceToObjective(Objective.AMP) > 3)
@@ -67,7 +68,7 @@ public class StateControllerSub extends SubsystemBase {
 
 
     public void scheduleAlignmentCommand(){
-        duckMode = DuckMode.DUCKING;
+        duckMode = DuckMode.DOWN;
         armState = ArmState.HOLD;
 
 
@@ -118,7 +119,7 @@ public class StateControllerSub extends SubsystemBase {
     public double getHoldAngle(){ // this is redundant now :)
 //        if(duckMode == DuckMode.DUCKING)
 //            return Constants.ArmConstants.duckingRad;
-        return Constants.ArmConstants.holdingRadSafe;
+        return Constants.ArmConstants.duckingRad;
     }
 
     public double getSpeakerAngle(){ //TODO: arm angle in radians
@@ -163,7 +164,7 @@ public class StateControllerSub extends SubsystemBase {
 
     public Objective getObjective(){return objective;}
 
-Supplier<Boolean> forceDuck;
+Supplier<Boolean> forceUnDuck;
 
 
     public StateControllerSub(Supplier<Boolean> forceDuck){
@@ -179,7 +180,7 @@ Supplier<Boolean> forceDuck;
         SmartDashboard.putNumber("tuningFlywheelVel",10);
 
 
-        this.forceDuck = forceDuck;
+        this.forceUnDuck = forceDuck;
     }
 
     double climbAngle = 0.0;
@@ -202,8 +203,12 @@ Supplier<Boolean> forceDuck;
         Pose3d armPose = new Pose3d(0.24,0,0.21, new Rotation3d(0,armAngleRad-(Math.PI/2),0));
         Pose3d climbPose = new Pose3d(-0.07,0,0.14, new Rotation3d(0,climbAngle,0));
 
-        SmartDashboard.putNumberArray("armPose2D", new double[]{armPose.getX(),armPose.getY(),armPose.getZ(),armPose.getRotation().getQuaternion().getW(),armPose.getRotation().getQuaternion().getX(),armPose.getRotation().getQuaternion().getY(),armPose.getRotation().getQuaternion().getZ()});
-        SmartDashboard.putNumberArray("climbPose2D", new double[]{climbPose.getX(),climbPose.getY(),climbPose.getZ(),climbPose.getRotation().getQuaternion().getW(),climbPose.getRotation().getQuaternion().getX(),climbPose.getRotation().getQuaternion().getY(),climbPose.getRotation().getQuaternion().getZ()});
+        //SmartDashboard.putNumberArray("armPose2D", new double[]{armPose.getX(),armPose.getY(),armPose.getZ(),armPose.getRotation().getQuaternion().getW(),armPose.getRotation().getQuaternion().getX(),armPose.getRotation().getQuaternion().getY(),armPose.getRotation().getQuaternion().getZ()});
+        //SmartDashboard.putNumberArray("climbPose2D", new double[]{climbPose.getX(),climbPose.getY(),climbPose.getZ(),climbPose.getRotation().getQuaternion().getW(),climbPose.getRotation().getQuaternion().getX(),climbPose.getRotation().getQuaternion().getY(),climbPose.getRotation().getQuaternion().getZ()});
+
+        //publish arm and climb 3d poses to network tables
+        table.getEntry("armPose").setDoubleArray(new double[]{armPose.getX(),armPose.getY(),armPose.getZ(),armPose.getRotation().getQuaternion().getW(),armPose.getRotation().getQuaternion().getX(),armPose.getRotation().getQuaternion().getY(),armPose.getRotation().getQuaternion().getZ()});
+        table.getEntry("climbPose").setDoubleArray(new double[]{climbPose.getX(),climbPose.getY(),climbPose.getZ(),climbPose.getRotation().getQuaternion().getW(),climbPose.getRotation().getQuaternion().getX(),climbPose.getRotation().getQuaternion().getY(),climbPose.getRotation().getQuaternion().getZ()});
 
 
         SmartDashboard.putNumber("distanceToMySpeaker",distanceToMySpeaker());
@@ -220,19 +225,27 @@ Supplier<Boolean> forceDuck;
 
         SmartDashboard.putNumber("distToObjective",distanceToObjective(objective));
 
-        if(duckMode == DuckMode.DUCKING){
-            climbState = ClimbState.DOWN;
-        }else{
+        if(duckMode == DuckMode.UNDUCK){
             if(climbState == ClimbState.DOWN)
                 climbState = ClimbState.READY;
+        }else{
+                climbState = ClimbState.DOWN;
         }
 
         SmartDashboard.putBoolean("alignToObjective",alignWhenClose);
 
-        if(forceDuck.get())
-            duckMode = DuckMode.DUCKING;
+        if(forceUnDuck.get())
+            duckMode = DuckMode.UNDUCK;
         else
-            duckMode = DuckMode.NOT_LOWERED;
+            duckMode = DuckMode.DOWN;
+
+
+        if(makeEFHoldTimer.hasElapsed(0.3)){
+            efState = EFState.HOLD;
+            makeEFHoldTimer.stop();
+            makeEFHoldTimer.reset();
+
+        }
 
     }
 
@@ -251,9 +264,11 @@ Supplier<Boolean> forceDuck;
     }
 
     public void publishTableEntries(){
-        table.getEntry("odom_x").setDouble(robotPose.getX());
-        table.getEntry("odom_y").setDouble(robotPose.getY());
-        table.getEntry("odom_rad").setDouble(robotPose.getRotation().getRadians());
+       // table.getEntry("odom_x").setDouble(robotPose.getX());
+       // table.getEntry("odom_y").setDouble(robotPose.getY());
+       // table.getEntry("odom_rad").setDouble(robotPose.getRotation().getRadians());
+
+        table.getEntry("odometry").setDoubleArray(new double[]{robotPose.getX(),robotPose.getY(),robotPose.getRotation().getRadians()});
 
         table.getEntry("armState").setString(armState.toString());
         table.getEntry("efState").setString(efState.toString());
@@ -270,9 +285,20 @@ Supplier<Boolean> forceDuck;
         efState = EFState.INTAKE;
        // climbState = ClimbState.STOWED; //TODO: should this be here?
     }
+
+    Timer makeEFHoldTimer = new Timer();
+
     public void holdPressed(){
-        armState = ArmState.HOLD;
-        efState = EFState.HOLD;
+        armState=ArmState.HOLD;
+
+        if(efState == EFState.INTAKE){
+            efState= EFState.EJECT;
+            makeEFHoldTimer.reset();
+            makeEFHoldTimer.start();
+        }else{
+            efState = EFState.HOLD;
+        }
+
     }
     public void ejectPressed(){
         //armState = ArmState.HOLD;

@@ -31,7 +31,7 @@ public class RobotContainer {
   CommandXboxController driver = new CommandXboxController(0);
   CommandXboxController operator = new CommandXboxController(1);
 
-  StateControllerSub stateController = new StateControllerSub(()->driver.getLeftTriggerAxis()>0.5 || driver.getRightTriggerAxis()>0.5); //this MUST be created before any pathplanner commands
+  StateControllerSub stateController = new StateControllerSub(()->driver.getLeftTriggerAxis()>0.5); //this MUST be created before any pathplanner commands
 
 
   VisionSubsystem visionSub = new VisionSubsystem();
@@ -70,6 +70,11 @@ public class RobotContainer {
     operator.x().onTrue(new InstantCommand(stateController::ejectPressed));
     operator.y().onTrue(new InstantCommand(stateController::readyToShootPressed));
 
+    driver.a().onTrue(new InstantCommand(stateController::intakePressed));
+    driver.b().onTrue(new InstantCommand(stateController::holdPressed));
+    driver.x().onTrue(new InstantCommand(stateController::ejectPressed));
+    driver.y().onTrue(new InstantCommand(stateController::readyToShootPressed));
+
    // operator.leftBumper().onTrue(new InstantCommand(stateController::stowPressed));
    // operator.rightBumper().onTrue(new InstantCommand(stateController::raiseClimbPressed));
    // operator.rightTrigger(0.5).onTrue(new InstantCommand(stateController::climbPressed));
@@ -80,10 +85,13 @@ public class RobotContainer {
     operator.povLeft().onTrue(new InstantCommand(stateController::trapPressed));
 
     operator.leftTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));
+    driver.leftBumper().onTrue(new InstantCommand(stateController::shootPressed));
 
 
-    driver.leftTrigger(0.5).onTrue(new InstantCommand(stateController::scheduleAlignmentCommand,swerveSubsystem));
-    driver.leftTrigger(0.5).onFalse(swerveSubsystem.getDefaultCommand());
+    driver.rightTrigger(0.5).onTrue(new InstantCommand(stateController::scheduleAlignmentCommand,swerveSubsystem));
+    driver.rightTrigger(0.5).onFalse(swerveSubsystem.getDefaultCommand());
+
+
 
    //TODO driver.x().onTrue(new InstantCommand(stateController::shootPressed));
 
@@ -100,6 +108,8 @@ public class RobotContainer {
     driver.y().whileTrue(efSub.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     driver.a().whileTrue(efSub.sysIdDynamic(SysIdRoutine.Direction.kForward));
     driver.b().whileTrue(efSub.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+
 
  // operator.a().onTrue(new InstantCommand(()->stateController.setArmState(StateControllerSub.ArmState.INTAKE)));
 

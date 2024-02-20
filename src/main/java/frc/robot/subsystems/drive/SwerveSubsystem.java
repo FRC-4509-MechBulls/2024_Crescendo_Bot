@@ -43,11 +43,11 @@ import static frc.robot.Constants.OperatorConstants.*;
 public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new SwerveSubsystem. */
 
-  SwerveModule frontLeft = new SwerveModule(frontLeftDriveID,frontLeftTurningID,false,true,0,frontLeftOffsetRad);
+  SwerveModule frontLeft = new SwerveModule(frontLeftDriveID,frontLeftTurningID,false,true,3,frontLeftOffsetRad);
   SwerveModule frontRight = new SwerveModule(frontRightDriveID,frontRightTurningID,false,true,1,frontRightOffsetRad);
 
-  SwerveModule rearLeft = new SwerveModule(rearLeftDriveID,rearLeftTurningID,false,true,2,rearLeftOffsetRad);
-  SwerveModule rearRight = new SwerveModule(rearRightDriveID,rearRightTurningID,false,true,3,rearRightOffsetRad);
+  SwerveModule rearLeft = new SwerveModule(rearLeftDriveID,rearLeftTurningID,false,true,0,rearLeftOffsetRad);
+  SwerveModule rearRight = new SwerveModule(rearRightDriveID,rearRightTurningID,false,true,2,rearRightOffsetRad);
 
   WPI_Pigeon2 pigeon = new WPI_Pigeon2(40);
   AHRS navx = new AHRS(SPI.Port.kMXP);
@@ -131,8 +131,6 @@ StateControllerSub stateController;
     if(Math.abs(rad)<controllerDeadband)
       rad = 0;
 
-    if(stateController.alignWhenClose() && stateController.getArmState() != StateControllerSub.ArmState.INTAKE && stateController.getArmState() != StateControllerSub.ArmState.HOLD)
-      rad+=MBUtils.clamp(stateController.alignWhenCloseAngDiff() * alignmentkP,1);
 
     SmartDashboard.putNumber("rad",rad);
 
@@ -155,6 +153,14 @@ StateControllerSub stateController;
 
   double dir = Math.atan2(joystickY,joystickX);
 
+    if(rad>0){
+      rad = Math.pow(rad,turnExponent) * turnMaxSpeed;
+    }else{
+      rad = -Math.pow(-rad,turnExponent) * turnMaxSpeed;
+    }
+
+    hypot = Math.pow(hypot,driveExponent) * driveMaxSpeed;
+
   //field oriented :p
     //oriented to 180 degrees
     double zeroHeading = 0;
@@ -164,19 +170,19 @@ StateControllerSub stateController;
   if(beFieldOriented)
     dir+=odometry.getEstimatedPosition().getRotation().getRadians() + zeroHeading;
 
-  hypot = Math.pow(hypot,driveExponent) * driveMaxSpeed;
+
 
   joystickX = hypot*Math.cos(dir);
   joystickY = hypot*Math.sin(dir);
 
-  if(rad>0){
-    rad = Math.pow(rad,turnExponent) * turnMaxSpeed;
-  }else{
-    rad = -Math.pow(-rad,turnExponent) * turnMaxSpeed;
-  }
 
 
-/* Angular adjustment stuff */
+    if(stateController.alignWhenClose() && stateController.getArmState() != StateControllerSub.ArmState.INTAKE && stateController.getArmState() != StateControllerSub.ArmState.HOLD)
+      rad+=MBUtils.clamp(stateController.alignWhenCloseAngDiff() * alignmentkP,1);
+
+
+
+    /* Angular adjustment stuff */
 //  if(Math.abs(rad)>radPerSecondDeadband || lastStillHeading.getDegrees() == 0){
 //    lastStillHeading = Rotation2d.fromDegrees(pigeon.getAngle());
 //  }
@@ -309,6 +315,12 @@ updatePoseFromVision();
             odometry.getEstimatedPosition().getY(),
             odometry.getEstimatedPosition().getRotation().getRadians()
     });
+
+    SmartDashboard.putNumber("fl_head",frontLeft.getAbsoluteEncoderRad());
+    SmartDashboard.putNumber("fr_head",frontRight.getAbsoluteEncoderRad());
+    SmartDashboard.putNumber("rl_head",rearLeft.getAbsoluteEncoderRad());
+    SmartDashboard.putNumber("rr_head",rearRight.getAbsoluteEncoderRad());
+
 
 
   }
