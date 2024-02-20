@@ -31,7 +31,7 @@ public class RobotContainer {
   CommandXboxController driver = new CommandXboxController(0);
   CommandXboxController operator = new CommandXboxController(1);
 
-  StateControllerSub stateController = new StateControllerSub(()->driver.getLeftTriggerAxis()>0.5); //this MUST be created before any pathplanner commands
+  StateControllerSub stateController = new StateControllerSub(()->driver.getHID().getLeftBumper()); //this MUST be created before any pathplanner commands
 
 
   VisionSubsystem visionSub = new VisionSubsystem();
@@ -75,6 +75,7 @@ public class RobotContainer {
     driver.x().onTrue(new InstantCommand(stateController::ejectPressed));
     driver.y().onTrue(new InstantCommand(stateController::readyToShootPressed));
 
+
    // operator.leftBumper().onTrue(new InstantCommand(stateController::stowPressed));
    // operator.rightBumper().onTrue(new InstantCommand(stateController::raiseClimbPressed));
    // operator.rightTrigger(0.5).onTrue(new InstantCommand(stateController::climbPressed));
@@ -84,9 +85,10 @@ public class RobotContainer {
     operator.povDown().onTrue(new InstantCommand(stateController::speakerPressed));
     operator.povLeft().onTrue(new InstantCommand(stateController::trapPressed));
 
-    operator.leftTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));
-    driver.leftBumper().onTrue(new InstantCommand(stateController::shootPressed));
+   // operator.leftTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));
+    driver.leftTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));
 
+    driver.rightBumper().onTrue(new InstantCommand(stateController::toggleClimbed));
 
     driver.rightTrigger(0.5).onTrue(new InstantCommand(stateController::scheduleAlignmentCommand,swerveSubsystem));
     driver.rightTrigger(0.5).onFalse(swerveSubsystem.getDefaultCommand());
@@ -99,15 +101,16 @@ public class RobotContainer {
    // driver.leftTrigger(0.5).onTrue(new InstantCommand(()->stateController.setDuckMode(true)));
     //driver.leftTrigger(0.5).onFalse(new InstantCommand(()->stateController.setDuckMode(false)));
 
+
    // driver.rightTrigger(0.5).onTrue(new InstantCommand(()->stateController.setDuckMode(true)));
    // driver.rightTrigger(0.5).onFalse(new InstantCommand(()->stateController.setDuckMode(false)));
 
    //TODO driver.a().onTrue(new InstantCommand(stateController::toggleAlignWhenClose));
 
-    driver.x().whileTrue(efSub.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    driver.y().whileTrue(efSub.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    driver.a().whileTrue(efSub.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    driver.b().whileTrue(efSub.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+  //  driver.x().whileTrue(efSub.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+  //  driver.y().whileTrue(efSub.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+  //  driver.a().whileTrue(efSub.sysIdDynamic(SysIdRoutine.Direction.kForward));
+  //  driver.b().whileTrue(efSub.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
 
 
