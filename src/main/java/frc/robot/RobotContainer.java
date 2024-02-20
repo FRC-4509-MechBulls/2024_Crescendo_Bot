@@ -85,10 +85,13 @@ public class RobotContainer {
     operator.povLeft().onTrue(new InstantCommand(stateController::trapPressed));
 
     operator.leftTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));
+    driver.leftBumper().onTrue(new InstantCommand(stateController::shootPressed));
 
 
     driver.rightTrigger(0.5).onTrue(new InstantCommand(stateController::scheduleAlignmentCommand,swerveSubsystem));
     driver.rightTrigger(0.5).onFalse(swerveSubsystem.getDefaultCommand());
+
+
 
    //TODO driver.x().onTrue(new InstantCommand(stateController::shootPressed));
 
@@ -105,6 +108,8 @@ public class RobotContainer {
     driver.y().whileTrue(efSub.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     driver.a().whileTrue(efSub.sysIdDynamic(SysIdRoutine.Direction.kForward));
     driver.b().whileTrue(efSub.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+
 
  // operator.a().onTrue(new InstantCommand(()->stateController.setArmState(StateControllerSub.ArmState.INTAKE)));
 

@@ -30,7 +30,7 @@ public class Alignments {
     );
 
     public static Command sourceAlign(){
-        Pose2d pose = new Pose2d(14,1.1, Rotation2d.fromDegrees(0));
+        Pose2d pose = new Pose2d(14,1.1, Rotation2d.fromDegrees(180));
         pose = AllianceFlipUtil.apply(pose);
         return AutoBuilder.pathfindToPose(pose,constraints,0);
 

@@ -56,7 +56,7 @@ public class StateControllerSub extends SubsystemBase {
     }
 
     public Optional<Rotation2d> getRotationTargetOverride(){
-        if(objective == Objective.SOURCE && distanceToObjective(Objective.SOURCE) > 2.5)
+        if(objective == Objective.SOURCE && distanceToObjective(Objective.SOURCE) > 3)
             return Optional.of(AllianceFlipUtil.apply(Rotation2d.fromDegrees(0)));
 
         if(objective == Objective.AMP && distanceToObjective(Objective.AMP) > 3)

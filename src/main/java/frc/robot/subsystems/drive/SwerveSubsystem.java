@@ -43,11 +43,11 @@ import static frc.robot.Constants.OperatorConstants.*;
 public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new SwerveSubsystem. */
 
-  SwerveModule frontLeft = new SwerveModule(frontLeftDriveID,frontLeftTurningID,false,true,0,frontLeftOffsetRad);
+  SwerveModule frontLeft = new SwerveModule(frontLeftDriveID,frontLeftTurningID,false,true,3,frontLeftOffsetRad);
   SwerveModule frontRight = new SwerveModule(frontRightDriveID,frontRightTurningID,false,true,1,frontRightOffsetRad);
 
-  SwerveModule rearLeft = new SwerveModule(rearLeftDriveID,rearLeftTurningID,false,true,2,rearLeftOffsetRad);
-  SwerveModule rearRight = new SwerveModule(rearRightDriveID,rearRightTurningID,false,true,3,rearRightOffsetRad);
+  SwerveModule rearLeft = new SwerveModule(rearLeftDriveID,rearLeftTurningID,false,true,0,rearLeftOffsetRad);
+  SwerveModule rearRight = new SwerveModule(rearRightDriveID,rearRightTurningID,false,true,2,rearRightOffsetRad);
 
   WPI_Pigeon2 pigeon = new WPI_Pigeon2(40);
   AHRS navx = new AHRS(SPI.Port.kMXP);
