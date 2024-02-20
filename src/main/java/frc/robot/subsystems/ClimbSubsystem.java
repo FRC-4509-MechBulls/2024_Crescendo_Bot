@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import com.revrobotics.SparkPIDController;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
@@ -58,8 +59,17 @@ StateControllerSub stateControllerSub;
     }
 
 
+
     double setpointMeters = 0.0;//bottom
     double simMeters = 0.0;
+
+    double climbAngle = 0;
+
+    public double getClimbAngle(){
+        return climbAngle;
+    }
+
+
 
 
     @Override
@@ -68,7 +78,7 @@ StateControllerSub stateControllerSub;
         if(Robot.isSimulation())
             simMeters += (setpointMeters - simMeters) * 0.1;
 
-        switch (stateControllerSub.getClimbState()){
+        switch (stateControllerSub.getClimbStateConsideringDuckMode()){
             case DOWN:
                 extendPneumatic();
                  retractClaw();
@@ -84,7 +94,15 @@ StateControllerSub stateControllerSub;
         }
 
         NetworkTableInstance.getDefault().getTable("StateController").getEntry("clawPosition").setDouble(getClawPosition());
+        NetworkTableInstance.getDefault().getTable("StateController").getEntry("climbStateConsideringDuckMode").setString(stateControllerSub.getClimbStateConsideringDuckMode().toString());
 
+
+        if(stateControllerSub.getClimbStateConsideringDuckMode() == StateControllerSub.ClimbState.DOWN)
+            climbAngle += (Units.degreesToRadians(-48) - climbAngle) * 0.1;
+        else
+            climbAngle += (Units.degreesToRadians(0) - climbAngle) * 0.1;
+
+        stateControllerSub.feedClimbAngle(getClimbAngle());
     }
 
     public double getClawPosition(){

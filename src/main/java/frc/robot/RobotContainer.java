@@ -31,7 +31,7 @@ public class RobotContainer {
   CommandXboxController driver = new CommandXboxController(0);
   CommandXboxController operator = new CommandXboxController(1);
 
-  StateControllerSub stateController = new StateControllerSub(()->driver.getHID().getLeftBumper()); //this MUST be created before any pathplanner commands
+  StateControllerSub stateController = new StateControllerSub(); //this MUST be created before any pathplanner commands
 
 
   VisionSubsystem visionSub = new VisionSubsystem();
@@ -87,6 +87,11 @@ public class RobotContainer {
 
    // operator.leftTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));
     driver.leftTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));
+
+   // driver.rightBumper().onTrue(new InstantCommand(stateController::toggleClimbed));
+
+    driver.leftBumper().onTrue(new InstantCommand(()->stateController.setDuckMode(false)));
+    driver.leftBumper().onFalse(new InstantCommand(()->stateController.setDuckMode(true)));
 
     driver.rightBumper().onTrue(new InstantCommand(stateController::toggleClimbed));
 

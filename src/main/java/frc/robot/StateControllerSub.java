@@ -13,7 +13,6 @@ import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.MBUtils;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import static frc.robot.Constants.ShootingTables;
 
@@ -25,7 +24,7 @@ public class StateControllerSub extends SubsystemBase {
 
     public enum ArmState{HOLD,SPEAKER,AMP,TRAP,INTAKE,SOURCE}
     public enum EFState{HOLD,INTAKE,EJECT,READY,SHOOT}
-    public enum ClimbState{DOWN,READY,CLIMBED}
+    public enum ClimbState{DOWN,READY,CLIMBED} //only ever set to ready or climbed
     public enum Objective{SPEAKER,AMP,SOURCE,TRAP}
     public enum SelectedTrap{AMP,SOURCE,REAR}
 
@@ -33,7 +32,7 @@ public class StateControllerSub extends SubsystemBase {
 
     private ArmState armState = ArmState.HOLD;
     private EFState efState = EFState.HOLD;
-    private ClimbState climbState = ClimbState.READY;
+    private ClimbState climbState = ClimbState.DOWN;
     Objective objective = Objective.SPEAKER;
     SelectedTrap selectedTrap = SelectedTrap.AMP;
 
@@ -68,7 +67,7 @@ public class StateControllerSub extends SubsystemBase {
 
 
     public void scheduleAlignmentCommand(){
-        duckMode = DuckMode.DOWN;
+        setDuckMode(true);
         armState = ArmState.HOLD;
 
 
@@ -164,10 +163,24 @@ public class StateControllerSub extends SubsystemBase {
 
     public Objective getObjective(){return objective;}
 
-Supplier<Boolean> forceUnDuck;
+public ClimbState getClimbStateConsideringDuckMode(){
+    if(duckMode==DuckMode.DOWN)
+        return ClimbState.DOWN;
+    return climbState;
+}
+
+public void toggleClimbed(){
+        if(climbState == ClimbState.DOWN) //local variable climbState should never be down. (that's what the climbStateConsideringDuckMode() method is for)
+            climbState = ClimbState.CLIMBED;
+
+        if(climbState == ClimbState.CLIMBED)
+            climbState = ClimbState.READY;
+        else if(climbState == ClimbState.READY)
+            climbState = ClimbState.CLIMBED;
+}
 
 
-    public StateControllerSub(Supplier<Boolean> forceDuck){
+    public StateControllerSub(){
         NamedCommands.registerCommand("intakeMode",new InstantCommand(this::intakePressed));
         NamedCommands.registerCommand("holdMode",new InstantCommand(this::holdPressed));
         NamedCommands.registerCommand("setObjectiveSpeaker",new InstantCommand(this::speakerPressed));
@@ -180,10 +193,14 @@ Supplier<Boolean> forceUnDuck;
         SmartDashboard.putNumber("tuningFlywheelVel",10);
 
 
-        this.forceUnDuck = forceDuck;
+
     }
 
     double climbAngle = 0.0;
+
+    public void feedClimbAngle(double climbAngle){
+        this.climbAngle = climbAngle;
+    }
 
 
     @Override
@@ -193,18 +210,11 @@ Supplier<Boolean> forceUnDuck;
 
         //get an x y and z from smartDashboard
 
-        if(climbState == ClimbState.DOWN)
-            climbAngle += (Units.degreesToRadians(-48) - climbAngle) * 0.1;
-        else
-            climbAngle += (Units.degreesToRadians(0) - climbAngle) * 0.1;
 
 
 
         Pose3d armPose = new Pose3d(0.24,0,0.21, new Rotation3d(0,armAngleRad-(Math.PI/2),0));
         Pose3d climbPose = new Pose3d(-0.07,0,0.14, new Rotation3d(0,climbAngle,0));
-
-        //SmartDashboard.putNumberArray("armPose2D", new double[]{armPose.getX(),armPose.getY(),armPose.getZ(),armPose.getRotation().getQuaternion().getW(),armPose.getRotation().getQuaternion().getX(),armPose.getRotation().getQuaternion().getY(),armPose.getRotation().getQuaternion().getZ()});
-        //SmartDashboard.putNumberArray("climbPose2D", new double[]{climbPose.getX(),climbPose.getY(),climbPose.getZ(),climbPose.getRotation().getQuaternion().getW(),climbPose.getRotation().getQuaternion().getX(),climbPose.getRotation().getQuaternion().getY(),climbPose.getRotation().getQuaternion().getZ()});
 
         //publish arm and climb 3d poses to network tables
         table.getEntry("armPose").setDoubleArray(new double[]{armPose.getX(),armPose.getY(),armPose.getZ(),armPose.getRotation().getQuaternion().getW(),armPose.getRotation().getQuaternion().getX(),armPose.getRotation().getQuaternion().getY(),armPose.getRotation().getQuaternion().getZ()});
@@ -229,15 +239,10 @@ Supplier<Boolean> forceUnDuck;
             if(climbState == ClimbState.DOWN)
                 climbState = ClimbState.READY;
         }else{
-                climbState = ClimbState.DOWN;
+               // climbState = ClimbState.DOWN;
         }
 
         SmartDashboard.putBoolean("alignToObjective",alignWhenClose);
-
-        if(forceUnDuck.get())
-            duckMode = DuckMode.UNDUCK;
-        else
-            duckMode = DuckMode.DOWN;
 
 
         if(makeEFHoldTimer.hasElapsed(0.3)){
@@ -247,6 +252,12 @@ Supplier<Boolean> forceUnDuck;
 
         }
 
+    }
+
+
+    public void setDuckMode(boolean down){
+        if(down) duckMode = DuckMode.DOWN;
+        else     duckMode = DuckMode.UNDUCK;
     }
 
     public boolean alignWhenClose() {
