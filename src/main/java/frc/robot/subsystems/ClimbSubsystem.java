@@ -1,17 +1,63 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
+import com.revrobotics.SparkPIDController;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.StateControllerSub;
 
+import static frc.robot.Constants.ClimbConstants.*;
+
 public class ClimbSubsystem extends SubsystemBase {
 StateControllerSub stateControllerSub;
+
+    CANSparkMax climbMaster = new CANSparkMax(climbMasterID, CANSparkMax.MotorType.kBrushless);
+    CANSparkMax climbFollower = new CANSparkMax(climbFollowerID, CANSparkMax.MotorType.kBrushless);
+
+
+
     public ClimbSubsystem(StateControllerSub stateControllerSub) {
+
         this.stateControllerSub = stateControllerSub;
+
+        climbMaster.restoreFactoryDefaults();
+        climbFollower.restoreFactoryDefaults();
+
+        climbMaster.setSmartCurrentLimit(40);
+        climbFollower.setSmartCurrentLimit(40);
+
+        climbMaster.getEncoder().setPosition(0);
+        climbFollower.getEncoder().setPosition(0);
+
+        climbMaster.getEncoder().setPositionConversionFactor(1.0/rotationsInTheClimbRange);
+        climbFollower.getEncoder().setPositionConversionFactor(1.0/rotationsInTheClimbRange);
+
+        climbMaster.getEncoder().setVelocityConversionFactor(1.0/rotationsInTheClimbRange/60);
+        climbFollower.getEncoder().setVelocityConversionFactor(1.0/rotationsInTheClimbRange/60);
+
+        climbMaster.getPIDController().setP(0.2);
+        climbFollower.getPIDController().setP(0.2);
+
+        climbMaster.getPIDController().setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal,0);
+        climbFollower.getPIDController().setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal,0);
+
+        climbMaster.getPIDController().setSmartMotionMaxVelocity(0.5,0);
+        climbMaster.getPIDController().setSmartMotionMaxVelocity(0.5,0);
+
+        climbMaster.getPIDController().setSmartMotionMaxAccel(0.5,0);
+        climbMaster.getPIDController().setSmartMotionMaxAccel(0.5,0);
+
+        climbMaster.getPIDController().setOutputRange(-0.2,0.2);
+        climbFollower.getPIDController().setOutputRange(-0.2,0.2);
+
+
+        climbMaster.burnFlash();
+        climbFollower.burnFlash();
     }
 
-    static final double maxClawDistanceMeters = 0.50;//TODO: find this
+
     double setpointMeters = 0.0;//bottom
     double simMeters = 0.0;
 
@@ -55,7 +101,9 @@ StateControllerSub stateControllerSub;
     }
 
     void extendClaw(){
-        setpointMeters = maxClawDistanceMeters;
+        setpointMeters = 0;
+        climbMaster.getPIDController().setReference(0, ControlType.kSmartMotion);
+        climbFollower.getPIDController().setReference(0,ControlType.kSmartMotion);
         //TODO: make it actually happen
     }
 

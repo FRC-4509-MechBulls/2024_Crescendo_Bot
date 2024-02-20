@@ -65,6 +65,13 @@ public final class Constants {
     public static final double intakeRad = Units.degreesToRadians(6);
   }
 
+  public static class ClimbConstants{
+    public static final int climbMasterID = 50;
+    public static final int climbFollowerID = 51;
+
+    public static final double rotationsInTheClimbRange = 73.2;
+  }
+
 
 
   public static class AutoConstants {
