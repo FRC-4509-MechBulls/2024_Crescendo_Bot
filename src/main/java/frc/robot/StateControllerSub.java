@@ -143,10 +143,16 @@ public class StateControllerSub extends SubsystemBase {
         return Units.degreesToRadians(10);
     }
 
+    private double fedTrapArmAngle = Constants.ArmConstants.intakeRad;
+
     public double getTrapArmAngle(){
         //TODO: arm angle in radians during trap - maybe this can be set into this sub by a lerp command or something?
         //could you have a sub-path as you come out from under the stage, where its completion is passed into t?
-        return 0.0;
+        return fedTrapArmAngle;
+    }
+
+    public void feedTrapArmAngle(double fedTrapArmAngle){
+        this.fedTrapArmAngle = fedTrapArmAngle;
     }
 
     public Pose2d getRobotPose(){
@@ -179,6 +185,10 @@ public void toggleClimbed(){
             climbState = ClimbState.CLIMBED;
 }
 
+public void setClimbState(ClimbState climbState){
+        this.climbState = climbState;
+}
+
 
     public StateControllerSub(){
         NamedCommands.registerCommand("intakeMode",new InstantCommand(this::intakePressed));
@@ -191,6 +201,8 @@ public void toggleClimbed(){
         SmartDashboard.putBoolean("tuningMode",false);
         SmartDashboard.putNumber("tuningAngle",90);
         SmartDashboard.putNumber("tuningFlywheelVel",10);
+
+        SmartDashboard.putNumber("groundHeight",0);
 
 
 
@@ -219,6 +231,12 @@ public void toggleClimbed(){
         //publish arm and climb 3d poses to network tables
         table.getEntry("armPose").setDoubleArray(new double[]{armPose.getX(),armPose.getY(),armPose.getZ(),armPose.getRotation().getQuaternion().getW(),armPose.getRotation().getQuaternion().getX(),armPose.getRotation().getQuaternion().getY(),armPose.getRotation().getQuaternion().getZ()});
         table.getEntry("climbPose").setDoubleArray(new double[]{climbPose.getX(),climbPose.getY(),climbPose.getZ(),climbPose.getRotation().getQuaternion().getW(),climbPose.getRotation().getQuaternion().getX(),climbPose.getRotation().getQuaternion().getY(),climbPose.getRotation().getQuaternion().getZ()});
+
+        double groundHeight = SmartDashboard.getNumber("groundHeight",0);
+
+        Pose3d odometry3D = new Pose3d(robotPose.getX(),robotPose.getY(),groundHeight,new Rotation3d(0,0,robotPose.getRotation().getRadians()));
+
+        table.getEntry("odometry3D").setDoubleArray(new double[]{odometry3D.getX(),odometry3D.getY(),odometry3D.getZ(),odometry3D.getRotation().getQuaternion().getW(),odometry3D.getRotation().getQuaternion().getX(),odometry3D.getRotation().getQuaternion().getY(),odometry3D.getRotation().getQuaternion().getZ()});
 
 
         SmartDashboard.putNumber("distanceToMySpeaker",distanceToMySpeaker());
@@ -280,6 +298,8 @@ public void toggleClimbed(){
        // table.getEntry("odom_rad").setDouble(robotPose.getRotation().getRadians());
 
         table.getEntry("odometry").setDoubleArray(new double[]{robotPose.getX(),robotPose.getY(),robotPose.getRotation().getRadians()});
+
+
 
         table.getEntry("armState").setString(armState.toString());
         table.getEntry("efState").setString(efState.toString());

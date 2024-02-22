@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.drive.Alignments;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.EFSubsystem;
@@ -98,6 +99,7 @@ public class RobotContainer {
     driver.rightTrigger(0.5).onTrue(new InstantCommand(stateController::scheduleAlignmentCommand,swerveSubsystem));
     driver.rightTrigger(0.5).onFalse(swerveSubsystem.getDefaultCommand());
 
+    driver.povUp().onTrue(new InstantCommand(()->Alignments.trapTest(stateController).schedule()));
 
 
    //TODO driver.x().onTrue(new InstantCommand(stateController::shootPressed));
