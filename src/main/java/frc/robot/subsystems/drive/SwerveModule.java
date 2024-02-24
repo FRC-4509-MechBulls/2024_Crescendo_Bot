@@ -172,9 +172,6 @@ public class SwerveModule extends SubsystemBase {
         return falconTicksIn;
     }
 
-    public SwerveModulePosition getModulePosition(){
-        return new SwerveModulePosition(falconToDriveMeters(driveMotor.getSelectedSensorPosition()),new Rotation2d(getAngle()));
-    }
 
     public SwerveModulePosition getPosition(){
       //  SmartDashboard.putNumber("sensorPosDrive",falconToDriveMeters(driveMotor.getSelectedSensorPosition()));

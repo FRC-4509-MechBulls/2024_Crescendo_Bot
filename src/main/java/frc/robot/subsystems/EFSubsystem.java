@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -44,6 +45,9 @@ public class EFSubsystem extends SubsystemBase {
 
         upperShooter.restoreFactoryDefaults();
         lowerShooter.restoreFactoryDefaults();
+
+       upperShooter.setIdleMode(CANSparkBase.IdleMode.kBrake);
+        lowerShooter.setIdleMode(CANSparkBase.IdleMode.kBrake);
 
 
       //  shooterFollower.follow(shooterMaster,true);
@@ -112,7 +116,7 @@ public class EFSubsystem extends SubsystemBase {
                 switch (stateControllerSub.getObjective()) {
                     case AMP -> flywheelVel = ampShooterVelocity;
                     case SPEAKER -> flywheelVel = stateControllerSub.getSpeakerFlywheelVel();
-                    case TRAP -> {} //TODO: do something here?
+                    case TRAP -> flywheelVel = trapShooterVelocity;
                 }
                 setMotors(intakeSpeed,flywheelVel);
 break;

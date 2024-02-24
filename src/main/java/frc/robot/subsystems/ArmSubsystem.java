@@ -71,7 +71,8 @@ public class ArmSubsystem extends SubsystemBase {
         if(Robot.isSimulation())
             simRad += (setpointRad - simRad) * 0.1; //TODO: move to simulation periodic?
 
-        if(stateControllerSub.getDuckMode() == StateControllerSub.DuckMode.UNDUCK && stateControllerSub.getArmState()!= StateControllerSub.ArmState.TRAP){
+        if(stateControllerSub.getDuckMode() == StateControllerSub.DuckMode.UNDUCK && stateControllerSub.getArmState()!= StateControllerSub.ArmState.TRAP
+        ){
 
                 setAngleRad(holdingRadSafe);
         }

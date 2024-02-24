@@ -38,7 +38,7 @@ public class StateControllerSub extends SubsystemBase {
 
     DuckMode duckMode = DuckMode.DOWN;
 
-    boolean alignWhenClose = false;
+    boolean alignWhenClose = true;
 
 
     private Pose2d robotPose = new Pose2d();
@@ -136,11 +136,12 @@ public class StateControllerSub extends SubsystemBase {
         if(SmartDashboard.getBoolean("tuningMode",true))
             return SmartDashboard.getNumber("tuningFlywheelVel",10);
 
+
         Optional<Double> vel = MBUtils.interpolate(ShootingTables.dist,ShootingTables.velocity, distanceToMySpeaker());
         if(vel.isPresent())
-            return Units.degreesToRadians(vel.get());
+            return vel.get();
 
-        return Units.degreesToRadians(10);
+        return 10;
     }
 
     private double fedTrapArmAngle = Constants.ArmConstants.intakeRad;
@@ -279,7 +280,10 @@ public void setClimbState(ClimbState climbState){
     }
 
     public boolean alignWhenClose() {
-        return alignWhenClose;
+
+        if(objective == Objective.SPEAKER && distanceToMySpeaker() < 6)
+            return alignWhenClose;
+        return false;
     }
 
     public double alignWhenCloseAngDiff() {
@@ -346,7 +350,13 @@ public void setClimbState(ClimbState climbState){
         armAngleRad = angle;
     }
 
+public void setObjective(Objective objective){
+        this.objective = objective;
+}
 
+public void setEfState(EFState efState){
+        this.efState = efState;
+}
 
     public void speakerPressed(){
         objective = Objective.SPEAKER;

@@ -56,14 +56,14 @@ public class Alignments {
         return AutoBuilder.pathfindToPose(pose,constraints,0);
     }
 
-    public static Command trapTest(StateControllerSub stateControllerSub){
-        Rotation2d angleToTravelIn = Rotation2d.fromRotations(0);
-        double distanceOutFar = 0.9;
+    public static Command trapTest(StateControllerSub stateControllerSub,Rotation2d angleToTravelIn){
+        double distanceOutFar = 0.85;
         double distanceOutClose = 0.75;
 
         Pose2d startingPose = new Pose2d(FieldConstants.Stage.center.getX(),FieldConstants.Stage.center.getY(),Rotation2d.fromDegrees(180).plus(angleToTravelIn));
 
         Command retractEverything = new InstantCommand(()->stateControllerSub.setDuckMode(true))
+                .andThen(new InstantCommand(()->stateControllerSub.setObjective(StateControllerSub.Objective.TRAP)))
                 .andThen(new InstantCommand(()->stateControllerSub.setArmState(StateControllerSub.ArmState.TRAP)))
                 .andThen(new InstantCommand(()->stateControllerSub.feedTrapArmAngle(Constants.ArmConstants.intakeRad)))
                 .andThen(new InstantCommand(()->stateControllerSub.setClimbState(StateControllerSub.ClimbState.READY)));
@@ -106,8 +106,25 @@ public class Alignments {
 
         Command doClimb = new InstantCommand(()->stateControllerSub.setClimbState(StateControllerSub.ClimbState.CLIMBED));
 
+        Command climbUpSequence = retractEverything.andThen(pathfindToInit.andThen(leaveStage)).andThen(liftClimber).andThen(wait1).andThen(driveAgainstChain).andThen(doClimb);
 
-        return retractEverything.andThen(pathfindToInit.andThen(leaveStage)).andThen(liftClimber).andThen(wait1).andThen(driveAgainstChain).andThen(doClimb);
+        Command setToShootAngle = new InstantCommand(()->stateControllerSub.feedTrapArmAngle(Units.degreesToRadians(95)));
+
+        Command readyToShoot = new InstantCommand(()->stateControllerSub.setEfState(StateControllerSub.EFState.READY));
+
+        Command wait2 = new WaitCommand(1);
+
+        Command shoot = new InstantCommand(()->stateControllerSub.setEfState(StateControllerSub.EFState.SHOOT));
+
+        Command shootSequence = setToShootAngle.andThen(readyToShoot).andThen(wait2).andThen(shoot);
+
+
+
+
+
+
+
+        return climbUpSequence.andThen(shootSequence);
     }
 
 

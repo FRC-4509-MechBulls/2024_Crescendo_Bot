@@ -33,8 +33,10 @@ public class VisionSubsystem extends SubsystemBase {
         }
 
         cam = new PhotonCamera("Arducam_OV2311_USB_Camera");
-        Transform3d robotToCam = new Transform3d(new Translation3d(Units.inchesToMeters(7), Units.inchesToMeters(0), Units.inchesToMeters(26)), new Rotation3d(0,Units.degreesToRadians(26),0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+        Transform3d robotToCam = new Transform3d(new Translation3d(0.357,0.076,0.224), new Rotation3d(0,Units.degreesToRadians(-30),0));
         photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam, robotToCam);
+       // photonPoseEstimator.setPrimaryStrategy();
+        photonPoseEstimator.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
 
         //1st + is cam forward
         //2nd + is cam to left
@@ -44,13 +46,15 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-        photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+        // photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+        //return Optional.empty();
+//Optional<EstimatedRobotPose> update = photonPoseEstimator.update();
+
         return photonPoseEstimator.update();
         
     }
 
     public void periodic(){
-        photonPoseEstimator.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_CAMERA_HEIGHT);
 
     }
 
