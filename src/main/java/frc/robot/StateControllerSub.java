@@ -4,6 +4,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.*;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -189,6 +190,7 @@ public void toggleClimbed(){
 public void setClimbState(ClimbState climbState){
         this.climbState = climbState;
 }
+    DigitalInput beamBreak1 = new DigitalInput(4);
 
 
     public StateControllerSub(){
@@ -269,6 +271,11 @@ public void setClimbState(ClimbState climbState){
             makeEFHoldTimer.stop();
             makeEFHoldTimer.reset();
 
+        }
+
+        if(!beamBreak1.get() && armState == ArmState.INTAKE){
+            armState = ArmState.HOLD;
+            efState = EFState.HOLD;
         }
 
     }
