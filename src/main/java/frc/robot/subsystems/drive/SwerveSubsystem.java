@@ -318,6 +318,8 @@ void updatePoseFromVision(){
 
     SmartDashboard.putNumber("frontLeftDrivePos",frontLeft.getPosition().distanceMeters);
 
+    SmartDashboard.putNumberArray("modulePositions",new double[]{frontLeft.getPosition().distanceMeters,frontRight.getPosition().distanceMeters,rearLeft.getPosition().distanceMeters,rearRight.getPosition().distanceMeters});
+    SmartDashboard.putNumberArray("moduleHeadings",new double[]{frontLeft.getAngle(),frontRight.getAngle(),rearLeft.getAngle(),rearRight.getAngle()});
 
 
 
