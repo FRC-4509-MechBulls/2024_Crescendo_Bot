@@ -88,6 +88,26 @@ public class FieldConstants {
   public static double aprilTagWidth = Units.inchesToMeters(6.50);
   public static AprilTagFieldLayout aprilTags;
 
+  public static final class Stage {
+    public static Pose2d podiumLeg =
+            new Pose2d(Units.inchesToMeters(126.75), Units.inchesToMeters(161.638), new Rotation2d());
+
+    public static Pose2d ampLeg =
+            new Pose2d(
+                    Units.inchesToMeters(220.873),
+                    Units.inchesToMeters(212.425),
+                    Rotation2d.fromDegrees(-30));
+
+    public static Pose2d sourceLeg =
+            new Pose2d(
+                    Units.inchesToMeters(220.873),
+                    Units.inchesToMeters(110.837),
+                    Rotation2d.fromDegrees(30));
+
+    public static Pose2d center =
+            new Pose2d(Units.inchesToMeters(192.55), Units.inchesToMeters(161.638), new Rotation2d());
+  }
+
   static {
     try {
       aprilTags = AprilTagFieldLayout.loadFromResource(k2024Crescendo.m_resourceFile);

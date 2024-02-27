@@ -4,6 +4,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.*;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -38,7 +39,7 @@ public class StateControllerSub extends SubsystemBase {
 
     DuckMode duckMode = DuckMode.DOWN;
 
-    boolean alignWhenClose = false;
+    boolean alignWhenClose = true;
 
 
     private Pose2d robotPose = new Pose2d();
@@ -136,17 +137,24 @@ public class StateControllerSub extends SubsystemBase {
         if(SmartDashboard.getBoolean("tuningMode",true))
             return SmartDashboard.getNumber("tuningFlywheelVel",10);
 
+
         Optional<Double> vel = MBUtils.interpolate(ShootingTables.dist,ShootingTables.velocity, distanceToMySpeaker());
         if(vel.isPresent())
-            return Units.degreesToRadians(vel.get());
+            return vel.get();
 
-        return Units.degreesToRadians(10);
+        return 10;
     }
+
+    private double fedTrapArmAngle = Constants.ArmConstants.intakeRad;
 
     public double getTrapArmAngle(){
         //TODO: arm angle in radians during trap - maybe this can be set into this sub by a lerp command or something?
         //could you have a sub-path as you come out from under the stage, where its completion is passed into t?
-        return 0.0;
+        return fedTrapArmAngle;
+    }
+
+    public void feedTrapArmAngle(double fedTrapArmAngle){
+        this.fedTrapArmAngle = fedTrapArmAngle;
     }
 
     public Pose2d getRobotPose(){
@@ -179,6 +187,11 @@ public void toggleClimbed(){
             climbState = ClimbState.CLIMBED;
 }
 
+public void setClimbState(ClimbState climbState){
+        this.climbState = climbState;
+}
+    DigitalInput beamBreak1 = new DigitalInput(4);
+
 
     public StateControllerSub(){
         NamedCommands.registerCommand("intakeMode",new InstantCommand(this::intakePressed));
@@ -191,6 +204,8 @@ public void toggleClimbed(){
         SmartDashboard.putBoolean("tuningMode",false);
         SmartDashboard.putNumber("tuningAngle",90);
         SmartDashboard.putNumber("tuningFlywheelVel",10);
+
+        SmartDashboard.putNumber("groundHeight",0);
 
 
 
@@ -219,6 +234,12 @@ public void toggleClimbed(){
         //publish arm and climb 3d poses to network tables
         table.getEntry("armPose").setDoubleArray(new double[]{armPose.getX(),armPose.getY(),armPose.getZ(),armPose.getRotation().getQuaternion().getW(),armPose.getRotation().getQuaternion().getX(),armPose.getRotation().getQuaternion().getY(),armPose.getRotation().getQuaternion().getZ()});
         table.getEntry("climbPose").setDoubleArray(new double[]{climbPose.getX(),climbPose.getY(),climbPose.getZ(),climbPose.getRotation().getQuaternion().getW(),climbPose.getRotation().getQuaternion().getX(),climbPose.getRotation().getQuaternion().getY(),climbPose.getRotation().getQuaternion().getZ()});
+
+        double groundHeight = SmartDashboard.getNumber("groundHeight",0);
+
+        Pose3d odometry3D = new Pose3d(robotPose.getX(),robotPose.getY(),groundHeight,new Rotation3d(0,0,robotPose.getRotation().getRadians()));
+
+        table.getEntry("odometry3D").setDoubleArray(new double[]{odometry3D.getX(),odometry3D.getY(),odometry3D.getZ(),odometry3D.getRotation().getQuaternion().getW(),odometry3D.getRotation().getQuaternion().getX(),odometry3D.getRotation().getQuaternion().getY(),odometry3D.getRotation().getQuaternion().getZ()});
 
 
         SmartDashboard.putNumber("distanceToMySpeaker",distanceToMySpeaker());
@@ -252,6 +273,11 @@ public void toggleClimbed(){
 
         }
 
+        if(!beamBreak1.get() && armState == ArmState.INTAKE){
+            armState = ArmState.HOLD;
+            efState = EFState.HOLD;
+        }
+
     }
 
 
@@ -261,7 +287,10 @@ public void toggleClimbed(){
     }
 
     public boolean alignWhenClose() {
-        return alignWhenClose;
+
+        if(objective == Objective.SPEAKER && distanceToMySpeaker() < 6)
+            return alignWhenClose;
+        return false;
     }
 
     public double alignWhenCloseAngDiff() {
@@ -280,6 +309,8 @@ public void toggleClimbed(){
        // table.getEntry("odom_rad").setDouble(robotPose.getRotation().getRadians());
 
         table.getEntry("odometry").setDoubleArray(new double[]{robotPose.getX(),robotPose.getY(),robotPose.getRotation().getRadians()});
+
+
 
         table.getEntry("armState").setString(armState.toString());
         table.getEntry("efState").setString(efState.toString());
@@ -326,7 +357,13 @@ public void toggleClimbed(){
         armAngleRad = angle;
     }
 
+public void setObjective(Objective objective){
+        this.objective = objective;
+}
 
+public void setEfState(EFState efState){
+        this.efState = efState;
+}
 
     public void speakerPressed(){
         objective = Objective.SPEAKER;

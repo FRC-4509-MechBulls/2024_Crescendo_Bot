@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.drive.Alignments;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.EFSubsystem;
@@ -93,11 +95,15 @@ public class RobotContainer {
     driver.leftBumper().onTrue(new InstantCommand(()->stateController.setDuckMode(false)));
     driver.leftBumper().onFalse(new InstantCommand(()->stateController.setDuckMode(true)));
 
-    driver.rightBumper().onTrue(new InstantCommand(stateController::toggleClimbed));
+    driver.rightBumper().onTrue(swerveSubsystem.getDefaultCommand());
 
     driver.rightTrigger(0.5).onTrue(new InstantCommand(stateController::scheduleAlignmentCommand,swerveSubsystem));
     driver.rightTrigger(0.5).onFalse(swerveSubsystem.getDefaultCommand());
 
+
+    driver.povUp().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(0)).schedule()));
+    driver.povLeft().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(1.0/3)).schedule()));
+    driver.povRight().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(-1.0/3)).schedule()));
 
 
    //TODO driver.x().onTrue(new InstantCommand(stateController::shootPressed));

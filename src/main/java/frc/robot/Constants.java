@@ -19,9 +19,33 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
 
   public static class ShootingTables{
-    public static final double[] dist = {0, 1.37, 1.7, 2.09, 2.32, 3.08, 3.81, 20};
-    public static final double[] angle = {18.38, 18.38, 22.19, 25.76, 32.9, 37.67, 42.67, 42.67};
-    public static final double[] velocity = {0,0,0,0,0,0,0,0};
+    public static final double[] dist = {
+            0,
+            1.437,
+            2.06,
+            3.2,
+            3.74,
+            4.68,
+            7
+    };
+    public static final double[] angle = {
+            37,
+            37.83,
+            47,
+            58,
+            59.5,
+            62,
+            64
+    };
+    public static final double[] velocity = {
+            31,
+            31.32,
+            52.4,
+            61,
+            58.7,
+            83,
+            90
+    };
 
 
   }
@@ -38,14 +62,16 @@ public final class Constants {
     public static final int intakeMasterID = 11;
     public static final int intakeFollowerID = 12;
 
-    public static final int shooterMasterID = 22;
-    public static final int shooterFollowerID = 23;
+    public static final int shooterMasterID = 23;
+    public static final int shooterFollowerID = 22;
 
     public static final double intakeSpeed = 0.7;
     public static final double outtakeSpeed = -0.4;
     public static final double outtakeShooterVelocity = 0;
 
-    public static final double ampShooterVelocity = 1000;
+    public static final double ampShooterVelocity = 20;
+
+    public static final double trapShooterVelocity = 80;
 
     public static final double feedToShooterSpeed = 1;
 
@@ -91,16 +117,16 @@ public final class Constants {
     public static final double turnMaxSpeed = 11; //11
 
 
-    public static final double maxDrivePower = 0.2;
+    public static final double maxDrivePower = 0.6;
 
     public static final double controllerDeadband = 0.06;
 
-    public static final double radFeedClamp = 0.5; //max heading adjustment speed
+    public static final double radFeedClamp = 1; //max heading adjustment speed
   }
 
   public static final class DriveConstants{
 
-    public static final double alignmentkP = 1.5;
+    public static final double alignmentkP = 2.5;
 
     /*Physical Characteristics*/
     public static final double TRACK_WIDTH = Units.inchesToMeters(23.625); //need to find

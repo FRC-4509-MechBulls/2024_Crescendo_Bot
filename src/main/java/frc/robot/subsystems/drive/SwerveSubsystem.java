@@ -10,11 +10,13 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.PPLibTelemetry;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -102,6 +104,7 @@ StateControllerSub stateController;
             this // Reference to this subsystem to set requirements
     );
     PPHolonomicDriveController.setRotationTargetOverride(stateController::getRotationTargetOverride);
+  //  PPLibTelemetry.
   }
 
 
@@ -135,11 +138,13 @@ StateControllerSub stateController;
     SmartDashboard.putNumber("rad",rad);
 
 
-  rad*=1+controllerDeadband;
-  if(rad>0)
-    rad-=controllerDeadband;
-  else if(rad<0)
-    rad+=controllerDeadband;
+    if(Math.abs(rad)<controllerDeadband)
+      rad = 0;
+ // rad*=1+controllerDeadband;
+ // if(rad>0)
+ //   rad-=controllerDeadband;
+ // else if(rad<0)
+ //   rad+=controllerDeadband;
 
 
   double hypot = Math.hypot(joystickX,joystickY);
@@ -232,9 +237,10 @@ public void drive(double xMeters,double yMeters, double rad){
   if(!beFieldOriented) radFeed = 0;
 
 
-
+ //subtract radfeed
   SwerveModuleState[] states = kinematics.toSwerveModuleStates(new ChassisSpeeds(xMeters,yMeters,rad - radFeed));
 
+  SmartDashboard.putNumberArray("fieldsPassedIntoKinematics",new double[]{xMeters,yMeters,rad});
   setStates(states);
 
 
@@ -292,6 +298,11 @@ void updatePoseFromVision(){
       SmartDashboard.putData("visionField",visionField);
 
 
+      Pose3d odometry3D = result.get().estimatedPose;
+      SmartDashboard.putNumberArray("vision3D",new double[]{odometry3D.getX(),odometry3D.getY(),odometry3D.getZ(),odometry3D.getRotation().getQuaternion().getW(),odometry3D.getRotation().getQuaternion().getX(),odometry3D.getRotation().getQuaternion().getY(),odometry3D.getRotation().getQuaternion().getZ()});
+
+
+
       SmartDashboard.putNumber("resultWasPresent",Timer.getFPGATimestamp());
     }
     //add vision measurement if present while passing in current reference pose
@@ -301,6 +312,15 @@ void updatePoseFromVision(){
   public void periodic() {
     // This method will be called once per scheduler run
     stateController.feedRobotPose(odometry.getEstimatedPosition());
+
+    SmartDashboard.putNumber("frontLeftDriveVel",frontLeft.getState().speedMetersPerSecond);
+    SmartDashboard.putNumber("frontLeftDriveVel2",frontLeft.getModuleVelocity());
+
+    SmartDashboard.putNumber("frontLeftDrivePos",frontLeft.getPosition().distanceMeters);
+
+    SmartDashboard.putNumberArray("modulePositions",new double[]{frontLeft.getPosition().distanceMeters,frontRight.getPosition().distanceMeters,rearLeft.getPosition().distanceMeters,rearRight.getPosition().distanceMeters});
+    SmartDashboard.putNumberArray("moduleHeadings",new double[]{frontLeft.getAngle(),frontRight.getAngle(),rearLeft.getAngle(),rearRight.getAngle()});
+
 
 
     if(Robot.isSimulation())

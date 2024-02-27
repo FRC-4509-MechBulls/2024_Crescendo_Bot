@@ -154,38 +154,6 @@
           "data": {
             "name": "ejectMode"
           }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "speaker6"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.3
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "intakeMode"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          }
         }
       ]
     }
