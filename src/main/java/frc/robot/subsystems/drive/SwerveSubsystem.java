@@ -46,10 +46,10 @@ public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new SwerveSubsystem. */
 
   SwerveModule frontLeft = new SwerveModule(frontLeftDriveID,frontLeftTurningID,false,true,3,frontLeftOffsetRad);
-  SwerveModule frontRight = new SwerveModule(frontRightDriveID,frontRightTurningID,false,true,1,frontRightOffsetRad);
+  SwerveModule frontRight = new SwerveModule(frontRightDriveID,frontRightTurningID,true,true,1,frontRightOffsetRad);
 
-  SwerveModule rearLeft = new SwerveModule(rearLeftDriveID,rearLeftTurningID,false,true,0,rearLeftOffsetRad);
-  SwerveModule rearRight = new SwerveModule(rearRightDriveID,rearRightTurningID,false,true,2,rearRightOffsetRad);
+  SwerveModule rearLeft = new SwerveModule(rearLeftDriveID,rearLeftTurningID,true,true,0,rearLeftOffsetRad);
+  SwerveModule rearRight = new SwerveModule(rearRightDriveID,rearRightTurningID,true,true,2,rearRightOffsetRad);
 
   WPI_Pigeon2 pigeon = new WPI_Pigeon2(40);
   AHRS navx = new AHRS(SPI.Port.kMXP);
@@ -223,7 +223,7 @@ public void drive(double xMeters,double yMeters, double rad){
 
   }
 
-
+/*
   if(Math.abs(rad)>radPerSecondDeadband || lastStillHeading.getDegrees() == 0){
     lastStillHeading = Rotation2d.fromDegrees(pigeon.getAngle());
   }
@@ -237,8 +237,10 @@ public void drive(double xMeters,double yMeters, double rad){
   if(!beFieldOriented) radFeed = 0;
 
 
- //subtract radfeed
-  SwerveModuleState[] states = kinematics.toSwerveModuleStates(new ChassisSpeeds(xMeters,yMeters,rad - radFeed));
+  radFeed = 0;
+ //TODO subtract radfeed if it should be enabled
+ */
+  SwerveModuleState[] states = kinematics.toSwerveModuleStates(new ChassisSpeeds(xMeters,yMeters,rad ));
 
   SmartDashboard.putNumberArray("fieldsPassedIntoKinematics",new double[]{xMeters,yMeters,rad});
   setStates(states);
@@ -321,6 +323,8 @@ void updatePoseFromVision(){
     SmartDashboard.putNumberArray("modulePositions",new double[]{frontLeft.getPosition().distanceMeters,frontRight.getPosition().distanceMeters,rearLeft.getPosition().distanceMeters,rearRight.getPosition().distanceMeters});
     SmartDashboard.putNumberArray("moduleHeadings",new double[]{frontLeft.getAngle(),frontRight.getAngle(),rearLeft.getAngle(),rearRight.getAngle()});
 
+
+    SmartDashboard.putNumberArray("moduleAbsoluteReadings",new double[]{frontLeft.getAbsoluteEncoderRad(),frontRight.getAbsoluteEncoderRad(),rearLeft.getAbsoluteEncoderRad(),rearRight.getAbsoluteEncoderRad()});
 
 
     if(Robot.isSimulation())

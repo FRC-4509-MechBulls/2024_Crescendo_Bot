@@ -117,7 +117,7 @@ public final class Constants {
     public static final double turnMaxSpeed = 11; //11
 
 
-    public static final double maxDrivePower = 0.6;
+    public static final double maxDrivePower = 0.3;
 
     public static final double controllerDeadband = 0.06;
 
@@ -159,19 +159,19 @@ public final class Constants {
     /*Motor IDs and offsets */
     public static final int frontLeftDriveID = 8;
     public static final int frontLeftTurningID = 2;
-    public static final double frontLeftOffsetRad = 3.80 - Math.PI/2;
+    public static final double frontLeftOffsetRad = 2.275 + Units.degreesToRadians(12);
 
     public static final int frontRightDriveID = 3;
     public static final int frontRightTurningID = 7;
-    public static final double frontRightOffsetRad =  2.33 + Math.PI/2;
+    public static final double frontRightOffsetRad =  0.754;
 
     public static final int rearRightDriveID = 1;
     public static final int rearRightTurningID = 4;
-    public static final double rearRightOffsetRad = 2.27 + Math.PI/2;
+    public static final double rearRightOffsetRad = 0.653 + + Units.degreesToRadians(16);
 
     public static final int rearLeftDriveID = 6;
     public static final int rearLeftTurningID = 5;
-    public static final double rearLeftOffsetRad = 2.19 + Math.PI/2;
+    public static final double rearLeftOffsetRad = 0.606 + Units.degreesToRadians(18);
 
 
 
