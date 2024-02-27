@@ -330,9 +330,10 @@ void updatePoseFromVision(){
     if(Robot.isSimulation())
       simDriveUpdate();
 
-odometry.updateWithTime(Timer.getFPGATimestamp(),pigeon.getRotation2d(),getPositions());
+    if(Robot.isReal())
+      odometry.updateWithTime(Timer.getFPGATimestamp(),pigeon.getRotation2d(),getPositions());
 
-updatePoseFromVision();
+    updatePoseFromVision();
 
     SmartDashboard.putNumberArray("odometry",new double[]{
             odometry.getEstimatedPosition().getX(),

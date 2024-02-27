@@ -7,6 +7,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.StateControllerSub;
@@ -16,8 +17,8 @@ import static frc.robot.Constants.ClimbConstants.*;
 public class ClimbSubsystem extends SubsystemBase {
 StateControllerSub stateControllerSub;
 
-    CANSparkMax climbMaster = new CANSparkMax(climbMasterID, CANSparkMax.MotorType.kBrushless);
-    CANSparkMax climbFollower = new CANSparkMax(climbFollowerID, CANSparkMax.MotorType.kBrushless);
+    CANSparkMax climbPrimary = new CANSparkMax(climbMasterID, CANSparkMax.MotorType.kBrushless);
+    CANSparkMax climbSecondary = new CANSparkMax(climbFollowerID, CANSparkMax.MotorType.kBrushless);
 
 
 
@@ -25,42 +26,43 @@ StateControllerSub stateControllerSub;
 
         this.stateControllerSub = stateControllerSub;
 
-        climbMaster.restoreFactoryDefaults();
-        climbFollower.restoreFactoryDefaults();
+        climbPrimary.restoreFactoryDefaults();
+        climbSecondary.restoreFactoryDefaults();
 
-        climbMaster.setSmartCurrentLimit(40);
-        climbFollower.setSmartCurrentLimit(40);
-
-        climbMaster.getEncoder().setPosition(0);
-        climbFollower.getEncoder().setPosition(0);
-
-        climbMaster.getEncoder().setPositionConversionFactor(1.0/rotationsInTheClimbRange);
-        climbFollower.getEncoder().setPositionConversionFactor(1.0/rotationsInTheClimbRange);
-
-        climbMaster.getEncoder().setVelocityConversionFactor(1.0/rotationsInTheClimbRange/60);
-        climbFollower.getEncoder().setVelocityConversionFactor(1.0/rotationsInTheClimbRange/60);
-
-        climbMaster.getPIDController().setP(0.2);
-        climbFollower.getPIDController().setP(0.2);
-
-        climbMaster.getPIDController().setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal,0);
-        climbFollower.getPIDController().setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal,0);
-
-        climbMaster.getPIDController().setSmartMotionMaxVelocity(0.5,0);
-        climbMaster.getPIDController().setSmartMotionMaxVelocity(0.5,0);
-
-        climbMaster.getPIDController().setSmartMotionMaxAccel(0.5,0);
-        climbMaster.getPIDController().setSmartMotionMaxAccel(0.5,0);
-
-        climbMaster.getPIDController().setOutputRange(-0.2,0.2);
-        climbFollower.getPIDController().setOutputRange(-0.2,0.2);
+        climbPrimary.setSmartCurrentLimit(40);
+        climbSecondary.setSmartCurrentLimit(40);
 
 
-        climbMaster.burnFlash();
-        climbFollower.burnFlash();
+        climbPrimary.getEncoder().setPosition(0);
+        climbSecondary.getEncoder().setPosition(0);
+
+        climbPrimary.getEncoder().setPositionConversionFactor(1.0/rotationsInTheClimbRange);
+        climbSecondary.getEncoder().setPositionConversionFactor(1.0/rotationsInTheClimbRange);
+
+        climbPrimary.getEncoder().setVelocityConversionFactor(1.0/rotationsInTheClimbRange/60);
+        climbSecondary.getEncoder().setVelocityConversionFactor(1.0/rotationsInTheClimbRange/60);
+
+        climbPrimary.getPIDController().setP(0.4);
+        climbSecondary.getPIDController().setP(0.4);
+
+        climbPrimary.getPIDController().setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal,0);
+        climbSecondary.getPIDController().setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal,0);
+
+        climbPrimary.getPIDController().setSmartMotionMaxVelocity(0.5,0);
+        climbSecondary.getPIDController().setSmartMotionMaxVelocity(0.5,0);
+
+        climbPrimary.getPIDController().setSmartMotionMaxAccel(0.5,0);
+        climbSecondary.getPIDController().setSmartMotionMaxAccel(0.5,0);
+
+        climbPrimary.getPIDController().setOutputRange(-0.4,0.4);
+        climbSecondary.getPIDController().setOutputRange(-0.4,0.4);
+
+
+        climbPrimary.burnFlash();
+        climbSecondary.burnFlash();
     }
 
-    private final Solenoid m_solenoid = new Solenoid(PneumaticsModuleType.REVPH, 0);
+    private final Solenoid solenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
 
 
     double setpointMeters = 0.0;//bottom
@@ -106,30 +108,39 @@ StateControllerSub stateControllerSub;
             climbAngle += (Units.degreesToRadians(0) - climbAngle) * 0.1;
 
         stateControllerSub.feedClimbAngle(getClimbAngle());
+
+    SmartDashboard.putNumber("climbMasterPosition", climbPrimary.getEncoder().getPosition());
+    SmartDashboard.putNumber("climbFollowerPosition", climbSecondary.getEncoder().getPosition());
     }
 
     public double getClawPosition(){
         if(Robot.isSimulation())
             return simMeters;
-        return 0.0; //TODO: actual claw encoder position
+        return climbPrimary.getEncoder().getPosition(); //TODO: actual claw encoder position
     }
 
     void extendPneumatic(){
-        m_solenoid.set(true);
+        solenoid.set(true);
     }
     void retractPneumatic(){
-        m_solenoid.set( false);
+        solenoid.set( false);
     }
 
     void extendClaw(){
         setpointMeters = 0;
-        climbMaster.getPIDController().setReference(0, ControlType.kSmartMotion);
-        climbFollower.getPIDController().setReference(0,ControlType.kSmartMotion);
+        climbPrimary.getPIDController().setReference(0, ControlType.kSmartMotion);
+        climbSecondary.getPIDController().setReference(0,ControlType.kSmartMotion);
+        SmartDashboard.putBoolean("clawExtended",true);
         //TODO: make it actually happen
     }
 
     void retractClaw(){
-        setpointMeters = 0.0;
+        setpointMeters = 1.0;
+
+        climbPrimary.getPIDController().setReference(-1, ControlType.kSmartMotion);
+        climbSecondary.getPIDController().setReference(1,ControlType.kSmartMotion);
+        SmartDashboard.putBoolean("clawExtended",false);
+
         //todo: admire the windows 11 octopus emoji (hes so cute)
     }
 
