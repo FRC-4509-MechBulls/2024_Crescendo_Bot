@@ -40,6 +40,7 @@ public class EFSubsystem extends SubsystemBase {
         intakeMaster.configSupplyCurrentLimit(new com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration(true, 40, 45, 100));
         //TODO current limits?
         intakeFollower.follow(intakeMaster,FollowerType.PercentOutput);
+        intakeMaster.setInverted(true);
         intakeFollower.setInverted(false);
 
 

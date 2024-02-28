@@ -45,15 +45,17 @@ public class MBUtils {
     }
 
     public static double angleDiffRad(double ang1, double ang2){
-        // Convert angle difference condition from 180 degrees to PI radians
-        if(Math.abs(ang1 - ang2) > Math.PI){
-            if(ang1 > ang2)
-                return -ang1 + ang2 + 2 * Math.PI; // 360 degrees is equivalent to 2*PI radians
-            else
-                return -ang1 + ang2 - 2 * Math.PI;
-        }
-        return ang2 - ang1;
+        double rawDiff = ang2 - ang1;
+        // Normalize the difference to [-π, π]
+        //  Adjust if the difference is greater than π
+        rawDiff = (rawDiff + Math.PI) % (2 * Math.PI) - Math.PI;
+        //  Handle the case where rawDiff becomes -π by adding 2π, ensuring it stays within the desired range
+        if (rawDiff < -Math.PI)
+            rawDiff += 2 * Math.PI;
+        return rawDiff;
     }
+
+
 
 
     public static double clamp(double input, double min, double max){
