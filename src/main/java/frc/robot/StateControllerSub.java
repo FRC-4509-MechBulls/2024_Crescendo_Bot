@@ -274,8 +274,8 @@ public void setClimbState(ClimbState climbState){
         }
 
         if(!beamBreak1.get() && armState == ArmState.INTAKE){
-            armState = ArmState.HOLD;
-            efState = EFState.HOLD;
+           // armState = ArmState.HOLD;
+           // efState = EFState.HOLD;
         }
 
     }

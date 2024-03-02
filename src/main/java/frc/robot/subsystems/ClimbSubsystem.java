@@ -1,12 +1,9 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.ControlType;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
@@ -22,7 +19,13 @@ StateControllerSub stateControllerSub;
 
 
 
+    PneumaticsControlModule pcm = new PneumaticsControlModule(59);
+
     public ClimbSubsystem(StateControllerSub stateControllerSub) {
+        pcm.disableCompressor();
+        SmartDashboard.putNumber("compressorCurrent",pcm.getCompressorCurrent());
+//pcm.makeDoubleSolenoid(0,0).set();
+
 
         this.stateControllerSub = stateControllerSub;
 
@@ -54,8 +57,14 @@ StateControllerSub stateControllerSub;
         climbPrimary.getPIDController().setSmartMotionMaxAccel(0.5,0);
         climbSecondary.getPIDController().setSmartMotionMaxAccel(0.5,0);
 
-        climbPrimary.getPIDController().setOutputRange(-0.4,0.4);
-        climbSecondary.getPIDController().setOutputRange(-0.4,0.4);
+        climbPrimary.getPIDController().setOutputRange(0,0);
+        climbSecondary.getPIDController().setOutputRange(0,0);
+
+
+      //  climbPrimary.getAlternateEncoder(AlternateEncoderType.kQuadrature,1);
+
+
+      //  climbPrimary.getPIDController().setFeedbackDevice(climbPrimary.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature,1));
 
 
         climbPrimary.burnFlash();

@@ -21,30 +21,27 @@ public final class Constants {
   public static class ShootingTables{
     public static final double[] dist = {
             0,
-            1.437,
-            2.06,
-            3.2,
-            3.74,
-            4.68,
-            7
+            1.31,
+            2.56,
+            3.47,
+            20
+
     };
     public static final double[] angle = {
-            37,
-            37.83,
+            27,
+            27,
+            43,
             47,
-            58,
-            59.5,
-            62,
-            64
+            47
+
     };
     public static final double[] velocity = {
-            31,
-            31.32,
-            52.4,
-            61,
-            58.7,
-            83,
-            90
+            53,
+            53,
+            73,
+            64,
+            64
+
     };
 
 
@@ -88,7 +85,7 @@ public final class Constants {
     public static final double ampRad = Units.degreesToRadians(100);
 
     public static final double sourceRad = Units.degreesToRadians(95.0);
-    public static final double intakeRad = Units.degreesToRadians(6);
+    public static final double intakeRad = Units.degreesToRadians(2);
   }
 
   public static class ClimbConstants{
@@ -117,7 +114,7 @@ public final class Constants {
     public static final double turnMaxSpeed = 11; //11
 
 
-    public static final double maxDrivePower = 0.3;
+    public static final double maxDrivePower = 1;
 
     public static final double controllerDeadband = 0.06;
 
