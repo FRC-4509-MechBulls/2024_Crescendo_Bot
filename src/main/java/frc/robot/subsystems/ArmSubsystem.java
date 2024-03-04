@@ -16,7 +16,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 //DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
 
-    RelativeEncoder encoder;
+    AbsoluteEncoder encoder;
     StateControllerSub stateControllerSub;
 
     double setpointRad = 0.0;
@@ -37,17 +37,20 @@ public class ArmSubsystem extends SubsystemBase {
         armMaster.setSmartCurrentLimit(30);
       //  armMaster.setSecondaryCurrentLimit(60, 10);
 
-        encoder = armMaster.getAlternateEncoder(AlternateEncoderType.kQuadrature,8192);
+        encoder = armMaster.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
 
         //   encoder.setAverageDepth(128);
 
         encoder.setPositionConversionFactor(Math.PI);
         encoder.setVelocityConversionFactor(Math.PI/60);
 
-        encoder.setPosition(Units.degreesToRadians(5));
+        //encoder.setPosition(Units.degreesToRadians(5));
+
 
         // encoder.
         //  encoder.setInverted(false);
+
+
 
         armMaster.getPIDController().setFeedbackDevice(encoder);
 
@@ -63,7 +66,7 @@ public class ArmSubsystem extends SubsystemBase {
 
         //armMaster.getEncoder().setVelocityConversionFactor(1.0/armGearRatio*2*Math.PI/60);//rad/sec
 
-        armMaster.getPIDController().setP(0,0);
+        armMaster.getPIDController().setP(0.03,0);
        // armMaster.getPIDController().setI(0.1,0);
 
 
@@ -77,7 +80,7 @@ public class ArmSubsystem extends SubsystemBase {
     //    armMaster.getPIDController().setFeedbackDevice(armMaster.getAlternateEncoder(AlternateEncoderType.kQuadrature,8192));
 
 
-        armMaster.getPIDController().setOutputRange(-0.4,0.4);
+        armMaster.getPIDController().setOutputRange(0,0);
 
         //armMaster.setSmartCurrentLimit(30);
 
@@ -87,13 +90,13 @@ public class ArmSubsystem extends SubsystemBase {
 
         armMaster.burnFlash();
 
-        SmartDashboard.putNumber("armTuningP",0);
+        SmartDashboard.putNumber("armTuningP",0.03);
         SmartDashboard.putNumber("armTuningI",0);
         SmartDashboard.putNumber("armTuningD",0);
 
     }
 
-    double lastP = 0;
+    double lastP = 0.03;
     double lastI = 0;
     double lastD = 0;
 
@@ -141,6 +144,8 @@ public class ArmSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("getAngleDeg",Units.radiansToDegrees(getArmAngle()));
       //  SmartDashboard.putNumber("armError",)
    //     SmartDashboard.putNumber("absoluteThroughSPARK",encoder.getPosition());
+
+        SmartDashboard.putNumber("rawArmEncoder",encoder.getPosition());
 
         SmartDashboard.putNumber("armError",getArmAngle() - setpointRad);
 
