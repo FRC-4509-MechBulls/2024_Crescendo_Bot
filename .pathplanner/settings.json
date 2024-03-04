@@ -3,12 +3,13 @@
   "robotLength": 1.2,
   "holonomicMode": true,
   "pathFolders": [
+    "2 amp 2 speaker",
     "4 amp auto",
     "4 speaker auto",
-    "2 amp 2 speaker"
+    "newspeaker"
   ],
   "autoFolders": [],
-  "defaultMaxVel": 5.0,
+  "defaultMaxVel": 1.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,

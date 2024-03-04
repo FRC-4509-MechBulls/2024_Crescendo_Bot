@@ -26,19 +26,19 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.75
+            "waitTime": 10.0
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "ejectMode"
+            "name": "shootMode"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.3
+            "waitTime": 0.5
           }
         },
         {
@@ -48,21 +48,63 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "speaker0"
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "holdMode"
+          }
+        },
+        {
           "type": "wait",
           "data": {
-            "waitTime": 0.0
+            "waitTime": 0.5
           }
         },
         {
           "type": "named",
           "data": {
             "name": "readyToShootMode"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 10.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootMode"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeMode"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 4.0
           }
         },
         {
@@ -74,31 +116,13 @@
         {
           "type": "named",
           "data": {
-            "name": "ejectMode"
+            "name": "holdMode"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.15
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "intakeMode"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "speaker2"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.0
+            "waitTime": 0.3
           }
         },
         {
@@ -108,51 +132,15 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "speaker3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ejectMode"
-          }
-        },
-        {
           "type": "wait",
           "data": {
-            "waitTime": 0.15
+            "waitTime": 11.0
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "intakeMode"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "speaker4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "readyToShootMode"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "speaker5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ejectMode"
+            "name": "shootMode"
           }
         }
       ]
