@@ -103,6 +103,20 @@ public class SwerveModule extends SubsystemBase {
         return absoluteEncoder.getAbsolutePosition()*2*Math.PI + absoluteEncoderOffset;
     }
 
+  //  double getAbsoluteEncoderRadWrapped
+
+    double getAbsoluteEncoderRadWrappedToMatch(){
+        double absReading = absoluteEncoder.getAbsolutePosition()*2*Math.PI;
+        double falconReading = turningToRad(turningMotor.getSelectedSensorPosition()) - absoluteEncoderOffset;
+        while(Math.abs(absReading - falconReading) > Math.PI*2){
+            if(absReading > falconReading)
+                absReading -=Math.PI * 2;
+            else
+                absReading +=Math.PI * 2;
+        }
+        return absReading + absoluteEncoderOffset;
+    }
+
     static double turningToRad(double turning){
         turning/=falconTicks;
         turning/=turningGearRatio;
