@@ -122,6 +122,80 @@ public class MBUtils {
         }
     }
 
+    public static Optional<Double> interpolateOrExtrapolateFlat(double[] xValues, double[] yValues, double x) {
+    // Ensure the arrays have the same length
+        if (xValues.length != yValues.length) {
+            throw new IllegalArgumentException("xValues and yValues must have the same length.");
+        }
+
+        // Check if x is outside the bounds of the xValues array and return the corresponding y value
+        if (x <= xValues[0]) {
+            return Optional.of(yValues[0]);
+        } else if (x >= xValues[xValues.length - 1]) {
+            return Optional.of(yValues[yValues.length - 1]);
+        }
+
+        int indexBelow = -1;
+        int indexAbove = -1;
+
+        // Find the two indices where x lies in between
+        for (int i = 0; i < xValues.length - 1; i++) {
+            if (x >= xValues[i] && x <= xValues[i + 1]) {
+                indexBelow = i;
+                indexAbove = i + 1;
+                break;
+            }
+        }
+
+        // If indices found, perform interpolation
+        if (indexBelow != -1) {
+            double x1 = xValues[indexBelow];
+            double x2 = xValues[indexAbove];
+            double y1 = yValues[indexBelow];
+            double y2 = yValues[indexAbove];
+
+            double interpolatedValue = y1 + ((x - x1) / (x2 - x1)) * (y2 - y1);
+            return Optional.of(interpolatedValue);
+        } else {
+            // This case should not be reached due to the earlier checks, but is required for compilation
+            return Optional.empty();
+        }
+    }
+
+
+
+    public static Optional<Double> interpolateAndExtrapolateFlat(double[] xValues, double[] yValues, double x) {
+        // Ensure the arrays have the same length
+        if (xValues.length != yValues.length) {
+            throw new IllegalArgumentException("xValues and yValues must have the same length.");
+        }
+
+        int indexBelow = -1;
+        int indexAbove = -1;
+
+        // Find the two indices where x lies in between
+        for (int i = 0; i < xValues.length - 1; i++) {
+            if (x >= xValues[i] && x <= xValues[i + 1]) {
+                indexBelow = i;
+                indexAbove = i + 1;
+                break;
+            }
+        }
+
+        //If indices found, perform interpolation. Otherwise, return an empty Optional.
+        if (indexBelow != -1) {
+            double x1 = xValues[indexBelow];
+            double x2 = xValues[indexAbove];
+            double y1 = yValues[indexBelow];
+            double y2 = yValues[indexAbove];
+
+            double interpolatedValue = y1 + ((x - x1) / (x2 - x1)) * (y2 - y1);
+            return Optional.of(interpolatedValue);
+        } else {
+            return Optional.empty();
+        }
+    }
+
 
 
 }

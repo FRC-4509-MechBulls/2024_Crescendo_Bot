@@ -74,9 +74,9 @@ StateControllerSub stateController;
     this.visionSubsystem = visionSubsystem;
     this.stateController = stateController;
 
-    SmartDashboard.putNumber("debugGoTo_x",0);
-    SmartDashboard.putNumber("debugGoTo_y",0);
-    SmartDashboard.putNumber("debugGoTo_deg",0);
+  //  SmartDashboard.putNumber("debugGoTo_x",0);
+  //  SmartDashboard.putNumber("debugGoTo_y",0);
+  //  SmartDashboard.putNumber("debugGoTo_deg",0);
 
     AutoBuilder.configureHolonomic(
             this::getPose, // Robot pose supplier
@@ -294,10 +294,10 @@ void updatePoseFromVision(){
     Optional<EstimatedRobotPose> result = visionSubsystem.getEstimatedGlobalPose(odometry.getEstimatedPosition());
     if(result.isPresent()){
       odometry.addVisionMeasurement(result.get().estimatedPose.toPose2d(), result.get().timestampSeconds);
-      SmartDashboard.putNumber("lastVisionX",result.get().estimatedPose.getX());
-      SmartDashboard.putNumber("lastVisionY",result.get().estimatedPose.getY());
+    //  SmartDashboard.putNumber("lastVisionX",result.get().estimatedPose.getX());
+    //  SmartDashboard.putNumber("lastVisionY",result.get().estimatedPose.getY());
       visionField.setRobotPose(result.get().estimatedPose.toPose2d());
-      SmartDashboard.putData("visionField",visionField);
+    //  SmartDashboard.putData("visionField",visionField);
 
 
       Pose3d odometry3D = result.get().estimatedPose;
@@ -305,7 +305,7 @@ void updatePoseFromVision(){
 
 
 
-      SmartDashboard.putNumber("resultWasPresent",Timer.getFPGATimestamp());
+    //  SmartDashboard.putNumber("resultWasPresent",Timer.getFPGATimestamp());
     }
     //add vision measurement if present while passing in current reference pose
 }
@@ -315,17 +315,17 @@ void updatePoseFromVision(){
     // This method will be called once per scheduler run
     stateController.feedRobotPose(odometry.getEstimatedPosition());
 
-    SmartDashboard.putNumber("frontLeftDriveVel",frontLeft.getState().speedMetersPerSecond);
-    SmartDashboard.putNumber("frontLeftDriveVel2",frontLeft.getModuleVelocity());
+    //SmartDashboard.putNumber("frontLeftDriveVel",frontLeft.getState().speedMetersPerSecond);
+    //SmartDashboard.putNumber("frontLeftDriveVel2",frontLeft.getModuleVelocity());
 
-    SmartDashboard.putNumber("frontLeftDrivePos",frontLeft.getPosition().distanceMeters);
+   // SmartDashboard.putNumber("frontLeftDrivePos",frontLeft.getPosition().distanceMeters);
 
     SmartDashboard.putNumberArray("modulePositions",new double[]{frontLeft.getPosition().distanceMeters,frontRight.getPosition().distanceMeters,rearLeft.getPosition().distanceMeters,rearRight.getPosition().distanceMeters});
     SmartDashboard.putNumberArray("moduleHeadings",new double[]{frontLeft.getAngle(),frontRight.getAngle(),rearLeft.getAngle(),rearRight.getAngle()});
-
-
     SmartDashboard.putNumberArray("moduleAbsoluteReadings",new double[]{frontLeft.getAbsoluteEncoderRad(),frontRight.getAbsoluteEncoderRad(),rearLeft.getAbsoluteEncoderRad(),rearRight.getAbsoluteEncoderRad()});
+    SmartDashboard.putNumberArray("moduleAbsoluteReadingsWrappedToMatch",new double[]{frontLeft.getAbsoluteEncoderRadWrappedToMatch(),frontRight.getAbsoluteEncoderRadWrappedToMatch(),rearLeft.getAbsoluteEncoderRadWrappedToMatch(),rearRight.getAbsoluteEncoderRadWrappedToMatch()});
 
+ //   SmartDashboard.putNumber("Mathdotrandom",Math.random());
 
     if(Robot.isSimulation())
       simDriveUpdate();
@@ -341,10 +341,10 @@ void updatePoseFromVision(){
             odometry.getEstimatedPosition().getRotation().getRadians()
     });
 
-    SmartDashboard.putNumber("fl_head",frontLeft.getAbsoluteEncoderRad());
-    SmartDashboard.putNumber("fr_head",frontRight.getAbsoluteEncoderRad());
-    SmartDashboard.putNumber("rl_head",rearLeft.getAbsoluteEncoderRad());
-    SmartDashboard.putNumber("rr_head",rearRight.getAbsoluteEncoderRad());
+  //  SmartDashboard.putNumber("fl_head",frontLeft.getAbsoluteEncoderRad());
+  //  SmartDashboard.putNumber("fr_head",frontRight.getAbsoluteEncoderRad());
+  //  SmartDashboard.putNumber("rl_head",rearLeft.getAbsoluteEncoderRad());
+ //   SmartDashboard.putNumber("rr_head",rearRight.getAbsoluteEncoderRad());
 
 
 
@@ -405,7 +405,7 @@ void updatePoseFromVision(){
 
     drive( hypot*Math.cos(angleOfTravel) + xFF, hypot * Math.sin(angleOfTravel) + yFF, angDiff + radFF);
 
-    SmartDashboard.putNumberArray("desiredPose",new double[]{desiredPose.getX(),desiredPose.getY(),desiredPose.getRotation().getRadians()});
+ //   SmartDashboard.putNumberArray("desiredPose",new double[]{desiredPose.getX(),desiredPose.getY(),desiredPose.getRotation().getRadians()});
 
 
   }

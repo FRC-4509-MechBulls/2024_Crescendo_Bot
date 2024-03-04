@@ -91,7 +91,7 @@ public class EFSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-        SmartDashboard.putNumber("shooterVoltage", upperShooter.getAppliedOutput() * upperShooter.getVoltageCompensationNominalVoltage());
+      //  SmartDashboard.putNumber("shooterVoltage", upperShooter.getAppliedOutput() * upperShooter.getVoltageCompensationNominalVoltage());
         SmartDashboard.putNumber("shooterVelocityMeasured", upperShooter.getEncoder().getVelocity());
         SmartDashboard.putNumber("shooterVelocityMeasured_bottom", lowerShooter.getEncoder().getVelocity());
 
@@ -139,7 +139,7 @@ break;
 SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.0,shooterkV,shooterkA);
     void setShooterVelocity(double velocity){
         double ff = feedforward.calculate(velocity);
-        SmartDashboard.putNumber("ff",ff);
+        SmartDashboard.putNumber("shooterFF",ff);
         upperShooter.getPIDController().setReference(velocity, ControlType.kVelocity,0,ff);
         lowerShooter.getPIDController().setReference(velocity, ControlType.kVelocity,0,ff);
     }

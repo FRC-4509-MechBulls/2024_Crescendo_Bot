@@ -127,7 +127,7 @@ public class StateControllerSub extends SubsystemBase {
             return Units.degreesToRadians(SmartDashboard.getNumber("tuningAngle",90));
 
 
-        Optional<Double> angle = MBUtils.interpolate(ShootingTables.dist,ShootingTables.angle, distanceToMySpeaker());
+        Optional<Double> angle = MBUtils.interpolateOrExtrapolateFlat(ShootingTables.dist,ShootingTables.angle, distanceToMySpeaker());
         if(angle.isPresent())
             return Units.degreesToRadians(angle.get());
 
@@ -138,7 +138,7 @@ public class StateControllerSub extends SubsystemBase {
             return SmartDashboard.getNumber("tuningFlywheelVel",10);
 
 
-        Optional<Double> vel = MBUtils.interpolate(ShootingTables.dist,ShootingTables.velocity, distanceToMySpeaker());
+        Optional<Double> vel = MBUtils.interpolateOrExtrapolateFlat(ShootingTables.dist,ShootingTables.velocity, distanceToMySpeaker());
         if(vel.isPresent())
             return vel.get();
 
@@ -199,6 +199,7 @@ public void setClimbState(ClimbState climbState){
         NamedCommands.registerCommand("setObjectiveSpeaker",new InstantCommand(this::speakerPressed));
         NamedCommands.registerCommand("setObjectiveAmp",new InstantCommand(this::ampPressed));
         NamedCommands.registerCommand("readyToShootMode",new InstantCommand(this::readyToShootPressed));
+        NamedCommands.registerCommand("shootMode",new InstantCommand(this::shootPressed));
         NamedCommands.registerCommand("ejectMode",new InstantCommand(this::ejectPressed));
 
         SmartDashboard.putBoolean("tuningMode",false);

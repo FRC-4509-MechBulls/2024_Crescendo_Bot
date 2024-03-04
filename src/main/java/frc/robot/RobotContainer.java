@@ -134,12 +134,12 @@ public class RobotContainer {
 
     autoChooser.addOption("four-speaker",new PathPlannerAuto("four-speaker"));
     autoChooser.addOption("four-amp",new PathPlannerAuto("four-amp"));
-    autoChooser.addOption("two-amp-speaker",new PathPlannerAuto("two-amp-two-speaker"));
+  //  autoChooser.addOption("two-amp-speaker",new PathPlannerAuto("two-amp-two-speaker"));
    // autoChooser.addOption("test",Autos.testAuto());
 
     //autoChooser = AutoBuilder.buildAutoChooser();
 
-    SmartDashboard.putData(autoChooser);
+    SmartDashboard.putData("autoChooser",autoChooser);
 
   }
 
