@@ -20,9 +20,17 @@ StateControllerSub stateControllerSub;
 
 
     PneumaticsControlModule pcm = new PneumaticsControlModule(59);
+    private final Solenoid solenoid;
+
+    boolean enableCompressor = false;
+
 
     public ClimbSubsystem(StateControllerSub stateControllerSub) {
         pcm.disableCompressor();
+        solenoid = pcm.makeSolenoid(7);
+
+
+        SmartDashboard.putBoolean("enableCompressor",false);
         SmartDashboard.putNumber("compressorCurrent",pcm.getCompressorCurrent());
 //pcm.makeDoubleSolenoid(0,0).set();
 
@@ -71,7 +79,6 @@ StateControllerSub stateControllerSub;
         climbSecondary.burnFlash();
     }
 
-    private final Solenoid solenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
 
 
     double setpointMeters = 0.0;//bottom
@@ -120,6 +127,15 @@ StateControllerSub stateControllerSub;
 
     SmartDashboard.putNumber("climbMasterPosition", climbPrimary.getEncoder().getPosition());
     SmartDashboard.putNumber("climbFollowerPosition", climbSecondary.getEncoder().getPosition());
+
+    boolean enableCompressorNT = SmartDashboard.getBoolean("enableCompressor",false);
+    if(enableCompressorNT != enableCompressor){
+        enableCompressor = enableCompressorNT;
+        if(enableCompressor)
+            pcm.enableCompressorDigital();
+        else
+            pcm.disableCompressor();
+    }
     }
 
     public double getClawPosition(){

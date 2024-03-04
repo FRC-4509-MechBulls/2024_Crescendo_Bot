@@ -94,7 +94,7 @@ public class TravelToPose extends Command {
         //SmartDashboard.putString()
 
 
-        SmartDashboard.putNumber("transSpeed",transSpeed);
+        //SmartDashboard.putNumber("transSpeed",transSpeed);
 
         //swerveSubsystem.drive(0,0,0);
         //swerveSubsystem.driveToPose(pPose);
