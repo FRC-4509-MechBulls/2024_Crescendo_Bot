@@ -2,20 +2,23 @@ package frc.robot.subsystems;
 
 
 import com.revrobotics.*;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.StateControllerSub;
+import frc.robot.util.MBUtils;
+
 import static  frc.robot.Constants.ArmConstants.*;
 
 public class ArmSubsystem extends SubsystemBase {
 
-//DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
+DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
 
+    PIDController pidController = new PIDController(armkP,armkI,armkD);
     AbsoluteEncoder encoder;
     StateControllerSub stateControllerSub;
 
@@ -27,6 +30,9 @@ public class ArmSubsystem extends SubsystemBase {
 
     public ArmSubsystem(StateControllerSub stateControllerSub) {
       //  armDutyCycle.setDistancePerRotation(Math.PI);
+
+        pidController.setIZone(armIZone);
+        pidController.setIntegratorRange(0,0.1);
 
 
         this.stateControllerSub = stateControllerSub;
@@ -44,6 +50,8 @@ public class ArmSubsystem extends SubsystemBase {
         encoder.setPositionConversionFactor(Math.PI);
         encoder.setVelocityConversionFactor(Math.PI/60);
 
+       // encoder.setZeroOffset()
+
         //encoder.setPosition(Units.degreesToRadians(5));
 
 
@@ -52,7 +60,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 
 
-        armMaster.getPIDController().setFeedbackDevice(encoder);
+    //    armMaster.getPIDController().setFeedbackDevice(encoder);
 
 
         armMaster.getPIDController().setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal, 0);
@@ -66,7 +74,7 @@ public class ArmSubsystem extends SubsystemBase {
 
         //armMaster.getEncoder().setVelocityConversionFactor(1.0/armGearRatio*2*Math.PI/60);//rad/sec
 
-        armMaster.getPIDController().setP(0.03,0);
+        armMaster.getPIDController().setP(0.3,0);
        // armMaster.getPIDController().setI(0.1,0);
 
 
@@ -82,6 +90,7 @@ public class ArmSubsystem extends SubsystemBase {
 
         armMaster.getPIDController().setOutputRange(0,0);
 
+
         //armMaster.setSmartCurrentLimit(30);
 
  //       SmartDashboard.putNumber("armReference",0);
@@ -90,15 +99,17 @@ public class ArmSubsystem extends SubsystemBase {
 
         armMaster.burnFlash();
 
-        SmartDashboard.putNumber("armTuningP",0.03);
-        SmartDashboard.putNumber("armTuningI",0);
-        SmartDashboard.putNumber("armTuningD",0);
+        SmartDashboard.putNumber("armTuningP",armkP);
+        SmartDashboard.putNumber("armTuningI",armkI);
+        SmartDashboard.putNumber("armTuningD",armkD);
+
+
 
     }
 
-    double lastP = 0.03;
-    double lastI = 0;
-    double lastD = 0;
+    double lastP = armkP;
+    double lastI = armkI;
+    double lastD = armkD;
 
     double lastZeroingTimestamp = 0;
 
@@ -162,15 +173,25 @@ public class ArmSubsystem extends SubsystemBase {
             armMaster.getPIDController().setI(currentI);
             armMaster.getPIDController().setD(currentD);
 
+            pidController.setP(currentP);
+            pidController.setI(currentI);
+            pidController.setD(currentD);
+
         }
+
+        double pidOut = MBUtils.clamp(pidController.calculate(getRIODutyCycleRad()),0.3);
+armMaster.set(pidOut);
+        SmartDashboard.putNumber("armRIO-PID out",pidOut);
+        SmartDashboard.putNumber("armRIO-PWM rad",getRIODutyCycleRad());
+        SmartDashboard.putNumber("armRIO-PWM raw",armDutyCycle.getAbsolutePosition());
     }
 
-    public double getDutyCycleRad(){
-     //   double out = armDutyCycle.getAbsolutePosition();
-        double out = 0;
+    public double getRIODutyCycleRad(){
+        double out = armDutyCycle.getAbsolutePosition();
+       // double out = 0;
 
-        double zeroReading = 0.226;
-        double zeroAngleHalfRots = Units.degreesToRotations(97) * 2;
+        double zeroReading = 0.222;
+        double zeroAngleHalfRots = Units.degreesToRotations(96) * 2;
 
         out -=zeroReading;
         out +=zeroAngleHalfRots;
@@ -186,6 +207,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 
     private void setAngleRad(double angle){
+      //  if(setpointRad == angle) return;
         setpointRad = angle;
         //TODO: actually command a position lol
      //   setpointRad = Units.degreesToRadians(SmartDashboard.getNumber("tuningAngle",90));
@@ -193,14 +215,17 @@ public class ArmSubsystem extends SubsystemBase {
 
        // armMaster.getPIDController().setReference(Units.degreesToRadians(SmartDashboard.getNumber("armReference",0)), CANSparkBase.ControlType.kSmartMotion);
 
-        armMaster.getPIDController().setReference(setpointRad,CANSparkBase.ControlType.kSmartMotion);
+  //todo      armMaster.getPIDController().setReference(setpointRad,CANSparkBase.ControlType.kSmartMotion);
+
+          pidController.setSetpoint(setpointRad);
 
     }
 
     public double getArmAngle(){
         if(Robot.isSimulation())
             return simRad;
-        return encoder.getPosition(); //TODO: actual arm angle
+     //   return encoder.getPosition(); //TODO: actual arm angle
+        return getRIODutyCycleRad();
 
     }
 
