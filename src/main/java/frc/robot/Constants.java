@@ -22,20 +22,20 @@ public final class Constants {
     public static final double[] dist = {
             1.31,
             2.56,
-            3.47,
-            3.87
+            2.77,
+            3.51
     };
     public static final double[] velocity = {
             53,
             73,
-            64,
-            64
+            74,
+            75
     };
     public static final double[] angle = {
-            27,
-            43,
-            47,
-            48
+            25,
+            41,
+            41,
+            44
 
     };
 
@@ -72,7 +72,7 @@ public final class Constants {
 
   public static class ArmConstants{
 
-    public static final double armkP = 0.5;
+    public static final double armkP = 0.3;
     public static final double armkI = 0.1;
     public static final double armkD = 0.0;
     public static final double armIZone = 0.15;

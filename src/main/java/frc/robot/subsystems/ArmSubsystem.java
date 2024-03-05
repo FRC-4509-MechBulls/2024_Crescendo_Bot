@@ -179,7 +179,7 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
 
         }
 
-        double pidOut = MBUtils.clamp(pidController.calculate(getRIODutyCycleRad()),0.3);
+        double pidOut = MBUtils.clamp(pidController.calculate(getRIODutyCycleRad()),0.5);
 armMaster.set(pidOut);
     //    SmartDashboard.putNumber("armRIO-PID out",pidOut);
     //    SmartDashboard.putNumber("armRIO-PWM rad",getRIODutyCycleRad());
