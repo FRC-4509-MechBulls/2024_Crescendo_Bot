@@ -39,7 +39,7 @@ public class StateControllerSub extends SubsystemBase {
 
     DuckMode duckMode = DuckMode.DOWN;
 
-    boolean alignWhenClose = true;
+    boolean alignWhenCloseEnabled = true;
 
 
     private Pose2d robotPose = new Pose2d();
@@ -122,8 +122,12 @@ public class StateControllerSub extends SubsystemBase {
         return Constants.ArmConstants.duckingRad;
     }
 
+    public boolean tuningMode(){
+        return SmartDashboard.getBoolean("tuningMode",false);
+    }
+
     public double getSpeakerAngle(){ //TODO: arm angle in radians
-        if(SmartDashboard.getBoolean("tuningMode",true))
+        if(tuningMode())
             return Units.degreesToRadians(SmartDashboard.getNumber("tuningAngle",90));
 
 
@@ -134,7 +138,7 @@ public class StateControllerSub extends SubsystemBase {
         return Units.degreesToRadians(90);
     }
     public double getSpeakerFlywheelVel(){ //TODO: flywheel velocity in radians per second
-        if(SmartDashboard.getBoolean("tuningMode",true))
+        if(tuningMode())
             return SmartDashboard.getNumber("tuningFlywheelVel",10);
 
 
@@ -208,6 +212,7 @@ public void setClimbState(ClimbState climbState){
 
         SmartDashboard.putNumber("groundHeight",0);
 
+        SmartDashboard.putBoolean("alignWhenClose",alignWhenCloseEnabled);
 
 
     }
@@ -264,7 +269,6 @@ public void setClimbState(ClimbState climbState){
                // climbState = ClimbState.DOWN;
         }
 
-        SmartDashboard.putBoolean("alignToObjective",alignWhenClose);
 
 
         if(makeEFHoldTimer.hasElapsed(0.3)){
@@ -279,6 +283,8 @@ public void setClimbState(ClimbState climbState){
            // efState = EFState.HOLD;
         }
 
+        alignWhenCloseEnabled = SmartDashboard.getBoolean("alignWhenClose",true);
+
     }
 
 
@@ -287,12 +293,14 @@ public void setClimbState(ClimbState climbState){
         else     duckMode = DuckMode.UNDUCK;
     }
 
-    public boolean alignWhenClose() {
 
+   public boolean alignWhenClose() {
         if(objective == Objective.SPEAKER && distanceToMySpeaker() < 6)
-            return alignWhenClose;
+            return alignWhenCloseEnabled;
         return false;
     }
+
+
 
     public double alignWhenCloseAngDiff() {
         return MBUtils.angleDiffRad(angleToObjective(objective),robotPose.getRotation().getRadians());
@@ -300,10 +308,10 @@ public void setClimbState(ClimbState climbState){
 
 
 
-    public void toggleAlignWhenClose() {
+  /*  public void toggleAlignWhenClose() {
         this.alignWhenClose = !this.alignWhenClose;
     }
-
+*/
     public void publishTableEntries(){
        // table.getEntry("odom_x").setDouble(robotPose.getX());
        // table.getEntry("odom_y").setDouble(robotPose.getY());

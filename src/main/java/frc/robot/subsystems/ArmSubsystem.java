@@ -152,7 +152,7 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
    //     }
 
 
-        SmartDashboard.putNumber("getAngleDeg",Units.radiansToDegrees(getArmAngle()));
+    //    SmartDashboard.putNumber("getAngleDeg",Units.radiansToDegrees(getArmAngle()));
       //  SmartDashboard.putNumber("armError",)
    //     SmartDashboard.putNumber("absoluteThroughSPARK",encoder.getPosition());
 
@@ -164,7 +164,7 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
         double currentP = SmartDashboard.getNumber("armTuningP",0);
         double currentI = SmartDashboard.getNumber("armTuningI",0);
         double currentD = SmartDashboard.getNumber("armTuningD",0);
-        if(currentP!=lastP || currentI!=lastI || currentD !=lastD){
+        if((currentP!=lastP || currentI!=lastI || currentD !=lastD) && stateControllerSub.tuningMode()){
             lastP = currentP;
             lastI = currentI;
             lastD = currentD;
@@ -181,9 +181,9 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
 
         double pidOut = MBUtils.clamp(pidController.calculate(getRIODutyCycleRad()),0.3);
 armMaster.set(pidOut);
-        SmartDashboard.putNumber("armRIO-PID out",pidOut);
-        SmartDashboard.putNumber("armRIO-PWM rad",getRIODutyCycleRad());
-        SmartDashboard.putNumber("armRIO-PWM raw",armDutyCycle.getAbsolutePosition());
+    //    SmartDashboard.putNumber("armRIO-PID out",pidOut);
+    //    SmartDashboard.putNumber("armRIO-PWM rad",getRIODutyCycleRad());
+    //    SmartDashboard.putNumber("armRIO-PWM raw",armDutyCycle.getAbsolutePosition());
     }
 
     public double getRIODutyCycleRad(){
