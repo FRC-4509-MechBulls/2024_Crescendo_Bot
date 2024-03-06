@@ -19,19 +19,15 @@ StateControllerSub stateControllerSub;
 
 
 
-    PneumaticsControlModule pcm = new PneumaticsControlModule(59);
-    private final Solenoid solenoid;
 
-    boolean enableCompressor = false;
+PneumaticControlSub pneumaticControlSub;
 
 
-    public ClimbSubsystem(StateControllerSub stateControllerSub) {
-        pcm.disableCompressor();
-        solenoid = pcm.makeSolenoid(7);
+    public ClimbSubsystem(StateControllerSub stateControllerSub,PneumaticControlSub pneumaticControlSub) {
 
 
-        SmartDashboard.putBoolean("enableCompressor",false);
-        SmartDashboard.putNumber("compressorCurrent",pcm.getCompressorCurrent());
+
+
 //pcm.makeDoubleSolenoid(0,0).set();
 
 
@@ -77,6 +73,8 @@ StateControllerSub stateControllerSub;
 
         climbPrimary.burnFlash();
         climbSecondary.burnFlash();
+
+        this.pneumaticControlSub = pneumaticControlSub;
     }
 
 
@@ -128,14 +126,7 @@ StateControllerSub stateControllerSub;
     SmartDashboard.putNumber("climbMasterPosition", climbPrimary.getEncoder().getPosition());
     SmartDashboard.putNumber("climbFollowerPosition", climbSecondary.getEncoder().getPosition());
 
-    boolean enableCompressorNT = SmartDashboard.getBoolean("enableCompressor",false);
-    if(enableCompressorNT != enableCompressor){
-        enableCompressor = enableCompressorNT;
-        if(enableCompressor)
-            pcm.enableCompressorDigital();
-        else
-            pcm.disableCompressor();
-    }
+
     }
 
     public double getClawPosition(){
@@ -145,10 +136,10 @@ StateControllerSub stateControllerSub;
     }
 
     void extendPneumatic(){
-        solenoid.set(true);
+        pneumaticControlSub.setClimbSolenoid(false);
     }
     void retractPneumatic(){
-        solenoid.set( false);
+        pneumaticControlSub.setClimbSolenoid(true);
     }
 
     void extendClaw(){

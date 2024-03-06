@@ -17,6 +17,7 @@ import frc.robot.commands.drive.Alignments;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.EFSubsystem;
+import frc.robot.subsystems.PneumaticControlSub;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 import frc.robot.subsystems.drive.VisionSubsystem;
 
@@ -35,17 +36,19 @@ public class RobotContainer {
 
   StateControllerSub stateController = new StateControllerSub(); //this MUST be created before any pathplanner commands
 
+  PneumaticControlSub pneumaticControlSub = new PneumaticControlSub();
+
 
   VisionSubsystem visionSub = new VisionSubsystem();
 
   SendableChooser<Command> autoChooser = new SendableChooser<>();
 
 
-  ArmSubsystem armSubsystem = new ArmSubsystem(stateController);
+  ArmSubsystem armSubsystem = new ArmSubsystem(stateController,pneumaticControlSub);
 
   EFSubsystem efSub = new EFSubsystem(stateController);
 
-  ClimbSubsystem climbSubsystem = new ClimbSubsystem(stateController);
+  ClimbSubsystem climbSubsystem = new ClimbSubsystem(stateController,pneumaticControlSub);
 
   SwerveSubsystem swerveSubsystem = new SwerveSubsystem(visionSub,stateController);
 

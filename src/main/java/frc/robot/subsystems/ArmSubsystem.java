@@ -27,8 +27,10 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
 
     CANSparkMax armMaster = new CANSparkMax(armMasterID, CANSparkMax.MotorType.kBrushless);
 
+    PneumaticControlSub pneumaticControlSub;
 
-    public ArmSubsystem(StateControllerSub stateControllerSub) {
+
+    public ArmSubsystem(StateControllerSub stateControllerSub, PneumaticControlSub pneumaticControlSub) {
       //  armDutyCycle.setDistancePerRotation(Math.PI);
 
         pidController.setIZone(armIZone);
@@ -36,6 +38,8 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
 
 
         this.stateControllerSub = stateControllerSub;
+
+        this.pneumaticControlSub = pneumaticControlSub;
 
         armMaster.restoreFactoryDefaults();
 
@@ -158,13 +162,13 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
 
         SmartDashboard.putNumber("rawArmEncoder",encoder.getPosition());
 
-        SmartDashboard.putNumber("armError",getArmAngle() - setpointRad);
+        SmartDashboard.putNumber("armError",getArmError());
 
 
         double currentP = SmartDashboard.getNumber("armTuningP",0);
         double currentI = SmartDashboard.getNumber("armTuningI",0);
         double currentD = SmartDashboard.getNumber("armTuningD",0);
-        if((currentP!=lastP || currentI!=lastI || currentD !=lastD) && stateControllerSub.tuningMode()){
+        if((currentP!=lastP || currentI!=lastI || currentD !=lastD)){ // && stateControllerSub.tuningMode()
             lastP = currentP;
             lastI = currentI;
             lastD = currentD;
@@ -184,6 +188,12 @@ armMaster.set(pidOut);
     //    SmartDashboard.putNumber("armRIO-PID out",pidOut);
     //    SmartDashboard.putNumber("armRIO-PWM rad",getRIODutyCycleRad());
     //    SmartDashboard.putNumber("armRIO-PWM raw",armDutyCycle.getAbsolutePosition());
+
+        pneumaticControlSub.setBrakeSolenoid(Math.abs(getArmError())<0.05 && getArmAngle() > 0&& getArmAngle() < Units.degreesToRadians(50) );
+    }
+
+    public double getArmError(){
+       return getArmAngle() - setpointRad;
     }
 
     public double getRIODutyCycleRad(){
