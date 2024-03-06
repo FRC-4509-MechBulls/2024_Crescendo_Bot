@@ -34,7 +34,7 @@ public final class Constants {
     public static final double[] angle = {
             25,
             41,
-            41,
+            42.5,
             44
 
     };
