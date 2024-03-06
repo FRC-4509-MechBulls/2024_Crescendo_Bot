@@ -103,6 +103,28 @@ public class SwerveModule extends SubsystemBase {
         return absoluteEncoder.getAbsolutePosition()*2*Math.PI + absoluteEncoderOffset;
     }
 
+  //  double getAbsoluteEncoderRadWrapped
+
+    double getAbsoluteEncoderRadWrappedToMatch() {
+        //  Get the absolute encoder position in radians
+        double absReading = absoluteEncoder.getAbsolutePosition() * 2 * Math.PI;
+        //  Convert the falcon reading to radians
+        double falconReading = turningToRad(turningMotor.getSelectedSensorPosition());
+
+        //  Calculate the raw difference between the absolute encoder and the falcon reading
+        double rawDifference = absReading - falconReading;
+
+        //  Find the closest number of full wraps to the falcon reading
+        double closestWrap = 2 * Math.PI * Math.round(rawDifference / (2 * Math.PI));
+
+        //  Adjust the absolute encoder reading to the closest wrapped position
+        return absReading - closestWrap + absoluteEncoderOffset;
+    }
+
+
+
+
+
     static double turningToRad(double turning){
         turning/=falconTicks;
         turning/=turningGearRatio;
@@ -118,7 +140,9 @@ public class SwerveModule extends SubsystemBase {
     }
 
     public double getAngle(){
-        return turningToRad(turningMotor.getSelectedSensorPosition());
+
+       // return turningToRad(turningMotor.getSelectedSensorPosition());
+        return getAbsoluteEncoderRadWrappedToMatch();
     }
 
     public void setState(SwerveModuleState state){
