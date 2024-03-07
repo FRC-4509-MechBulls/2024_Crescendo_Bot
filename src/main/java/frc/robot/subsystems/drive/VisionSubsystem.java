@@ -5,13 +5,15 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.StateControllerSub;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
+import java.util.List;
 import java.util.Optional;
 
 public class VisionSubsystem extends SubsystemBase {
@@ -20,21 +22,24 @@ public class VisionSubsystem extends SubsystemBase {
 
 
     AprilTagFieldLayout aprilTagFieldLayout;
-    PhotonCamera cam;
+    PhotonCamera shooterSideArducam;
+
+    PhotonCamera intakeAssistCamera = new PhotonCamera("intake_assist_scary");
     PhotonPoseEstimator photonPoseEstimator;
-    public VisionSubsystem() {
+
+    StateControllerSub stateControllerSub;
+    public VisionSubsystem(StateControllerSub stateControllerSub) {
 
     //    SmartDashboard.putData("poseStrategy",selectedPoseStrategy);
-
         try{
             aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        cam = new PhotonCamera("Arducam_OV2311_USB_Camera");
+        shooterSideArducam = new PhotonCamera("Arducam_OV2311_shooter");
         Transform3d robotToCam = new Transform3d(new Translation3d(0.357,0.076,0.224), new Rotation3d(0,Units.degreesToRadians(-30),0));
-        photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam, robotToCam);
+        photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, shooterSideArducam, robotToCam);
        // photonPoseEstimator.setPrimaryStrategy();
         photonPoseEstimator.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
 
@@ -42,6 +47,7 @@ public class VisionSubsystem extends SubsystemBase {
         //2nd + is cam to left
         //3rd + is cam up
 
+        this.stateControllerSub = stateControllerSub;
 
     }
 
@@ -54,7 +60,19 @@ public class VisionSubsystem extends SubsystemBase {
         
     }
 
+
+
+
     public void periodic(){
+
+      List<PhotonTrackedTarget> targets = intakeAssistCamera.getLatestResult().getTargets();
+      double assistAngle = 0;
+      if(!targets.isEmpty())
+          assistAngle = Units.degreesToRadians(targets.get(0).getYaw());
+      stateControllerSub.feedNoteAlignAngleDiff(assistAngle);
+
+        SmartDashboard.putNumber("noteAssistAngle",assistAngle);
+
 
     }
 

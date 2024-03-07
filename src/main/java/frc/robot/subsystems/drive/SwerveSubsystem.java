@@ -131,6 +131,8 @@ StateControllerSub stateController;
 
   public void joystickDrive(double joystickX, double joystickY, double rad){
 
+    double rawJoyHypot = Math.hypot(joystickX,joystickY);
+
     if(Math.abs(rad)<controllerDeadband)
       rad = 0;
 
@@ -182,8 +184,17 @@ StateControllerSub stateController;
 
 
 
-    if(stateController.alignWhenClose() && stateController.getArmState() != StateControllerSub.ArmState.INTAKE && stateController.getArmState() != StateControllerSub.ArmState.HOLD)
+    if(stateController.alignWhenClose() && stateController.getArmState() != StateControllerSub.ArmState.HOLD)
       rad+=MBUtils.clamp(stateController.alignWhenCloseAngDiff() * alignmentkP,1);
+
+    double creep = 0;
+
+    if(stateController.getArmState() == StateControllerSub.ArmState.INTAKE && rawJoyHypot<0.1)
+     creep = -0.3;
+
+    SmartDashboard.putNumber("rawJoyHypot",rawJoyHypot);
+
+    SmartDashboard.putNumber("alignWhenCloseAngDiff",stateController.alignWhenCloseAngDiff());
 
 
 
@@ -194,7 +205,7 @@ StateControllerSub stateController;
 
 
 
-  drive(-joystickY ,-joystickX ,-rad);
+  drive(-joystickY + creep ,-joystickX ,-rad);
 }
 
 

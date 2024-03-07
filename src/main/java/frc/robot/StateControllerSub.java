@@ -215,6 +215,7 @@ public void setClimbState(ClimbState climbState){
         SmartDashboard.putBoolean("alignWhenClose",alignWhenCloseEnabled);
 
 
+
     }
 
     double climbAngle = 0.0;
@@ -297,13 +298,24 @@ public void setClimbState(ClimbState climbState){
    public boolean alignWhenClose() {
         if(objective == Objective.SPEAKER && distanceToMySpeaker() < 6)
             return alignWhenCloseEnabled;
+        if(armState == ArmState.INTAKE)
+            return alignWhenCloseEnabled;
         return false;
     }
 
 
 
-    public double alignWhenCloseAngDiff() {
+    public double
+    alignWhenCloseAngDiff() {
+        if(armState == ArmState.INTAKE){
+            return noteAlignAngleDiff;
+        }
         return MBUtils.angleDiffRad(angleToObjective(objective),robotPose.getRotation().getRadians());
+    }
+    double noteAlignAngleDiff = 0;
+
+    public void feedNoteAlignAngleDiff(double noteAlignAngleDiff){
+        this.noteAlignAngleDiff = noteAlignAngleDiff;
     }
 
 

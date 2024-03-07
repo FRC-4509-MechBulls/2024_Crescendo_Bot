@@ -39,7 +39,7 @@ public class RobotContainer {
   PneumaticControlSub pneumaticControlSub = new PneumaticControlSub();
 
 
-  VisionSubsystem visionSub = new VisionSubsystem();
+  VisionSubsystem visionSub = new VisionSubsystem(stateController);
 
   SendableChooser<Command> autoChooser = new SendableChooser<>();
 
