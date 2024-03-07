@@ -310,6 +310,7 @@ public void setClimbState(ClimbState climbState){
         if(armState == ArmState.INTAKE){
             return noteAlignAngleDiff;
         }
+
         return MBUtils.angleDiffRad(angleToObjective(objective),robotPose.getRotation().getRadians());
     }
     double noteAlignAngleDiff = 0;

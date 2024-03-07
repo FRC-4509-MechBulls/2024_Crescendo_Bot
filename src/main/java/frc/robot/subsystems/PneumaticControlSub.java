@@ -17,9 +17,9 @@ public class PneumaticControlSub extends SubsystemBase {
         SmartDashboard.putBoolean("enableCompressor",false);
 
         climbSolenoid = pcm.makeSolenoid(6);
-        brakeSolenoid = pcm.makeSolenoid(7);
+        brakeSolenoid = pcm.makeSolenoid(5);
 
-       SmartDashboard.putBoolean("setBrakeSolenoid",false);
+       SmartDashboard.putBoolean("enableBrakes",true);
 
 
     }
@@ -49,7 +49,9 @@ public class PneumaticControlSub extends SubsystemBase {
     }
 
     public void setBrakeSolenoid(boolean state){
-        SmartDashboard.putBoolean("brakeSolenoid",state);
+        SmartDashboard.putBoolean("brakeSolenoidClosed",state);
+        if(!SmartDashboard.getBoolean("enableBrakes",true))
+            state = false;
         brakeSolenoid.set(state);
     }
 

@@ -88,7 +88,7 @@ public class RobotContainer {
     operator.povUp().onTrue(new InstantCommand(stateController::sourcePressed));
     operator.povRight().onTrue(new InstantCommand(stateController::ampPressed));
     operator.povDown().onTrue(new InstantCommand(stateController::speakerPressed));
-    operator.povLeft().onTrue(new InstantCommand(stateController::trapPressed));
+    //operator.povLeft().onTrue(new InstantCommand(stateController::trapPressed));
 
    // operator.leftTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));
     driver.leftTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));

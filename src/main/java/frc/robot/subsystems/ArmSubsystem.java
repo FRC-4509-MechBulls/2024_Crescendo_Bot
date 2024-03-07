@@ -34,7 +34,7 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
       //  armDutyCycle.setDistancePerRotation(Math.PI);
 
         pidController.setIZone(armIZone);
-        pidController.setIntegratorRange(0,0.1);
+        pidController.setIntegratorRange(-0.15,0.15);
 
 
         this.stateControllerSub = stateControllerSub;
@@ -111,9 +111,7 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
 
     }
 
-    double lastP = armkP;
-    double lastI = armkI;
-    double lastD = armkD;
+
 
     double lastZeroingTimestamp = 0;
 
@@ -167,25 +165,39 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
         SmartDashboard.putNumber("armError",getArmError());
 
 
-        double currentP = SmartDashboard.getNumber("armTuningP",0);
-        double currentI = SmartDashboard.getNumber("armTuningI",0);
-        double currentD = SmartDashboard.getNumber("armTuningD",0);
-        if((currentP!=lastP || currentI!=lastI || currentD !=lastD)){ // && stateControllerSub.tuningMode()
-            lastP = currentP;
-            lastI = currentI;
-            lastD = currentD;
 
-            armMaster.getPIDController().setP(currentP);
-            armMaster.getPIDController().setI(currentI);
-            armMaster.getPIDController().setD(currentD);
+        if((stateControllerSub.tuningMode())){ //
+
+            double currentP = SmartDashboard.getNumber("armTuningP",0);
+            double currentI = SmartDashboard.getNumber("armTuningI",0);
+            double currentD = SmartDashboard.getNumber("armTuningD",0);
+
+        //    armMaster.getPIDController().setP(currentP);
+        //    armMaster.getPIDController().setI(currentI);
+        //    armMaster.getPIDController().setD(currentD);
 
             pidController.setP(currentP);
             pidController.setI(currentI);
             pidController.setD(currentD);
 
+        }else{
+
+            if(inRangeOfBrake()){
+                pidController.setP(armkP);
+                pidController.setI(armkI);
+                pidController.setD(armkD);
+
+            }else{
+                pidController.setP(armkPBrakeless);
+                pidController.setI(armkIBrakeless);
+                pidController.setD(armkDBrakeless);
+
+            }
+
+
         }
 
-        double pidOut = MBUtils.clamp(pidController.calculate(getRIODutyCycleRad()),0.5);
+        double pidOut = MBUtils.clamp(pidController.calculate(getRIODutyCycleRad()),armMaxPower);
 
         if(armDutyCycle.isConnected())
             armMaster.set(pidOut);
@@ -199,7 +211,11 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
     //    SmartDashboard.putNumber("armRIO-PWM rad",getRIODutyCycleRad());
     //    SmartDashboard.putNumber("armRIO-PWM raw",armDutyCycle.getAbsolutePosition());
 
-        pneumaticControlSub.setBrakeSolenoid(Math.abs(getArmError())<0.05 && getArmAngle() > 0&& getArmAngle() < Units.degreesToRadians(50) );
+        pneumaticControlSub.setBrakeSolenoid(Math.abs(getArmError())<brakeEngageError &&  inRangeOfBrake());
+    }
+
+    public boolean inRangeOfBrake(){
+        return getArmAngle() > brakeMinAngle&& getArmAngle() < brakeMaxAngle;
     }
 
     public double getArmError(){
