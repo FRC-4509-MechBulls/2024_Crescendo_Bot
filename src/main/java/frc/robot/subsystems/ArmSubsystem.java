@@ -121,6 +121,8 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
     @Override
     public void periodic() {
 
+
+
         // This method will be called once per scheduler run
         if(Robot.isSimulation())
             simRad += (setpointRad - simRad) * 0.1; //TODO: move to simulation periodic?
@@ -184,7 +186,15 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
         }
 
         double pidOut = MBUtils.clamp(pidController.calculate(getRIODutyCycleRad()),0.5);
-armMaster.set(pidOut);
+
+        if(armDutyCycle.isConnected())
+            armMaster.set(pidOut);
+        else
+            armMaster.set(0);
+
+        SmartDashboard.putBoolean("armConnected",armDutyCycle.isConnected());
+
+
     //    SmartDashboard.putNumber("armRIO-PID out",pidOut);
     //    SmartDashboard.putNumber("armRIO-PWM rad",getRIODutyCycleRad());
     //    SmartDashboard.putNumber("armRIO-PWM raw",armDutyCycle.getAbsolutePosition());
