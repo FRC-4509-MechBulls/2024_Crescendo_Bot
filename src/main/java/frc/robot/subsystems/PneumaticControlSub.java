@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.PneumaticsControlModule;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.StateControllerSub;
 
 public class PneumaticControlSub extends SubsystemBase {
     PneumaticsControlModule pcm = new PneumaticsControlModule(59);
@@ -12,7 +13,10 @@ public class PneumaticControlSub extends SubsystemBase {
     Solenoid climbSolenoid;
     Solenoid brakeSolenoid;
 
-    public PneumaticControlSub(){
+
+    StateControllerSub stateControllerSub;
+
+    public PneumaticControlSub(StateControllerSub stateControllerSub){
         pcm.disableCompressor();
         SmartDashboard.putBoolean("enableCompressor",false);
 
@@ -20,7 +24,7 @@ public class PneumaticControlSub extends SubsystemBase {
         brakeSolenoid = pcm.makeSolenoid(5);
 
        SmartDashboard.putBoolean("enableBrakes",true);
-
+this.stateControllerSub = stateControllerSub;
 
     }
 
@@ -52,6 +56,7 @@ public class PneumaticControlSub extends SubsystemBase {
         SmartDashboard.putBoolean("brakeSolenoidClosed",state);
         if(!SmartDashboard.getBoolean("enableBrakes",true))
             state = false;
+        stateControllerSub.feedBrakeEngaged(state);
         brakeSolenoid.set(state);
     }
 

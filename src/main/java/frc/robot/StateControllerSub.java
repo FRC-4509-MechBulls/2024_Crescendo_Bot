@@ -5,10 +5,12 @@ import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.drive.Alignments;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.MBUtils;
@@ -197,7 +199,9 @@ public void setClimbState(ClimbState climbState){
     DigitalInput beamBreak1 = new DigitalInput(4);
 
 
-    public StateControllerSub(){
+    CommandXboxController driver;
+    CommandXboxController operator;
+    public StateControllerSub(CommandXboxController driver, CommandXboxController operator){
         NamedCommands.registerCommand("intakeMode",new InstantCommand(this::intakePressed));
         NamedCommands.registerCommand("holdMode",new InstantCommand(this::holdPressed));
         NamedCommands.registerCommand("setObjectiveSpeaker",new InstantCommand(this::speakerPressed));
@@ -215,6 +219,8 @@ public void setClimbState(ClimbState climbState){
         SmartDashboard.putBoolean("alignWhenClose",alignWhenCloseEnabled);
 
 
+        this.driver = driver;
+        this.operator = operator;
 
     }
 
@@ -229,6 +235,8 @@ public void setClimbState(ClimbState climbState){
     public void periodic(){
 
         publishTableEntries();
+
+        updateRumbles();
 
         //get an x y and z from smartDashboard
 
@@ -286,6 +294,28 @@ public void setClimbState(ClimbState climbState){
 
         alignWhenCloseEnabled = SmartDashboard.getBoolean("alignWhenClose",true);
 
+    }
+
+    public void updateRumbles(){
+        double bothRumbleVal = 0;
+
+        if(Timer.getFPGATimestamp() - lastBrakeEngagementTimestamp <0.2 && armState == ArmState.SPEAKER)
+            bothRumbleVal = 1;
+
+        driver.getHID().setRumble(GenericHID.RumbleType.kBothRumble,bothRumbleVal);
+        operator.getHID().setRumble(GenericHID.RumbleType.kBothRumble,bothRumbleVal);
+
+    }
+    boolean brakeEngaged = false;
+    double lastBrakeEngagementTimestamp = 0;
+    public void feedBrakeEngaged(boolean brakeEngaged){
+        if(brakeEngaged == true && this.brakeEngaged == false)
+            onBrakeEngaged();
+        this.brakeEngaged = brakeEngaged;
+    }
+
+    void onBrakeEngaged(){
+        lastBrakeEngagementTimestamp = Timer.getFPGATimestamp();
     }
 
 

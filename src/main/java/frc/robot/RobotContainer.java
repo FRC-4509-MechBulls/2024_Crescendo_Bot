@@ -34,9 +34,9 @@ public class RobotContainer {
   CommandXboxController driver = new CommandXboxController(0);
   CommandXboxController operator = new CommandXboxController(1);
 
-  StateControllerSub stateController = new StateControllerSub(); //this MUST be created before any pathplanner commands
+  StateControllerSub stateController = new StateControllerSub(driver,operator); //this MUST be created before any pathplanner commands
 
-  PneumaticControlSub pneumaticControlSub = new PneumaticControlSub();
+  PneumaticControlSub pneumaticControlSub = new PneumaticControlSub(stateController);
 
 
   VisionSubsystem visionSub = new VisionSubsystem(stateController);
