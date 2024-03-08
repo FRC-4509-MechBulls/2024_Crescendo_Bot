@@ -21,6 +21,7 @@ public final class Constants {
   public static class ShootingTables{
     public static final double[] dist = {
             1.31,
+            2.33,
             2.56,
             2.77,
             3.51
@@ -28,11 +29,13 @@ public final class Constants {
     public static final double[] velocity = {
             53,
             73,
+            73,
             74,
             75
     };
     public static final double[] angle = {
             25,
+            42.6,
             41,
             42.5,
             44
