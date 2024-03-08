@@ -299,7 +299,7 @@ public void setClimbState(ClimbState climbState){
     public void updateRumbles(){
         double bothRumbleVal = 0;
 
-        if(Timer.getFPGATimestamp() - lastBrakeEngagementTimestamp <0.2 && armState == ArmState.SPEAKER)
+        if(Timer.getFPGATimestamp() - lastBrakeEngagementTimestamp <0.3 && armState == ArmState.SPEAKER)
             bothRumbleVal = 1;
 
         driver.getHID().setRumble(GenericHID.RumbleType.kBothRumble,bothRumbleVal);

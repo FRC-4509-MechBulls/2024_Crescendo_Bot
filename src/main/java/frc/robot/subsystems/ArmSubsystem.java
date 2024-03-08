@@ -205,13 +205,14 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
             armMaster.set(0);
 
         SmartDashboard.putBoolean("armConnected",armDutyCycle.isConnected());
+        SmartDashboard.putNumber("armPIDOut",pidOut);
 
 
     //    SmartDashboard.putNumber("armRIO-PID out",pidOut);
     //    SmartDashboard.putNumber("armRIO-PWM rad",getRIODutyCycleRad());
     //    SmartDashboard.putNumber("armRIO-PWM raw",armDutyCycle.getAbsolutePosition());
 
-        pneumaticControlSub.setBrakeSolenoid(Math.abs(getArmError())<brakeEngageError &&  inRangeOfBrake());
+        pneumaticControlSub.setBrakeSolenoid(shouldBrakeEngage());
     }
 
     public boolean inRangeOfBrake(){
@@ -220,6 +221,17 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
 
     public double getArmError(){
        return getArmAngle() - setpointRad;
+    }
+
+    boolean brakeEngageTracker = false;
+    public boolean shouldBrakeEngage(){
+        if(Math.abs(getArmError())<brakeEngageError)
+            brakeEngageTracker = true;
+        if(Math.abs(getArmError())>brakeDisengageError)
+            brakeEngageTracker = false;
+
+
+        return brakeEngageTracker &&  inRangeOfBrake();
     }
 
     public double getRIODutyCycleRad(){

@@ -9,7 +9,7 @@ import frc.robot.StateControllerSub;
 public class PneumaticControlSub extends SubsystemBase {
     PneumaticsControlModule pcm = new PneumaticsControlModule(59);
 
-    boolean enableCompressor = false;
+    boolean compressorEnabledOld = false;
     Solenoid climbSolenoid;
     Solenoid brakeSolenoid;
 
@@ -33,10 +33,9 @@ this.stateControllerSub = stateControllerSub;
     public void periodic(){
         SmartDashboard.putNumber("compressorCurrent",pcm.getCompressorCurrent());
 
-        boolean enableCompressorNT = SmartDashboard.getBoolean("enableCompressor",false);
-        if(enableCompressorNT != enableCompressor){
-            enableCompressor = enableCompressorNT;
-            if(enableCompressor)
+        if(compressorEnabled() != compressorEnabledOld){
+            compressorEnabledOld = compressorEnabled();
+            if(compressorEnabledOld)
                 pcm.enableCompressorDigital();
             else
                 pcm.disableCompressor();
@@ -46,6 +45,12 @@ this.stateControllerSub = stateControllerSub;
 
 
 
+    }
+
+    public boolean compressorEnabled(){
+        boolean enableCompressorNT = SmartDashboard.getBoolean("enableCompressor",false);
+
+        return enableCompressorNT || stateControllerSub.getArmState() == StateControllerSub.ArmState.INTAKE;
     }
 
     public void setClimbSolenoid(boolean state){
