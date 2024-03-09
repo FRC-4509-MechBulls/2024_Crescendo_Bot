@@ -3,8 +3,6 @@
   "robotLength": 1.2,
   "holonomicMode": true,
   "pathFolders": [
-    "2 amp 2 speaker",
-    "4 amp auto",
     "4 speaker auto",
     "newspeaker"
   ],

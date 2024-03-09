@@ -24,12 +24,14 @@ public final class Constants {
             2.33,
             2.56,
             2.77,
+            3.16,
             3.51
     };
     public static final double[] velocity = {
             53,
             73,
             73,
+            74,
             74,
             75
     };
@@ -38,6 +40,7 @@ public final class Constants {
             42.6,
             41,
             42.5,
+            44.5,
             44
 
     };
@@ -75,10 +78,10 @@ public final class Constants {
 
   public static class ArmConstants{
 
-    public static final double armMaxPower = 0.6;
+    public static final double armMaxPower = 0.6; //0.6
 
-    public static final double armkP = 0.7;
-    public static final double armkI = 0.1;
+    public static final double armkP = 0.9;
+    public static final double armkI = 0.3;
     public static final double armkD = 0.0;
 
 
@@ -101,7 +104,7 @@ public final class Constants {
     public static final int armMasterID = 30;
     public static final int armFollowerID = 31;
     public static final double duckingRad = Units.degreesToRadians(20.0);
-    public static final double holdingRadSafe = Units.degreesToRadians(70.0);
+    public static final double holdingRadSafe = Units.degreesToRadians(50.0);
     public static final double ampRad = Units.degreesToRadians(100);
 
     public static final double sourceRad = Units.degreesToRadians(95.0);

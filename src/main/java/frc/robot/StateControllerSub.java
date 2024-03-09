@@ -64,6 +64,15 @@ public class StateControllerSub extends SubsystemBase {
         if(objective == Objective.AMP && distanceToObjective(Objective.AMP) > 3)
             return Optional.of(AllianceFlipUtil.apply(Rotation2d.fromDegrees(180)));
 
+
+        if(armState ==ArmState.INTAKE)
+            return Optional.of(getRobotPose().getRotation().minus(Rotation2d.fromRadians(noteAlignAngleDiff)));
+
+        if(armState ==ArmState.SPEAKER  )
+            return Optional.of(getRobotPose().getRotation().minus(Rotation2d.fromRadians(MBUtils.angleDiffRad(angleToObjective(objective),robotPose.getRotation().getRadians()))));
+
+
+
         return Optional.empty();
     }
 
@@ -335,8 +344,7 @@ public void setClimbState(ClimbState climbState){
 
 
 
-    public double
-    alignWhenCloseAngDiff() {
+    public double alignWhenCloseAngDiff() {
         if(armState == ArmState.INTAKE){
             return noteAlignAngleDiff;
         }

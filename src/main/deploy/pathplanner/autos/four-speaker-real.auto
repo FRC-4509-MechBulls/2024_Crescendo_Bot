@@ -56,7 +56,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "speaker0"
+            "pathName": "speaker1"
           }
         },
         {
@@ -121,7 +121,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "speaker1"
+                  "pathName": "speaker1-right"
                 }
               },
               {
@@ -187,6 +187,12 @@
           "type": "named",
           "data": {
             "name": "shootMode"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0
           }
         }
       ]

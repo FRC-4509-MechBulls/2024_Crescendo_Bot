@@ -24,7 +24,7 @@ public class VisionSubsystem extends SubsystemBase {
     AprilTagFieldLayout aprilTagFieldLayout;
     PhotonCamera shooterSideArducam;
 
-    PhotonCamera intakeAssistCamera = new PhotonCamera("intake_assist_scary");
+    PhotonCamera intakeAssistCamera = new PhotonCamera("intake_assist_awesome");
     PhotonPoseEstimator photonPoseEstimator;
 
     StateControllerSub stateControllerSub;
@@ -68,7 +68,7 @@ public class VisionSubsystem extends SubsystemBase {
       List<PhotonTrackedTarget> targets = intakeAssistCamera.getLatestResult().getTargets();
       double assistAngle = 0;
       if(!targets.isEmpty())
-          assistAngle = Units.degreesToRadians(targets.get(0).getYaw());
+          assistAngle = Units.degreesToRadians(targets.get(0).getYaw()) * 0.6;
       stateControllerSub.feedNoteAlignAngleDiff(assistAngle);
 
         SmartDashboard.putNumber("noteAssistAngle",assistAngle);

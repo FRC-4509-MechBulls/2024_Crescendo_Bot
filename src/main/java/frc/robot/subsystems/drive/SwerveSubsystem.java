@@ -190,7 +190,7 @@ StateControllerSub stateController;
     double creep = 0;
 
     if(stateController.getArmState() == StateControllerSub.ArmState.INTAKE && rawJoyHypot<0.1)
-     creep = -0.3;
+     creep = -0.5; //-0.5
 
     SmartDashboard.putNumber("rawJoyHypot",rawJoyHypot);
 
@@ -208,6 +208,10 @@ StateControllerSub stateController;
   drive(-joystickY + creep ,-joystickX ,-rad);
 }
 
+public void noteAssistCreep(double vel){
+    double rad = MBUtils.clamp(stateController.alignWhenCloseAngDiff() * alignmentkP,1);
+    drive(0,vel,-rad);
+}
 
 
 

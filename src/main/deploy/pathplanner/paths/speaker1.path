@@ -3,50 +3,34 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.219755423410669,
-        "y": 5.53650223579517
+        "x": 2.230792882638397,
+        "y": 5.564638673136996
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.793025235173278,
-        "y": 5.501160826883058
+        "x": 2.804062694401006,
+        "y": 5.529297264224884
       },
       "isLocked": false,
       "linkedName": "speakerauto1"
     },
     {
       "anchor": {
-        "x": 2.892776136429466,
-        "y": 6.244758454429189
+        "x": 2.3940216301485235,
+        "y": 4.313218275559358
       },
       "prevControl": {
-        "x": 2.827529218899155,
-        "y": 5.7227831141867025
-      },
-      "nextControl": {
-        "x": 2.910912663930591,
-        "y": 6.389850674438191
-      },
-      "isLocked": false,
-      "linkedName": "speakerautonew1"
-    },
-    {
-      "anchor": {
-        "x": 2.892776136429466,
-        "y": 7.069970455730385
-      },
-      "prevControl": {
-        "x": 2.892776136429466,
-        "y": 7.006492609476447
+        "x": 2.3287747126182126,
+        "y": 3.7912429353168715
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "speakerautonew1"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.3,
+      "waypointRelativePos": 1,
       "rotationDegrees": -90.0,
       "rotateFast": true
     }
@@ -54,15 +38,15 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.0,
+    "maxVelocity": 0.7,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -148.1725534233269,
-    "rotateFast": false
+    "rotation": -90.0,
+    "rotateFast": true
   },
   "reversed": false,
   "folder": "4 speaker auto",
@@ -70,5 +54,5 @@
     "rotation": 180.0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

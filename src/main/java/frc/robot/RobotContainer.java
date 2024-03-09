@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.fasterxml.jackson.databind.util.Named;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -14,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.drive.Alignments;
+import frc.robot.commands.drive.NoteCreep;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.EFSubsystem;
@@ -52,6 +55,8 @@ public class RobotContainer {
 
   SwerveSubsystem swerveSubsystem = new SwerveSubsystem(visionSub,stateController);
 
+
+
   RunCommand drive = new RunCommand(()->swerveSubsystem.joystickDrive(driver.getLeftX(),driver.getLeftY(),driver.getRightX()),swerveSubsystem);
 
 
@@ -59,6 +64,9 @@ public class RobotContainer {
   public RobotContainer() {
 
     swerveSubsystem.setDefaultCommand(drive);
+
+    NamedCommands.registerCommand("creep3s", new NoteCreep(swerveSubsystem,1,3));
+    NamedCommands.registerCommand("joystick0", new RunCommand(()->swerveSubsystem.joystickDrive(0,0,0),swerveSubsystem));
 
     // Configure the trigger bindings
     configureBindings();
