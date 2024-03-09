@@ -185,7 +185,7 @@ StateControllerSub stateController;
 
 
     if(stateController.alignWhenClose() && stateController.getArmState() != StateControllerSub.ArmState.HOLD)
-      rad+=MBUtils.clamp(stateController.alignWhenCloseAngDiff() * alignmentkP,1);
+      rad+=MBUtils.clamp(stateController.alignWhenCloseAngDiff() * alignmentkP,1.5);
 
     double creep = 0;
 

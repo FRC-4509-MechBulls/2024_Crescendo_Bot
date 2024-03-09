@@ -61,8 +61,8 @@ PneumaticControlSub pneumaticControlSub;
         climbPrimary.getPIDController().setSmartMotionMaxAccel(0.5,0);
         climbSecondary.getPIDController().setSmartMotionMaxAccel(0.5,0);
 
-        climbPrimary.getPIDController().setOutputRange(0,0);
-        climbSecondary.getPIDController().setOutputRange(0,0);
+        climbPrimary.getPIDController().setOutputRange(-0.3,0.3);
+        climbSecondary.getPIDController().setOutputRange(-0.3,0.3);
 
 
       //  climbPrimary.getAlternateEncoder(AlternateEncoderType.kQuadrature,1);

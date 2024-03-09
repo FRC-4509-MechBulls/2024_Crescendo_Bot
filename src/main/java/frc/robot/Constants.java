@@ -68,7 +68,7 @@ public final class Constants {
     public static final double outtakeSpeed = -0.4;
     public static final double outtakeShooterVelocity = 0;
 
-    public static final double ampShooterVelocity = 20;
+    public static final double ampShooterVelocity = 10;
 
     public static final double trapShooterVelocity = 80;
 

@@ -99,23 +99,25 @@ public class RobotContainer {
     //operator.povLeft().onTrue(new InstantCommand(stateController::trapPressed));
 
    // operator.leftTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));
-    driver.leftTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));
+    driver.rightTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));
 
    // driver.rightBumper().onTrue(new InstantCommand(stateController::toggleClimbed));
+    driver.leftTrigger(0.5).onTrue(new InstantCommand(()->stateController.readyToShootPressed()));
 
     driver.leftBumper().onTrue(new InstantCommand(()->stateController.setDuckMode(false)));
     driver.leftBumper().onFalse(new InstantCommand(()->stateController.setDuckMode(true)));
 
-    driver.rightBumper().onTrue(swerveSubsystem.getDefaultCommand());
+   // driver.rightTrigger(0.5).onTrue(swerveSubsystem.getDefaultCommand());
 
-    driver.rightTrigger(0.5).onTrue(new InstantCommand(stateController::scheduleAlignmentCommand,swerveSubsystem));
-    driver.rightTrigger(0.5).onFalse(swerveSubsystem.getDefaultCommand());
+    driver.rightBumper().onTrue(new InstantCommand(stateController::scheduleAlignmentCommand,swerveSubsystem));
+    driver.rightBumper().onFalse(swerveSubsystem.getDefaultCommand());
 
 
     driver.povUp().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(0)).schedule()));
     driver.povLeft().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(1.0/3)).schedule()));
     driver.povRight().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(-1.0/3)).schedule()));
 
+    operator.leftTrigger(0.5).onTrue(new InstantCommand(()->stateController.shootPressed()));
 
    //TODO driver.x().onTrue(new InstantCommand(stateController::shootPressed));
 

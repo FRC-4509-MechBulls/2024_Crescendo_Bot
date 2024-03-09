@@ -114,6 +114,8 @@ public class EFSubsystem extends SubsystemBase {
                 double intakeSpeed = 0;
                 if(stateControllerSub.getEFState() == StateControllerSub.EFState.SHOOT)
                     intakeSpeed=feedToShooterSpeed;
+                if(stateControllerSub.getObjective() == StateControllerSub.Objective.AMP)
+                    intakeSpeed/=3;
                 switch (stateControllerSub.getObjective()) {
                     case AMP -> flywheelVel = ampShooterVelocity;
                     case SPEAKER -> flywheelVel = stateControllerSub.getSpeakerFlywheelVel();
