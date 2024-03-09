@@ -146,7 +146,7 @@ public final class Constants {
 
   public static final class DriveConstants{
 
-    public static final double alignmentkP = 2.5;
+    public static final double alignmentkP = 12;
 
     /*Physical Characteristics*/
     public static final double TRACK_WIDTH = Units.inchesToMeters(23.625); //need to find

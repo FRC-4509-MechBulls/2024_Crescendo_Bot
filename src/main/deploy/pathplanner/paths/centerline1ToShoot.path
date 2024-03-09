@@ -3,47 +3,47 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.4707856249343993,
-        "y": 5.53650223579517
+        "x": 7.698955924227639,
+        "y": 7.432701005752889
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7791849537187456,
-        "y": 5.53650223579517
+        "x": 6.175487614133124,
+        "y": 7.342018368247263
       },
       "isLocked": false,
-      "linkedName": "speakerauto0"
+      "linkedName": "centerline1"
     },
     {
       "anchor": {
-        "x": 2.230792882638397,
-        "y": 5.564638673136996
+        "x": 2.493772531404712,
+        "y": 6.752581224460695
       },
       "prevControl": {
-        "x": 1.9517649185001789,
-        "y": 5.564638673136996
+        "x": 3.953762995245289,
+        "y": 7.01556087322701
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "speakerauto1"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.0,
+    "maxVelocity": 4.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0,
+    "rotation": -154.93253656193951,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "4 speaker auto",
+  "folder": null,
   "previewStartingState": {
     "rotation": 180.0,
     "velocity": 0

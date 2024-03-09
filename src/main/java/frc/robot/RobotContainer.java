@@ -143,8 +143,8 @@ public class RobotContainer {
   private void createAutos(){
     autoChooser.setDefaultOption("no auto :'( ", null);
 
-    autoChooser.addOption("four-speaker",new PathPlannerAuto("four-speaker"));
-    autoChooser.addOption("four-amp",new PathPlannerAuto("four-amp"));
+    autoChooser.addOption("AS-3CENTERLINE",new PathPlannerAuto("AS-3CENTERLINE"));
+   // autoChooser.addOption("four-amp",new PathPlannerAuto("four-amp"));
   //  autoChooser.addOption("two-amp-speaker",new PathPlannerAuto("two-amp-two-speaker"));
    // autoChooser.addOption("test",Autos.testAuto());
 
