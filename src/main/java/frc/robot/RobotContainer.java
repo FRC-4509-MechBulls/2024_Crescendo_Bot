@@ -144,6 +144,7 @@ public class RobotContainer {
     autoChooser.setDefaultOption("no auto :'( ", null);
 
     autoChooser.addOption("AS-3CENTERLINE",new PathPlannerAuto("AS-3CENTERLINE"));
+    autoChooser.addOption("C-4NOTE",new PathPlannerAuto("C-4NOTE"));
    // autoChooser.addOption("four-amp",new PathPlannerAuto("four-amp"));
   //  autoChooser.addOption("two-amp-speaker",new PathPlannerAuto("two-amp-two-speaker"));
    // autoChooser.addOption("test",Autos.testAuto());

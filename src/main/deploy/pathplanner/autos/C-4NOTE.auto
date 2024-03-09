@@ -3,9 +3,9 @@
   "startingPose": {
     "position": {
       "x": 1.5144000463439524,
-      "y": 5.8729596406561235
+      "y": 5.5555704093864335
     },
-    "rotation": -120.78414652632647
+    "rotation": 180.0
   },
   "command": {
     "type": "sequential",
@@ -54,7 +54,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "ampSideToAmpNote"
+                  "pathName": "centerToCenterNote"
                 }
               },
               {
@@ -64,7 +64,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.6
+                        "waitTime": 0.3
                       }
                     },
                     {
@@ -141,7 +141,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "ampNoteToCenterline1"
+                  "pathName": "centerNoteToAmpNote"
                 }
               },
               {
@@ -151,7 +151,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.6
+                        "waitTime": 0.3
                       }
                     },
                     {
@@ -167,41 +167,21 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "holdMode"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 1.0
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "readyToShootMode"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "centerline1ToShoot"
-                }
-              }
-            ]
+            "name": "holdMode"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.3
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "readyToShootMode"
           }
         },
         {
@@ -217,7 +197,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 1.0
+                  "waitTime": 2.0
                 }
               }
             ]
