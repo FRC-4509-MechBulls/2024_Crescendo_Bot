@@ -2,7 +2,9 @@
   "robotWidth": 0.92,
   "robotLength": 1.2,
   "holonomicMode": true,
-  "pathFolders": [],
+  "pathFolders": [
+    "speaker"
+  ],
   "autoFolders": [],
   "defaultMaxVel": 4.0,
   "defaultMaxAccel": 3.0,

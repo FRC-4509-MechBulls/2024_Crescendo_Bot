@@ -158,6 +158,11 @@ public class StateControllerSub extends SubsystemBase {
     }
     public void feedIntendedPose(Pose2d pose){
         intendedPose = pose;
+        SmartDashboard.putNumberArray("intendedShotPose",new double[]{pose.getX(),pose.getY(),pose.getRotation().getRadians()});
+    }
+
+    public void feedIntendedPoseWithAllianceFlip(Pose2d pose){
+        feedIntendedPose(AllianceFlipUtil.apply(pose));
     }
 
 
@@ -251,7 +256,17 @@ public void setClimbState(ClimbState climbState){
         NamedCommands.registerCommand("setObjectiveAmp",new InstantCommand(this::ampPressed));
         NamedCommands.registerCommand("readyToShootMode",new InstantCommand(this::readyToShootPressed));
         NamedCommands.registerCommand("shootMode",new InstantCommand(this::shootPressed));
-        NamedCommands.registerCommand("ejectMode",new InstantCommand(this::ejectPressed));
+
+        NamedCommands.registerCommand("enableNoteAssist",new InstantCommand(()->setIntakeAssistPPEnabled(true)));
+        NamedCommands.registerCommand("disableNoteAssist",new InstantCommand(()->setIntakeAssistPPEnabled(false)));
+
+        NamedCommands.registerCommand("enableUseFedPoseIntention",new InstantCommand(()->setUseFedPoseIntention(UseFedPoseIntention.YES)));
+        NamedCommands.registerCommand("disableUseFedPoseIntention",new InstantCommand(()->setUseFedPoseIntention(UseFedPoseIntention.NO)));
+
+        NamedCommands.registerCommand("shotIntentionCurrentPose",new InstantCommand(()->feedIntendedPose(robotPose)));
+
+        NamedCommands.registerCommand("shotIntentionAgainstSpeaker",new InstantCommand(()->feedIntendedPoseWithAllianceFlip(FieldConstants.Speaker.centerSpeakerOpening)));
+
 
         SmartDashboard.putBoolean("tuningMode",false);
         SmartDashboard.putNumber("tuningAngle",90);
