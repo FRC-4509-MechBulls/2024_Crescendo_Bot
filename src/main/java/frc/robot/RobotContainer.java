@@ -91,7 +91,9 @@ public class RobotContainer {
     driver.a().onTrue(new InstantCommand(stateController::stowClimbPressed));
     driver.y().onTrue(new InstantCommand(stateController::raiseClimbPressed));
     driver.x().onTrue(new InstantCommand(stateController::climbPressed));
+    driver.b().onTrue(new InstantCommand(stateController::resetPressed));
 
+    operator.leftBumper().onTrue(new InstantCommand(stateController::resetPressed));
 
    // operator.leftBumper().onTrue(new InstantCommand(stateController::stowPressed));
    // operator.rightBumper().onTrue(new InstantCommand(stateController::raiseClimbPressed));

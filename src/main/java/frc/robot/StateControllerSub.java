@@ -32,6 +32,7 @@ public class StateControllerSub extends SubsystemBase {
     public enum SelectedTrap{AMP,SOURCE,REAR}
 
     public enum UseFedPoseIntention{YES,NO}
+    boolean intakeAssistPPEnabled = false;
 
     public enum DuckMode {UNDUCK, DOWN}
 
@@ -71,7 +72,7 @@ public class StateControllerSub extends SubsystemBase {
             return Optional.of(AllianceFlipUtil.apply(Rotation2d.fromDegrees(180)));
 
 
-        if(armState ==ArmState.INTAKE)
+        if(armState ==ArmState.INTAKE && intakeAssistPPEnabled)
             return Optional.of(getRobotPose().getRotation().minus(Rotation2d.fromRadians(noteAlignAngleDiff)));
 
         if(armState ==ArmState.SPEAKER  )
@@ -82,6 +83,9 @@ public class StateControllerSub extends SubsystemBase {
         return Optional.empty();
     }
 
+    public void setIntakeAssistPPEnabled(boolean intakeAssistPPEnabled){
+        this.intakeAssistPPEnabled = intakeAssistPPEnabled;
+    }
 
 
     public void scheduleAlignmentCommand(){
@@ -219,6 +223,8 @@ public ClimbState getClimbStateConsideringDuckMode(){
         return ClimbState.CLIMBED;
     return climbState;
 }
+
+
 
 public void toggleClimbed(){
         if(climbState == ClimbState.DOWN) //local variable climbState should never be down. (that's what the climbStateConsideringDuckMode() method is for)
@@ -407,6 +413,13 @@ public void setClimbState(ClimbState climbState){
         table.getEntry("selectedTrap").setString(selectedTrap.toString());
 
         table.getEntry("loweredMode").setString(duckMode.toString());
+    }
+
+    public void resetPressed(){
+        armState = ArmState.HOLD;
+        efState = EFState.HOLD;
+        climbState = ClimbState.DOWN;
+        useFedPoseIntention = UseFedPoseIntention.NO;
     }
 
     public void intakePressed(){
