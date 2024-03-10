@@ -83,10 +83,14 @@ public class RobotContainer {
     operator.x().onTrue(new InstantCommand(stateController::ejectPressed));
     operator.y().onTrue(new InstantCommand(stateController::readyToShootPressed));
 
-    driver.a().onTrue(new InstantCommand(stateController::intakePressed));
-    driver.b().onTrue(new InstantCommand(stateController::holdPressed));
-    driver.x().onTrue(new InstantCommand(stateController::ejectPressed));
-    driver.y().onTrue(new InstantCommand(stateController::readyToShootPressed));
+  //  driver.a().onTrue(new InstantCommand(stateController::intakePressed));
+  //  driver.b().onTrue(new InstantCommand(stateController::holdPressed));
+  //  driver.x().onTrue(new InstantCommand(stateController::ejectPressed));
+  //  driver.y().onTrue(new InstantCommand(stateController::readyToShootPressed));
+
+    driver.a().onTrue(new InstantCommand(stateController::stowClimbPressed));
+    driver.y().onTrue(new InstantCommand(stateController::raiseClimbPressed));
+    driver.x().onTrue(new InstantCommand(stateController::climbPressed));
 
 
    // operator.leftBumper().onTrue(new InstantCommand(stateController::stowPressed));
@@ -96,6 +100,7 @@ public class RobotContainer {
     operator.povUp().onTrue(new InstantCommand(stateController::sourcePressed));
     operator.povRight().onTrue(new InstantCommand(stateController::ampPressed));
     operator.povDown().onTrue(new InstantCommand(stateController::speakerPressed));
+
     //operator.povLeft().onTrue(new InstantCommand(stateController::trapPressed));
 
    // operator.leftTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));
@@ -113,9 +118,9 @@ public class RobotContainer {
     driver.rightBumper().onFalse(swerveSubsystem.getDefaultCommand());
 
 
-    driver.povUp().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(0)).schedule()));
-    driver.povLeft().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(1.0/3)).schedule()));
-    driver.povRight().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(-1.0/3)).schedule()));
+  //  driver.povUp().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(0)).schedule()));
+  //  driver.povLeft().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(1.0/3)).schedule()));
+  //  driver.povRight().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(-1.0/3)).schedule()));
 
     operator.leftTrigger(0.5).onTrue(new InstantCommand(()->stateController.shootPressed()));
 

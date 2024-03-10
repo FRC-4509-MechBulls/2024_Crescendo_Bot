@@ -215,8 +215,8 @@ public class StateControllerSub extends SubsystemBase {
     public Objective getObjective(){return objective;}
 
 public ClimbState getClimbStateConsideringDuckMode(){
-    if(duckMode==DuckMode.DOWN)
-        return ClimbState.DOWN;
+    if(duckMode==DuckMode.UNDUCK)
+        return ClimbState.CLIMBED;
     return climbState;
 }
 
@@ -415,6 +415,17 @@ public void setClimbState(ClimbState climbState){
         efState = EFState.INTAKE;
        // climbState = ClimbState.STOWED; //TODO: should this be here?
     }
+
+    public void stowClimbPressed(){
+        climbState = ClimbState.DOWN;
+    }
+    public void raiseClimbPressed(){
+        climbState = ClimbState.READY;
+    }
+    public void climbPressed(){
+        climbState = ClimbState.CLIMBED;
+    }
+
 
     Timer makeEFHoldTimer = new Timer();
 
