@@ -31,6 +31,8 @@ public class StateControllerSub extends SubsystemBase {
     public enum Objective{SPEAKER,AMP,SOURCE,TRAP}
     public enum SelectedTrap{AMP,SOURCE,REAR}
 
+    public enum UseFedPoseIntention{YES,NO}
+
     public enum DuckMode {UNDUCK, DOWN}
 
     private ArmState armState = ArmState.HOLD;
@@ -38,6 +40,10 @@ public class StateControllerSub extends SubsystemBase {
     private ClimbState climbState = ClimbState.DOWN;
     Objective objective = Objective.SPEAKER;
     SelectedTrap selectedTrap = SelectedTrap.AMP;
+
+    UseFedPoseIntention useFedPoseIntention = UseFedPoseIntention.NO;
+
+    Pose2d intendedPose = new Pose2d();
 
     DuckMode duckMode = DuckMode.DOWN;
 
@@ -122,9 +128,12 @@ public class StateControllerSub extends SubsystemBase {
         }
 
 
-    private double distanceToMySpeaker(){
+    private double distanceToMySpeaker(Pose2d robotPose){
         Translation2d speakerTranslation = AllianceFlipUtil.apply(FieldConstants.Speaker.centerSpeakerOpening.getTranslation());
         return Math.hypot(speakerTranslation.getX()-robotPose.getX(),speakerTranslation.getY()-robotPose.getY());
+    }
+    private double distanceToMySpeaker(){
+        return distanceToMySpeaker(robotPose);
     }
 
     public double getHoldAngle(){ // this is redundant now :)
@@ -137,12 +146,28 @@ public class StateControllerSub extends SubsystemBase {
         return SmartDashboard.getBoolean("tuningMode",false);
     }
 
+    public void setUseFedPoseIntention(UseFedPoseIntention useFedPoseIntention){
+        this.useFedPoseIntention = useFedPoseIntention;
+    }
+    public UseFedPoseIntention getUseFedPoseIntention(){
+        return useFedPoseIntention;
+    }
+    public void feedIntendedPose(Pose2d pose){
+        intendedPose = pose;
+    }
+
+
     public double getSpeakerAngle(){ //TODO: arm angle in radians
         if(tuningMode())
             return Units.degreesToRadians(SmartDashboard.getNumber("tuningAngle",90));
 
+     //   if(useFedPoseIntention == UseFedPoseIntention.YES)
+        double distanceToUse = distanceToMySpeaker();
 
-        Optional<Double> angle = MBUtils.interpolateOrExtrapolateFlat(ShootingTables.dist,ShootingTables.angle, distanceToMySpeaker());
+        if(useFedPoseIntention == UseFedPoseIntention.YES)
+            distanceToUse = distanceToMySpeaker(intendedPose);
+
+        Optional<Double> angle = MBUtils.interpolateOrExtrapolateFlat(ShootingTables.dist,ShootingTables.angle, distanceToUse);
         if(angle.isPresent())
             return Units.degreesToRadians(angle.get());
 
@@ -151,9 +176,12 @@ public class StateControllerSub extends SubsystemBase {
     public double getSpeakerFlywheelVel(){ //TODO: flywheel velocity in radians per second
         if(tuningMode())
             return SmartDashboard.getNumber("tuningFlywheelVel",10);
+        double distanceToUse = distanceToMySpeaker();
 
+        if(useFedPoseIntention == UseFedPoseIntention.YES)
+            distanceToUse = distanceToMySpeaker(intendedPose);
 
-        Optional<Double> vel = MBUtils.interpolateOrExtrapolateFlat(ShootingTables.dist,ShootingTables.velocity, distanceToMySpeaker());
+        Optional<Double> vel = MBUtils.interpolateOrExtrapolateFlat(ShootingTables.dist,ShootingTables.velocity, distanceToUse);
         if(vel.isPresent())
             return vel.get();
 
@@ -404,7 +432,9 @@ public void setClimbState(ClimbState climbState){
     }
     public void ejectPressed(){
         //armState = ArmState.HOLD;
-        //efState = EFState.EJECT;
+        efState= EFState.EJECT;
+        makeEFHoldTimer.reset();
+        makeEFHoldTimer.start();
     }
     public void readyToShootPressed(){
        // armState = ArmState.HOLD;
