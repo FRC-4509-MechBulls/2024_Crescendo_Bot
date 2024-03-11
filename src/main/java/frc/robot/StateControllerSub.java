@@ -32,7 +32,7 @@ public class StateControllerSub extends SubsystemBase {
     public enum SelectedTrap{AMP,SOURCE,REAR}
 
     public enum UseFedPoseIntention{YES,NO}
-    boolean intakeAssistPPEnabled = false;
+    boolean aimAssistPPEnabled = false;
 
     public enum DuckMode {UNDUCK, DOWN}
 
@@ -72,10 +72,10 @@ public class StateControllerSub extends SubsystemBase {
             return Optional.of(AllianceFlipUtil.apply(Rotation2d.fromDegrees(180)));
 
 
-        if(armState ==ArmState.INTAKE && intakeAssistPPEnabled)
+        if(armState ==ArmState.INTAKE && aimAssistPPEnabled)
             return Optional.of(getRobotPose().getRotation().minus(Rotation2d.fromRadians(noteAlignAngleDiff)));
 
-        if(armState ==ArmState.SPEAKER  )
+        if(armState ==ArmState.SPEAKER  && aimAssistPPEnabled)
             return Optional.of(getRobotPose().getRotation().minus(Rotation2d.fromRadians(MBUtils.angleDiffRad(angleToObjective(objective),robotPose.getRotation().getRadians()))));
 
 
@@ -83,8 +83,8 @@ public class StateControllerSub extends SubsystemBase {
         return Optional.empty();
     }
 
-    public void setIntakeAssistPPEnabled(boolean intakeAssistPPEnabled){
-        this.intakeAssistPPEnabled = intakeAssistPPEnabled;
+    public void setPPAimAssistEnabled(boolean intakeAssistPPEnabled){
+        this.aimAssistPPEnabled = intakeAssistPPEnabled;
     }
 
 
@@ -257,8 +257,8 @@ public void setClimbState(ClimbState climbState){
         NamedCommands.registerCommand("readyToShootMode",new InstantCommand(this::readyToShootPressed));
         NamedCommands.registerCommand("shootMode",new InstantCommand(this::shootPressed));
 
-        NamedCommands.registerCommand("enableNoteAssist",new InstantCommand(()->setIntakeAssistPPEnabled(true)));
-        NamedCommands.registerCommand("disableNoteAssist",new InstantCommand(()->setIntakeAssistPPEnabled(false)));
+        NamedCommands.registerCommand("enableAimAssist",new InstantCommand(()-> setPPAimAssistEnabled(true)));
+        NamedCommands.registerCommand("disableAimAssist",new InstantCommand(()-> setPPAimAssistEnabled(false)));
 
         NamedCommands.registerCommand("enableUseFedPoseIntention",new InstantCommand(()->setUseFedPoseIntention(UseFedPoseIntention.YES)));
         NamedCommands.registerCommand("disableUseFedPoseIntention",new InstantCommand(()->setUseFedPoseIntention(UseFedPoseIntention.NO)));
@@ -435,6 +435,7 @@ public void setClimbState(ClimbState climbState){
         efState = EFState.HOLD;
         climbState = ClimbState.DOWN;
         useFedPoseIntention = UseFedPoseIntention.NO;
+
     }
 
     public void intakePressed(){
