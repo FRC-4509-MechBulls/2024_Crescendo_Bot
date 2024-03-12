@@ -55,20 +55,22 @@ PneumaticControlSub pneumaticControlSub;
         climbPrimary.getPIDController().setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal,0);
         climbSecondary.getPIDController().setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal,0);
 
-        climbPrimary.getPIDController().setSmartMotionMaxVelocity(0.5,0);
-        climbSecondary.getPIDController().setSmartMotionMaxVelocity(0.5,0);
+        climbPrimary.getPIDController().setSmartMotionMaxVelocity(1.5,0);
+        climbSecondary.getPIDController().setSmartMotionMaxVelocity(1.5,0);
 
         climbPrimary.getPIDController().setSmartMotionMaxAccel(0.5,0);
         climbSecondary.getPIDController().setSmartMotionMaxAccel(0.5,0);
 
-        climbPrimary.getPIDController().setOutputRange(-0.3,0.3);
-        climbSecondary.getPIDController().setOutputRange(-0.3,0.3);
+        climbPrimary.getPIDController().setOutputRange(-climbMaxPower,climbMaxPower);
+        climbSecondary.getPIDController().setOutputRange(-climbMaxPower,climbMaxPower);
 
 
       //  climbPrimary.getAlternateEncoder(AlternateEncoderType.kQuadrature,1);
 
 
       //  climbPrimary.getPIDController().setFeedbackDevice(climbPrimary.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature,1));
+        climbPrimary.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus2,100);
+        climbSecondary.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus2,100);
 
 
         climbPrimary.burnFlash();
@@ -100,7 +102,7 @@ PneumaticControlSub pneumaticControlSub;
         switch (stateControllerSub.getClimbStateConsideringDuckMode()){
             case DOWN:
                 extendPneumatic();
-                 retractClaw();
+                 extendClaw();
                 break;
             case READY:
                 retractPneumatic();
@@ -136,10 +138,10 @@ PneumaticControlSub pneumaticControlSub;
     }
 
     void extendPneumatic(){
-        pneumaticControlSub.setClimbSolenoid(false);
+        pneumaticControlSub.setClimbSolenoid(true);
     }
     void retractPneumatic(){
-        pneumaticControlSub.setClimbSolenoid(true);
+        pneumaticControlSub.setClimbSolenoid(false);
     }
 
     void extendClaw(){

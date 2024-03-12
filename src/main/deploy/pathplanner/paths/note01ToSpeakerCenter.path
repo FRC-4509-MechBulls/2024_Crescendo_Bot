@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "speaker",
+  "folder": "speaker-center",
   "previewStartingState": {
     "rotation": 180.0,
     "velocity": 0

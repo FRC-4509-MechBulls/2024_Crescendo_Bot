@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.2579976738900847,
-        "y": 4.086511681795294
+        "x": 2.3225551996721174,
+        "y": 4.082619685811823
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8600695807886543,
-        "y": 4.086511681795294
+        "x": 1.924627106570687,
+        "y": 4.082619685811823
       },
       "isLocked": false,
       "linkedName": "note02"
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "speaker",
+  "folder": "speaker-center",
   "previewStartingState": {
     "rotation": 180.0,
     "velocity": 0

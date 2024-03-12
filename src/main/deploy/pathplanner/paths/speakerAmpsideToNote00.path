@@ -3,32 +3,38 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.5300455864069624,
-        "y": 6.525874630696631
+        "x": 0.765872873427322,
+        "y": 6.843527962547876
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.384953366397961,
-        "y": 6.154075816923564
+        "x": 1.01564554006301,
+        "y": 7.160653093236012
       },
       "isLocked": false,
-      "linkedName": "note00"
+      "linkedName": "ampSideSpeaker"
     },
     {
       "anchor": {
-        "x": 1.4871952550922645,
-        "y": 5.56
+        "x": 2.2670659376406475,
+        "y": 7.01556087322701
       },
       "prevControl": {
-        "x": 1.9768814976226448,
-        "y": 5.573706936887558
+        "x": 1.5960144200990156,
+        "y": 6.952083026973072
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "centerSpeaker"
+      "linkedName": "note00Straight"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.4,
+      "rotationDegrees": 180.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -40,12 +46,12 @@
   "goalEndState": {
     "velocity": 0,
     "rotation": 180.0,
-    "rotateFast": true
+    "rotateFast": false
   },
   "reversed": false,
-  "folder": "speaker-center",
+  "folder": "speaker-ampside",
   "previewStartingState": {
-    "rotation": -128.85337434035333,
+    "rotation": -121.29303899592018,
     "velocity": 0
   },
   "useDefaultConstraints": true

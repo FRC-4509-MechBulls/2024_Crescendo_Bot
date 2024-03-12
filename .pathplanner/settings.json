@@ -3,7 +3,8 @@
   "robotLength": 1.2,
   "holonomicMode": true,
   "pathFolders": [
-    "speaker"
+    "speaker-ampside",
+    "speaker-center"
   ],
   "autoFolders": [],
   "defaultMaxVel": 4.0,

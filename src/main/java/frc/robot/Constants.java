@@ -19,6 +19,7 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
 
   public static class ShootingTables{
+
     public static final double[] dist = {
             1.31,
             2.33,
@@ -44,6 +45,38 @@ public final class Constants {
             44
 
     };
+
+
+    /** //old head values
+
+
+    public static final double[] dist = {
+            1.31,
+            2.33,
+            2.56,
+            2.77,
+            3.16,
+            3.51
+    };
+    public static final double[] velocity = {
+            53,
+            73,
+            73,
+            74,
+            74,
+            75
+    };
+    public static final double[] angle = {
+            25,
+            42.6,
+            41,
+            42.5,
+            44.5,
+            44
+
+    };
+
+     */
 
 
 
@@ -112,6 +145,8 @@ public final class Constants {
   }
 
   public static class ClimbConstants{
+
+    public static final double climbMaxPower = 1;
     public static final int climbMasterID = 50;
     public static final int climbFollowerID = 52;
 

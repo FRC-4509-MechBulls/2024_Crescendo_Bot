@@ -68,7 +68,7 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(drive);
 
     NamedCommands.registerCommand("joystick0", new RunCommand(()->swerveSubsystem.joystickDrive(0,0,0),swerveSubsystem));
-    NamedCommands.registerCommand("waitForArmError", new WaitForArmError(armSubsystem, Units.degreesToRadians(0.5),0.25));
+    NamedCommands.registerCommand("waitForArmError", new WaitForArmError(armSubsystem, Units.degreesToRadians(2),0.25));
 
     // Configure the trigger bindings
     configureBindings();
@@ -154,11 +154,8 @@ public class RobotContainer {
   private void createAutos(){
     autoChooser.setDefaultOption("no auto :'( ", null);
 
-    autoChooser.addOption("CS-01-00-02",new PathPlannerAuto("CS-01-00-02"));
-  //  autoChooser.addOption("C-4NOTE",new PathPlannerAuto("C-4NOTE"));
-   // autoChooser.addOption("four-amp",new PathPlannerAuto("four-amp"));
-  //  autoChooser.addOption("two-amp-speaker",new PathPlannerAuto("two-amp-two-speaker"));
-   // autoChooser.addOption("test",Autos.testAuto());
+    autoChooser.addOption("CS-PL-01-00-02",new PathPlannerAuto("CS-PL-01-00-02"));
+    autoChooser.addOption("AS-PL-00",new PathPlannerAuto("AS-PL-00"));
 
     //autoChooser = AutoBuilder.buildAutoChooser();
 
