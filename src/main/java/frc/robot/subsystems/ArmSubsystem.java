@@ -120,7 +120,7 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
     public void periodic() {
 
 
-
+        stateControllerSub.feedArmError(getArmError());
         // This method will be called once per scheduler run
         if(Robot.isSimulation())
             simRad += (setpointRad - simRad) * 0.1; //TODO: move to simulation periodic?
@@ -225,6 +225,9 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
 
     boolean brakeEngageTracker = false;
     public boolean shouldBrakeEngage(){
+        if(stateControllerSub.getArmState() == StateControllerSub.ArmState.INTAKE)
+            return false;
+
         if(Math.abs(getArmError())<brakeEngageError)
             brakeEngageTracker = true;
         if(Math.abs(getArmError())>brakeDisengageError)

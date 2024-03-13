@@ -156,6 +156,10 @@ public class RobotContainer {
 
     autoChooser.addOption("CS-PL-01-00-02",new PathPlannerAuto("CS-PL-01-00-02"));
     autoChooser.addOption("AS-PL-00",new PathPlannerAuto("AS-PL-00"));
+    autoChooser.addOption("AS-PL-WIPE",new PathPlannerAuto("AS-PL-WIPE"));
+    autoChooser.addOption("AS-PL-00-02",new PathPlannerAuto("AS-PL-00-02"));
+
+
 
     //autoChooser = AutoBuilder.buildAutoChooser();
 

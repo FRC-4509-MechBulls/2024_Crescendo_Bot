@@ -354,14 +354,26 @@ public void setClimbState(ClimbState climbState){
 
     }
 
+    double lastUnacceptableErrorTime = 0;
+    double armError = 0;
+
     public void updateRumbles(){
+        if(Math.abs(armError) > Units.degreesToRadians(1))
+            lastUnacceptableErrorTime = Timer.getFPGATimestamp();
+        boolean readyToShoot = Timer.getFPGATimestamp() - lastUnacceptableErrorTime > 0.25;
+
+
         double bothRumbleVal = 0;
+        double operatorRumbleVal = 0;
 
         if(Timer.getFPGATimestamp() - lastBrakeEngagementTimestamp <0.3 && armState == ArmState.SPEAKER)
             bothRumbleVal = 1;
 
+        if(readyToShoot && armState == ArmState.SPEAKER)
+            operatorRumbleVal +=1;
+
         driver.getHID().setRumble(GenericHID.RumbleType.kBothRumble,bothRumbleVal);
-        operator.getHID().setRumble(GenericHID.RumbleType.kBothRumble,bothRumbleVal);
+        operator.getHID().setRumble(GenericHID.RumbleType.kBothRumble,bothRumbleVal + operatorRumbleVal);
 
     }
     boolean brakeEngaged = false;
@@ -371,6 +383,7 @@ public void setClimbState(ClimbState climbState){
             onBrakeEngaged();
         this.brakeEngaged = brakeEngaged;
     }
+    public void feedArmError(double armError){this.armError = armError;}
 
     void onBrakeEngaged(){
         lastBrakeEngagementTimestamp = Timer.getFPGATimestamp();

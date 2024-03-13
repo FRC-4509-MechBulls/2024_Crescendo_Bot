@@ -21,28 +21,30 @@ public final class Constants {
   public static class ShootingTables{
 
     public static final double[] dist = {
-            1.31,
-            2.33,
-            2.56,
-            2.77,
-            3.16,
-            3.51
+            1.3,
+            2,
+            2.25,
+            3,
+            3.52,
+            4.2
     };
     public static final double[] velocity = {
-            53,
-            73,
-            73,
-            74,
-            74,
-            75
+            50,
+            60,
+            60,
+            70,
+            70,
+            70
+
     };
     public static final double[] angle = {
             25,
-            42.6,
-            41,
-            42.5,
-            44.5,
-            44
+            38,
+            38,
+            42,
+            45,
+            49
+
 
     };
 
@@ -114,7 +116,7 @@ public final class Constants {
     public static final double armMaxPower = 0.6; //0.6
 
     public static final double armkP = 0.9;
-    public static final double armkI = 0.3;
+    public static final double armkI = 0.4;
     public static final double armkD = 0.0;
 
 
