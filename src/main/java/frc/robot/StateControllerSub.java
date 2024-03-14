@@ -244,7 +244,7 @@ public void toggleClimbed(){
 public void setClimbState(ClimbState climbState){
         this.climbState = climbState;
 }
-    DigitalInput beamBreak1 = new DigitalInput(4);
+    DigitalInput beamBreak1 = new DigitalInput(7);
 
 
     CommandXboxController driver;
@@ -346,9 +346,10 @@ public void setClimbState(ClimbState climbState){
         }
 
         if(!beamBreak1.get() && armState == ArmState.INTAKE){
-           // armState = ArmState.HOLD;
-           // efState = EFState.HOLD;
+       //    timestampOfRumbleStart = Timer.getFPGATimestamp();
         }
+
+        SmartDashboard.putBoolean("beamBreak1",beamBreak1.get());
 
         alignWhenCloseEnabled = SmartDashboard.getBoolean("alignWhenClose",true);
 
@@ -366,18 +367,22 @@ public void setClimbState(ClimbState climbState){
         double bothRumbleVal = 0;
         double operatorRumbleVal = 0;
 
-        if(Timer.getFPGATimestamp() - lastBrakeEngagementTimestamp <0.3 && armState == ArmState.SPEAKER)
+        if(Timer.getFPGATimestamp() - timestampOfRumbleStart <0.3 && armState == ArmState.SPEAKER)
             bothRumbleVal = 1;
 
         if(readyToShoot && armState == ArmState.SPEAKER)
             operatorRumbleVal +=1;
+
+        if(armState == ArmState.INTAKE && !beamBreak1.get())
+            operatorRumbleVal+=1;
+
 
         driver.getHID().setRumble(GenericHID.RumbleType.kBothRumble,bothRumbleVal);
         operator.getHID().setRumble(GenericHID.RumbleType.kBothRumble,bothRumbleVal + operatorRumbleVal);
 
     }
     boolean brakeEngaged = false;
-    double lastBrakeEngagementTimestamp = 0;
+    double timestampOfRumbleStart = 0;
     public void feedBrakeEngaged(boolean brakeEngaged){
         if(brakeEngaged == true && this.brakeEngaged == false)
             onBrakeEngaged();
@@ -386,7 +391,7 @@ public void setClimbState(ClimbState climbState){
     public void feedArmError(double armError){this.armError = armError;}
 
     void onBrakeEngaged(){
-        lastBrakeEngagementTimestamp = Timer.getFPGATimestamp();
+        timestampOfRumbleStart = Timer.getFPGATimestamp();
     }
 
 

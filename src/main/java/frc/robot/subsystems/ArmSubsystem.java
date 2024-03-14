@@ -16,7 +16,7 @@ import static  frc.robot.Constants.ArmConstants.*;
 
 public class ArmSubsystem extends SubsystemBase {
 
-DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
+DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(4);
 
     PIDController pidController = new PIDController(armkP,armkI,armkD);
     AbsoluteEncoder encoder;
@@ -98,6 +98,14 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(5);
         //armMaster.setSmartCurrentLimit(30);
 
  //       SmartDashboard.putNumber("armReference",0);
+
+
+        armMaster.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus1,500);
+        armMaster.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus2,500);
+        armMaster.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus3,500);
+        armMaster.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus4,500);
+        armMaster.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus5,500);
+        armMaster.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus6,500);
 
 
 
