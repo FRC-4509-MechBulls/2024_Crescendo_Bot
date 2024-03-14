@@ -185,12 +185,12 @@ StateControllerSub stateController;
 
 
     if(stateController.alignWhenClose() && stateController.getArmState() != StateControllerSub.ArmState.HOLD)
-      rad+=MBUtils.clamp(stateController.alignWhenCloseAngDiff() * alignmentkP,1.5);
+      rad+=MBUtils.clamp(stateController.alignWhenCloseAngDiff() * alignmentkP,1);
 
     double creep = 0;
 
     if(stateController.getArmState() == StateControllerSub.ArmState.INTAKE && rawJoyHypot<0.1)
-     creep = -0.5; //-0.5
+     creep = -0.5 ; //-0.5
 
     SmartDashboard.putNumber("rawJoyHypot",rawJoyHypot);
 

@@ -49,27 +49,43 @@ PneumaticControlSub pneumaticControlSub;
         climbPrimary.getEncoder().setVelocityConversionFactor(1.0/rotationsInTheClimbRange/60);
         climbSecondary.getEncoder().setVelocityConversionFactor(1.0/rotationsInTheClimbRange/60);
 
-        climbPrimary.getPIDController().setP(0.4);
-        climbSecondary.getPIDController().setP(0.4);
+        climbPrimary.getPIDController().setP(1);
+        climbSecondary.getPIDController().setP(1);
 
         climbPrimary.getPIDController().setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal,0);
         climbSecondary.getPIDController().setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal,0);
 
-        climbPrimary.getPIDController().setSmartMotionMaxVelocity(0.5,0);
-        climbSecondary.getPIDController().setSmartMotionMaxVelocity(0.5,0);
+        climbPrimary.getPIDController().setSmartMotionMaxVelocity(1,0);
+        climbSecondary.getPIDController().setSmartMotionMaxVelocity(1,0);
 
         climbPrimary.getPIDController().setSmartMotionMaxAccel(0.5,0);
         climbSecondary.getPIDController().setSmartMotionMaxAccel(0.5,0);
 
-        climbPrimary.getPIDController().setOutputRange(-0.3,0.3);
-        climbSecondary.getPIDController().setOutputRange(-0.3,0.3);
+        climbPrimary.getPIDController().setOutputRange(-climbMaxPower,climbMaxPower);
+        climbSecondary.getPIDController().setOutputRange(-climbMaxPower,climbMaxPower);
 
 
       //  climbPrimary.getAlternateEncoder(AlternateEncoderType.kQuadrature,1);
 
 
       //  climbPrimary.getPIDController().setFeedbackDevice(climbPrimary.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature,1));
+        climbPrimary.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus1,500);
+        climbPrimary.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus2,500);
+        climbPrimary.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus3,500);
+        climbPrimary.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus4,500);
+        climbPrimary.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus5,500);
+        climbPrimary.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus6,500);
 
+
+        climbSecondary.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus1,500);
+        climbSecondary.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus2,500);
+        climbSecondary.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus3,500);
+        climbSecondary.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus4,500);
+        climbSecondary.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus5,500);
+        climbSecondary.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus6,500);
+
+        climbPrimary.enableVoltageCompensation(12);
+        climbSecondary.enableVoltageCompensation(12);
 
         climbPrimary.burnFlash();
         climbSecondary.burnFlash();
@@ -100,7 +116,7 @@ PneumaticControlSub pneumaticControlSub;
         switch (stateControllerSub.getClimbStateConsideringDuckMode()){
             case DOWN:
                 extendPneumatic();
-                 retractClaw();
+                 extendClaw();
                 break;
             case READY:
                 retractPneumatic();
@@ -126,6 +142,8 @@ PneumaticControlSub pneumaticControlSub;
     SmartDashboard.putNumber("climbMasterPosition", climbPrimary.getEncoder().getPosition());
     SmartDashboard.putNumber("climbFollowerPosition", climbSecondary.getEncoder().getPosition());
 
+        SmartDashboard.putNumber("climbMasterVoltage",climbPrimary.getAppliedOutput()* climbPrimary.getVoltageCompensationNominalVoltage());
+        SmartDashboard.putNumber("climbSecondaryVoltage",climbSecondary.getAppliedOutput()* climbSecondary.getVoltageCompensationNominalVoltage());
 
     }
 
@@ -136,16 +154,18 @@ PneumaticControlSub pneumaticControlSub;
     }
 
     void extendPneumatic(){
-        pneumaticControlSub.setClimbSolenoid(false);
+        pneumaticControlSub.setClimbSolenoid(true);
     }
     void retractPneumatic(){
-        pneumaticControlSub.setClimbSolenoid(true);
+        pneumaticControlSub.setClimbSolenoid(false);
     }
 
     void extendClaw(){
         setpointMeters = 0;
-        climbPrimary.getPIDController().setReference(0, ControlType.kSmartMotion);
-        climbSecondary.getPIDController().setReference(0,ControlType.kSmartMotion);
+        if(stateControllerSub.getClimbState() == StateControllerSub.ClimbState.DOWN)
+            setpointMeters = 0.1;
+        climbPrimary.getPIDController().setReference(-setpointMeters, ControlType.kSmartMotion);
+        climbSecondary.getPIDController().setReference(setpointMeters,ControlType.kSmartMotion);
         SmartDashboard.putBoolean("clawExtended",true);
         //TODO: make it actually happen
     }
@@ -153,8 +173,8 @@ PneumaticControlSub pneumaticControlSub;
     void retractClaw(){
         setpointMeters = 1.0;
 
-        climbPrimary.getPIDController().setReference(-1, ControlType.kSmartMotion);
-        climbSecondary.getPIDController().setReference(1,ControlType.kSmartMotion);
+        climbPrimary.getPIDController().setReference(-setpointMeters, ControlType.kSmartMotion);
+        climbSecondary.getPIDController().setReference(setpointMeters,ControlType.kSmartMotion);
         SmartDashboard.putBoolean("clawExtended",false);
 
         //todo: admire the windows 11 octopus emoji (hes so cute)

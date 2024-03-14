@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.5144000463439524,
-      "y": 5.5555704093864335
+      "x": 0.765872873427322,
+      "y": 6.843527962547876
     },
-    "rotation": 180.0
+    "rotation": -120.62502060853139
   },
   "command": {
     "type": "sequential",
@@ -20,13 +20,38 @@
         {
           "type": "named",
           "data": {
+            "name": "disableAimAssist"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "disableUseFedPoseIntention"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "readyToShootMode"
           }
         },
         {
-          "type": "wait",
+          "type": "race",
           "data": {
-            "waitTime": 2.0
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 5.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "waitForArmError"
+                }
+              }
+            ]
           }
         },
         {
@@ -44,7 +69,7 @@
         {
           "type": "named",
           "data": {
-            "name": "holdMode"
+            "name": "intakeMode"
           }
         },
         {
@@ -54,7 +79,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "centerToCenterNote"
+                  "pathName": "speakerAmpsideToNote00"
                 }
               },
               {
@@ -64,13 +89,13 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.1
+                        "waitTime": 0.7
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "intakeMode"
+                        "name": "enableAimAssist"
                       }
                     }
                   ]
@@ -110,7 +135,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 2.6
+                  "waitTime": 3.0
                 }
               }
             ]
@@ -120,18 +145,6 @@
           "type": "named",
           "data": {
             "name": "shootMode"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.4
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "holdMode"
           }
         }
       ]

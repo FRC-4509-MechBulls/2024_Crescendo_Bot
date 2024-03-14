@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.WaitForArmError;
 import frc.robot.commands.drive.Alignments;
 import frc.robot.commands.drive.NoteCreep;
 import frc.robot.subsystems.ArmSubsystem;
@@ -65,8 +67,8 @@ public class RobotContainer {
 
     swerveSubsystem.setDefaultCommand(drive);
 
-    NamedCommands.registerCommand("creep3s", new NoteCreep(swerveSubsystem,1,3));
     NamedCommands.registerCommand("joystick0", new RunCommand(()->swerveSubsystem.joystickDrive(0,0,0),swerveSubsystem));
+    NamedCommands.registerCommand("waitForArmError", new WaitForArmError(armSubsystem, Units.degreesToRadians(2),0.25));
 
     // Configure the trigger bindings
     configureBindings();
@@ -83,11 +85,17 @@ public class RobotContainer {
     operator.x().onTrue(new InstantCommand(stateController::ejectPressed));
     operator.y().onTrue(new InstantCommand(stateController::readyToShootPressed));
 
-    driver.a().onTrue(new InstantCommand(stateController::intakePressed));
-    driver.b().onTrue(new InstantCommand(stateController::holdPressed));
-    driver.x().onTrue(new InstantCommand(stateController::ejectPressed));
-    driver.y().onTrue(new InstantCommand(stateController::readyToShootPressed));
+  //  driver.a().onTrue(new InstantCommand(stateController::intakePressed));
+  //  driver.b().onTrue(new InstantCommand(stateController::holdPressed));
+  //  driver.x().onTrue(new InstantCommand(stateController::ejectPressed));
+  //  driver.y().onTrue(new InstantCommand(stateController::readyToShootPressed));
 
+    driver.a().onTrue(new InstantCommand(stateController::stowClimbPressed));
+    driver.y().onTrue(new InstantCommand(stateController::raiseClimbPressed));
+    driver.x().onTrue(new InstantCommand(stateController::climbPressed));
+    driver.b().onTrue(new InstantCommand(stateController::resetPressed));
+
+    operator.leftBumper().onTrue(new InstantCommand(stateController::resetPressed));
 
    // operator.leftBumper().onTrue(new InstantCommand(stateController::stowPressed));
    // operator.rightBumper().onTrue(new InstantCommand(stateController::raiseClimbPressed));
@@ -96,6 +104,7 @@ public class RobotContainer {
     operator.povUp().onTrue(new InstantCommand(stateController::sourcePressed));
     operator.povRight().onTrue(new InstantCommand(stateController::ampPressed));
     operator.povDown().onTrue(new InstantCommand(stateController::speakerPressed));
+
     //operator.povLeft().onTrue(new InstantCommand(stateController::trapPressed));
 
    // operator.leftTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));
@@ -113,9 +122,9 @@ public class RobotContainer {
     driver.rightBumper().onFalse(swerveSubsystem.getDefaultCommand());
 
 
-    driver.povUp().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(0)).schedule()));
-    driver.povLeft().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(1.0/3)).schedule()));
-    driver.povRight().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(-1.0/3)).schedule()));
+  //  driver.povUp().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(0)).schedule()));
+  //  driver.povLeft().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(1.0/3)).schedule()));
+  //  driver.povRight().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(-1.0/3)).schedule()));
 
     operator.leftTrigger(0.5).onTrue(new InstantCommand(()->stateController.shootPressed()));
 
@@ -145,11 +154,10 @@ public class RobotContainer {
   private void createAutos(){
     autoChooser.setDefaultOption("no auto :'( ", null);
 
-    autoChooser.addOption("AS-3CENTERLINE",new PathPlannerAuto("AS-3CENTERLINE"));
-    autoChooser.addOption("C-4NOTE",new PathPlannerAuto("C-4NOTE"));
-   // autoChooser.addOption("four-amp",new PathPlannerAuto("four-amp"));
-  //  autoChooser.addOption("two-amp-speaker",new PathPlannerAuto("two-amp-two-speaker"));
-   // autoChooser.addOption("test",Autos.testAuto());
+    autoChooser.addOption("CS-PL-01-00-02",new PathPlannerAuto("CS-PL-01-00-02"));
+    autoChooser.addOption("AS-PL-00",new PathPlannerAuto("AS-PL-00"));
+
+
 
     //autoChooser = AutoBuilder.buildAutoChooser();
 

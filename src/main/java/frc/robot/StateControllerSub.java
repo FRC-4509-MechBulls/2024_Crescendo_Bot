@@ -31,6 +31,9 @@ public class StateControllerSub extends SubsystemBase {
     public enum Objective{SPEAKER,AMP,SOURCE,TRAP}
     public enum SelectedTrap{AMP,SOURCE,REAR}
 
+    public enum UseFedPoseIntention{YES,NO}
+    boolean aimAssistPPEnabled = false;
+
     public enum DuckMode {UNDUCK, DOWN}
 
     private ArmState armState = ArmState.HOLD;
@@ -38,6 +41,10 @@ public class StateControllerSub extends SubsystemBase {
     private ClimbState climbState = ClimbState.DOWN;
     Objective objective = Objective.SPEAKER;
     SelectedTrap selectedTrap = SelectedTrap.AMP;
+
+    UseFedPoseIntention useFedPoseIntention = UseFedPoseIntention.NO;
+
+    Pose2d intendedPose = new Pose2d();
 
     DuckMode duckMode = DuckMode.DOWN;
 
@@ -65,10 +72,10 @@ public class StateControllerSub extends SubsystemBase {
             return Optional.of(AllianceFlipUtil.apply(Rotation2d.fromDegrees(180)));
 
 
-        if(armState ==ArmState.INTAKE)
+        if(armState ==ArmState.INTAKE && aimAssistPPEnabled)
             return Optional.of(getRobotPose().getRotation().minus(Rotation2d.fromRadians(noteAlignAngleDiff)));
 
-        if(armState ==ArmState.SPEAKER  )
+        if(armState ==ArmState.SPEAKER  && aimAssistPPEnabled)
             return Optional.of(getRobotPose().getRotation().minus(Rotation2d.fromRadians(MBUtils.angleDiffRad(angleToObjective(objective),robotPose.getRotation().getRadians()))));
 
 
@@ -76,6 +83,9 @@ public class StateControllerSub extends SubsystemBase {
         return Optional.empty();
     }
 
+    public void setPPAimAssistEnabled(boolean intakeAssistPPEnabled){
+        this.aimAssistPPEnabled = intakeAssistPPEnabled;
+    }
 
 
     public void scheduleAlignmentCommand(){
@@ -122,9 +132,12 @@ public class StateControllerSub extends SubsystemBase {
         }
 
 
-    private double distanceToMySpeaker(){
+    private double distanceToMySpeaker(Pose2d robotPose){
         Translation2d speakerTranslation = AllianceFlipUtil.apply(FieldConstants.Speaker.centerSpeakerOpening.getTranslation());
         return Math.hypot(speakerTranslation.getX()-robotPose.getX(),speakerTranslation.getY()-robotPose.getY());
+    }
+    private double distanceToMySpeaker(){
+        return distanceToMySpeaker(robotPose);
     }
 
     public double getHoldAngle(){ // this is redundant now :)
@@ -137,12 +150,33 @@ public class StateControllerSub extends SubsystemBase {
         return SmartDashboard.getBoolean("tuningMode",false);
     }
 
+    public void setUseFedPoseIntention(UseFedPoseIntention useFedPoseIntention){
+        this.useFedPoseIntention = useFedPoseIntention;
+    }
+    public UseFedPoseIntention getUseFedPoseIntention(){
+        return useFedPoseIntention;
+    }
+    public void feedIntendedPose(Pose2d pose){
+        intendedPose = pose;
+        SmartDashboard.putNumberArray("intendedShotPose",new double[]{pose.getX(),pose.getY(),pose.getRotation().getRadians()});
+    }
+
+    public void feedIntendedPoseWithAllianceFlip(Pose2d pose){
+        feedIntendedPose(AllianceFlipUtil.apply(pose));
+    }
+
+
     public double getSpeakerAngle(){ //TODO: arm angle in radians
         if(tuningMode())
             return Units.degreesToRadians(SmartDashboard.getNumber("tuningAngle",90));
 
+     //   if(useFedPoseIntention == UseFedPoseIntention.YES)
+        double distanceToUse = distanceToMySpeaker();
 
-        Optional<Double> angle = MBUtils.interpolateOrExtrapolateFlat(ShootingTables.dist,ShootingTables.angle, distanceToMySpeaker());
+        if(useFedPoseIntention == UseFedPoseIntention.YES)
+            distanceToUse = distanceToMySpeaker(intendedPose);
+
+        Optional<Double> angle = MBUtils.interpolateOrExtrapolateFlat(ShootingTables.dist,ShootingTables.angle, distanceToUse);
         if(angle.isPresent())
             return Units.degreesToRadians(angle.get());
 
@@ -151,9 +185,12 @@ public class StateControllerSub extends SubsystemBase {
     public double getSpeakerFlywheelVel(){ //TODO: flywheel velocity in radians per second
         if(tuningMode())
             return SmartDashboard.getNumber("tuningFlywheelVel",10);
+        double distanceToUse = distanceToMySpeaker();
 
+        if(useFedPoseIntention == UseFedPoseIntention.YES)
+            distanceToUse = distanceToMySpeaker(intendedPose);
 
-        Optional<Double> vel = MBUtils.interpolateOrExtrapolateFlat(ShootingTables.dist,ShootingTables.velocity, distanceToMySpeaker());
+        Optional<Double> vel = MBUtils.interpolateOrExtrapolateFlat(ShootingTables.dist,ShootingTables.velocity, distanceToUse);
         if(vel.isPresent())
             return vel.get();
 
@@ -187,10 +224,12 @@ public class StateControllerSub extends SubsystemBase {
     public Objective getObjective(){return objective;}
 
 public ClimbState getClimbStateConsideringDuckMode(){
-    if(duckMode==DuckMode.DOWN)
-        return ClimbState.DOWN;
+    if(duckMode==DuckMode.UNDUCK)
+        return ClimbState.CLIMBED;
     return climbState;
 }
+
+
 
 public void toggleClimbed(){
         if(climbState == ClimbState.DOWN) //local variable climbState should never be down. (that's what the climbStateConsideringDuckMode() method is for)
@@ -205,7 +244,7 @@ public void toggleClimbed(){
 public void setClimbState(ClimbState climbState){
         this.climbState = climbState;
 }
-    DigitalInput beamBreak1 = new DigitalInput(4);
+    DigitalInput beamBreak1 = new DigitalInput(7);
 
 
     CommandXboxController driver;
@@ -217,7 +256,17 @@ public void setClimbState(ClimbState climbState){
         NamedCommands.registerCommand("setObjectiveAmp",new InstantCommand(this::ampPressed));
         NamedCommands.registerCommand("readyToShootMode",new InstantCommand(this::readyToShootPressed));
         NamedCommands.registerCommand("shootMode",new InstantCommand(this::shootPressed));
-        NamedCommands.registerCommand("ejectMode",new InstantCommand(this::ejectPressed));
+
+        NamedCommands.registerCommand("enableAimAssist",new InstantCommand(()-> setPPAimAssistEnabled(true)));
+        NamedCommands.registerCommand("disableAimAssist",new InstantCommand(()-> setPPAimAssistEnabled(false)));
+
+        NamedCommands.registerCommand("enableUseFedPoseIntention",new InstantCommand(()->setUseFedPoseIntention(UseFedPoseIntention.YES)));
+        NamedCommands.registerCommand("disableUseFedPoseIntention",new InstantCommand(()->setUseFedPoseIntention(UseFedPoseIntention.NO)));
+
+        NamedCommands.registerCommand("shotIntentionCurrentPose",new InstantCommand(()->feedIntendedPose(robotPose)));
+
+        NamedCommands.registerCommand("shotIntentionAgainstSpeaker",new InstantCommand(()->feedIntendedPoseWithAllianceFlip(FieldConstants.Speaker.centerSpeakerOpening)));
+
 
         SmartDashboard.putBoolean("tuningMode",false);
         SmartDashboard.putNumber("tuningAngle",90);
@@ -297,34 +346,52 @@ public void setClimbState(ClimbState climbState){
         }
 
         if(!beamBreak1.get() && armState == ArmState.INTAKE){
-           // armState = ArmState.HOLD;
-           // efState = EFState.HOLD;
+       //    timestampOfRumbleStart = Timer.getFPGATimestamp();
         }
+
+        SmartDashboard.putBoolean("beamBreak1",beamBreak1.get());
 
         alignWhenCloseEnabled = SmartDashboard.getBoolean("alignWhenClose",true);
 
     }
 
-    public void updateRumbles(){
-        double bothRumbleVal = 0;
+    double lastUnacceptableErrorTime = 0;
+    double armError = 0;
 
-        if(Timer.getFPGATimestamp() - lastBrakeEngagementTimestamp <0.3 && armState == ArmState.SPEAKER)
+    public void updateRumbles(){
+        if(Math.abs(armError) > Units.degreesToRadians(1))
+            lastUnacceptableErrorTime = Timer.getFPGATimestamp();
+        boolean readyToShoot = Timer.getFPGATimestamp() - lastUnacceptableErrorTime > 0.25;
+
+
+        double bothRumbleVal = 0;
+        double operatorRumbleVal = 0;
+
+        if(Timer.getFPGATimestamp() - timestampOfRumbleStart <0.3 && armState == ArmState.SPEAKER)
             bothRumbleVal = 1;
 
+        if(readyToShoot && armState == ArmState.SPEAKER)
+            operatorRumbleVal +=1;
+
+        if(armState == ArmState.INTAKE && !beamBreak1.get())
+            operatorRumbleVal+=1;
+
+
         driver.getHID().setRumble(GenericHID.RumbleType.kBothRumble,bothRumbleVal);
-        operator.getHID().setRumble(GenericHID.RumbleType.kBothRumble,bothRumbleVal);
+        operator.getHID().setRumble(GenericHID.RumbleType.kBothRumble,bothRumbleVal + operatorRumbleVal);
 
     }
     boolean brakeEngaged = false;
-    double lastBrakeEngagementTimestamp = 0;
+    double timestampOfRumbleStart = 0;
     public void feedBrakeEngaged(boolean brakeEngaged){
         if(brakeEngaged == true && this.brakeEngaged == false)
             onBrakeEngaged();
         this.brakeEngaged = brakeEngaged;
     }
+    public void feedArmError(double armError){this.armError = armError;}
 
     void onBrakeEngaged(){
-        lastBrakeEngagementTimestamp = Timer.getFPGATimestamp();
+        timestampOfRumbleStart = Timer.getFPGATimestamp();
     }
 
 
@@ -381,12 +448,31 @@ public void setClimbState(ClimbState climbState){
         table.getEntry("loweredMode").setString(duckMode.toString());
     }
 
+    public void resetPressed(){
+        armState = ArmState.HOLD;
+        efState = EFState.HOLD;
+        climbState = ClimbState.DOWN;
+        useFedPoseIntention = UseFedPoseIntention.NO;
+
+    }
+
     public void intakePressed(){
 
         armState = ArmState.INTAKE;
         efState = EFState.INTAKE;
        // climbState = ClimbState.STOWED; //TODO: should this be here?
     }
+
+    public void stowClimbPressed(){
+        climbState = ClimbState.DOWN;
+    }
+    public void raiseClimbPressed(){
+        climbState = ClimbState.READY;
+    }
+    public void climbPressed(){
+        climbState = ClimbState.CLIMBED;
+    }
+
 
     Timer makeEFHoldTimer = new Timer();
 
@@ -404,7 +490,9 @@ public void setClimbState(ClimbState climbState){
     }
     public void ejectPressed(){
         //armState = ArmState.HOLD;
-        //efState = EFState.EJECT;
+        efState= EFState.EJECT;
+        makeEFHoldTimer.reset();
+        makeEFHoldTimer.start();
     }
     public void readyToShootPressed(){
        // armState = ArmState.HOLD;
