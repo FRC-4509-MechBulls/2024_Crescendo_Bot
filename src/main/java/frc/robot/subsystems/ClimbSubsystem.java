@@ -49,15 +49,18 @@ PneumaticControlSub pneumaticControlSub;
         climbPrimary.getEncoder().setVelocityConversionFactor(1.0/rotationsInTheClimbRange/60);
         climbSecondary.getEncoder().setVelocityConversionFactor(1.0/rotationsInTheClimbRange/60);
 
-        climbPrimary.getPIDController().setP(1);
-        climbSecondary.getPIDController().setP(1);
+        climbPrimary.getPIDController().setP(0.5);
+        climbSecondary.getPIDController().setP(0.5);
+
+        climbPrimary.getPIDController().setI(0.5);
+        climbSecondary.getPIDController().setI(0.5);
 
         climbPrimary.getPIDController().setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal,0);
         climbSecondary.getPIDController().setSmartMotionAccelStrategy(SparkPIDController.AccelStrategy.kTrapezoidal,0);
-
+//
         climbPrimary.getPIDController().setSmartMotionMaxVelocity(1,0);
         climbSecondary.getPIDController().setSmartMotionMaxVelocity(1,0);
-
+//
         climbPrimary.getPIDController().setSmartMotionMaxAccel(0.5,0);
         climbSecondary.getPIDController().setSmartMotionMaxAccel(0.5,0);
 
@@ -86,6 +89,9 @@ PneumaticControlSub pneumaticControlSub;
 
         climbPrimary.enableVoltageCompensation(12);
         climbSecondary.enableVoltageCompensation(12);
+
+        climbPrimary.setIdleMode(CANSparkBase.IdleMode.kBrake);
+        climbSecondary.setIdleMode(CANSparkBase.IdleMode.kBrake);
 
         climbPrimary.burnFlash();
         climbSecondary.burnFlash();
@@ -116,7 +122,7 @@ PneumaticControlSub pneumaticControlSub;
         switch (stateControllerSub.getClimbStateConsideringDuckMode()){
             case DOWN:
                 extendPneumatic();
-                 extendClaw();
+                 retractClaw();
                 break;
             case READY:
                 retractPneumatic();
@@ -164,8 +170,10 @@ PneumaticControlSub pneumaticControlSub;
         setpointMeters = 0;
         if(stateControllerSub.getClimbState() == StateControllerSub.ClimbState.DOWN)
             setpointMeters = 0.1;
-        climbPrimary.getPIDController().setReference(-setpointMeters, ControlType.kSmartMotion);
-        climbSecondary.getPIDController().setReference(setpointMeters,ControlType.kSmartMotion);
+        climbPrimary.getPIDController().setReference(-setpointMeters, ControlType.kPosition);
+        climbSecondary.getPIDController().setReference(setpointMeters,ControlType.kPosition);
+        climbPrimary.getPIDController().setIAccum(0);
+        climbSecondary.getPIDController().setIAccum(0);
         SmartDashboard.putBoolean("clawExtended",true);
         //TODO: make it actually happen
     }
@@ -173,8 +181,10 @@ PneumaticControlSub pneumaticControlSub;
     void retractClaw(){
         setpointMeters = 1.0;
 
-        climbPrimary.getPIDController().setReference(-setpointMeters, ControlType.kSmartMotion);
-        climbSecondary.getPIDController().setReference(setpointMeters,ControlType.kSmartMotion);
+        climbPrimary.getPIDController().setReference(-setpointMeters, ControlType.kPosition);
+        climbSecondary.getPIDController().setReference(setpointMeters,ControlType.kPosition);
+        climbPrimary.getPIDController().setIAccum(0);
+        climbSecondary.getPIDController().setIAccum(0);
         SmartDashboard.putBoolean("clawExtended",false);
 
         //todo: admire the windows 11 octopus emoji (hes so cute)

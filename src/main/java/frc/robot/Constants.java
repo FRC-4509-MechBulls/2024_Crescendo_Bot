@@ -140,7 +140,7 @@ public final class Constants {
     public static final int armFollowerID = 31;
     public static final double duckingRad = Units.degreesToRadians(20.0);
     public static final double holdingRadSafe = Units.degreesToRadians(50.0);
-    public static final double ampRad = Units.degreesToRadians(100);
+    public static final double ampRad = Units.degreesToRadians(107.5);
 
     public static final double sourceRad = Units.degreesToRadians(95.0);
     public static final double intakeRad = Units.degreesToRadians(2);
