@@ -1,0 +1,31 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.8099299203965142,
+      "y": 4.3029049206577845
+    },
+    "rotation": -56.30993247402022
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "holdMode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "wipe1"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
