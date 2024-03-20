@@ -113,7 +113,7 @@ public final class Constants {
 
   public static class ArmConstants{
 
-    public static final double armMaxPower = 0.6; //0.6
+    public static final double armMaxPower = 0.3; //0.6
 
     public static final double armkP = 0.9;
     public static final double armkI = 0.4;
@@ -125,7 +125,7 @@ public final class Constants {
     public static final double armkDBrakeless = 0.0;
 
     public static final double brakeMinAngle = Units.degreesToRadians(-5);
-    public static final double brakeMaxAngle = Units.degreesToRadians(50);
+    public static final double brakeMaxAngle = Units.degreesToRadians(130);
 
 
     public static final double armIZone = Units.degreesToRadians(10);

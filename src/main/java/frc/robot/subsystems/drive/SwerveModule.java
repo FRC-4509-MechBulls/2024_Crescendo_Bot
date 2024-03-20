@@ -59,7 +59,7 @@ public class SwerveModule extends SubsystemBase {
 
         driveMotor.configNeutralDeadband(driveNeutralDeadband);
 
-        driveMotor.setNeutralMode(NeutralMode.Coast);
+        driveMotor.setNeutralMode(NeutralMode.Brake);
         driveMotor.setInverted(driveMotorReversed);
 
         driveMotor.configPeakOutputForward(maxDrivePower,1000);
@@ -78,6 +78,8 @@ public class SwerveModule extends SubsystemBase {
         turningMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
         turningMotor.setInverted(true);
 
+
+        driveMotor
 
 
         StatorCurrentLimitConfiguration turningStatorConfig = new StatorCurrentLimitConfiguration(false,40,40,0);
