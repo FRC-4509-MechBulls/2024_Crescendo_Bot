@@ -6,55 +6,58 @@ package frc.robot.subsystems.drive;
 
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.PPLibTelemetry;
+import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardComponent;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import frc.robot.Constants;
-import frc.robot.FMSGetter;
-import frc.robot.MBUtils;
+import frc.robot.FieldConstants;
+import frc.robot.util.MBUtils;
 import frc.robot.Robot;
+import frc.robot.StateControllerSub;
 import org.photonvision.EstimatedRobotPose;
 
+import java.lang.reflect.Field;
 import java.util.Optional;
 
 import static frc.robot.Constants.AutoConstants.*;
 import static frc.robot.Constants.DriveConstants.*;
-import static frc.robot.Constants.FieldConstants.alignmentPoses;
-import static frc.robot.Constants.FieldConstants.nodeYValues;
+
 import static frc.robot.Constants.OperatorConstants.*;
 
 
 public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new SwerveSubsystem. */
 
-  SwerveModule frontLeft = new SwerveModule(frontLeftDriveID,frontLeftTurningID,false,true,0,frontLeftOffsetRad);
-  SwerveModule frontRight = new SwerveModule(frontRightDriveID,frontRightTurningID,false,true,1,frontRightOffsetRad);
+  SwerveModule frontLeft = new SwerveModule(frontLeftDriveID,frontLeftTurningID,false,true,3,frontLeftOffsetRad);
+  SwerveModule frontRight = new SwerveModule(frontRightDriveID,frontRightTurningID,true,true,1,frontRightOffsetRad);
 
-  SwerveModule rearLeft = new SwerveModule(rearLeftDriveID,rearLeftTurningID,false,true,2,rearLeftOffsetRad);
-  SwerveModule rearRight = new SwerveModule(rearRightDriveID,rearRightTurningID,false,true,3,rearRightOffsetRad);
+  SwerveModule rearLeft = new SwerveModule(rearLeftDriveID,rearLeftTurningID,true,true,0,rearLeftOffsetRad);
+  SwerveModule rearRight = new SwerveModule(rearRightDriveID,rearRightTurningID,true,true,2,rearRightOffsetRad);
 
   WPI_Pigeon2 pigeon = new WPI_Pigeon2(40);
   AHRS navx = new AHRS(SPI.Port.kMXP);
 
   SwerveDrivePoseEstimator odometry;
 VisionSubsystem visionSubsystem;
+StateControllerSub stateController;
+
 
   Field2d field2d = new Field2d();
 
@@ -63,18 +66,62 @@ VisionSubsystem visionSubsystem;
   boolean beFieldOriented = true;
 
 
-  public SwerveSubsystem(VisionSubsystem visionSubsystem) {
+  public SwerveSubsystem(VisionSubsystem visionSubsystem, StateControllerSub stateController) {
     pigeon.configFactoryDefault();
     pigeon.zeroGyroBiasNow();
     odometry = new SwerveDrivePoseEstimator(kinematics,pigeon.getRotation2d(),getPositions(),new Pose2d());
-    odometry.setVisionMeasurementStdDevs(VecBuilder.fill(7, 7, Units.degreesToRadians(400)));
+    odometry.setVisionMeasurementStdDevs(VecBuilder.fill(2, 2, Units.degreesToRadians(400)));
     this.visionSubsystem = visionSubsystem;
+    this.stateController = stateController;
 
-    SmartDashboard.putNumber("debugGoTo_x",0);
-    SmartDashboard.putNumber("debugGoTo_y",0);
-    SmartDashboard.putNumber("debugGoTo_deg",0);
+  //  SmartDashboard.putNumber("debugGoTo_x",0);
+  //  SmartDashboard.putNumber("debugGoTo_y",0);
+  //  SmartDashboard.putNumber("debugGoTo_deg",0);
 
+    AutoBuilder.configureHolonomic(
+            this::getPose, // Robot pose supplier
+            this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+            this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            this::drive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+            new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                    new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                    new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                    4.5, // Max module speed, in m/s
+                    0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+                    new ReplanningConfig() // Default path replanning config. See the API for the options here
+            ),
+            () -> {
+              // Boolean supplier that controls when the path will be mirrored for the red alliance
+              // This will flip the path being followed to the red side of the field.
+              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+              var alliance = DriverStation.getAlliance();
+              if (alliance.isPresent()) {
+                return alliance.get() == DriverStation.Alliance.Red;
+              }
+              return false;
+            },
+            this // Reference to this subsystem to set requirements
+    );
+    PPHolonomicDriveController.setRotationTargetOverride(stateController::getRotationTargetOverride);
+  //  PPLibTelemetry.
   }
+
+
+  public void drive(ChassisSpeeds speeds){
+    drive(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond);
+  }
+
+  public Pose2d getPose(){
+    return odometry.getEstimatedPosition();
+  }
+
+  ChassisSpeeds getRobotRelativeSpeeds(){
+    if(Robot.isSimulation())
+      return new ChassisSpeeds(simXMeters,simYMeters,simRad);
+    return kinematics.toChassisSpeeds(frontLeft.getState(), frontRight.getState(), rearLeft.getState(), rearRight.getState());
+  }
+
 
   public SwerveModulePosition[] getPositions(){
     return new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),rearLeft.getPosition(),rearRight.getPosition()};
@@ -84,15 +131,22 @@ VisionSubsystem visionSubsystem;
 
   public void joystickDrive(double joystickX, double joystickY, double rad){
 
+    double rawJoyHypot = Math.hypot(joystickX,joystickY);
+
     if(Math.abs(rad)<controllerDeadband)
       rad = 0;
 
 
-  rad*=1+controllerDeadband;
-  if(rad>0)
-    rad-=controllerDeadband;
-  else if(rad<0)
-    rad+=controllerDeadband;
+    SmartDashboard.putNumber("rad",rad);
+
+
+    if(Math.abs(rad)<controllerDeadband)
+      rad = 0;
+ // rad*=1+controllerDeadband;
+ // if(rad>0)
+ //   rad-=controllerDeadband;
+ // else if(rad<0)
+ //   rad+=controllerDeadband;
 
 
   double hypot = Math.hypot(joystickX,joystickY);
@@ -106,37 +160,58 @@ VisionSubsystem visionSubsystem;
 
   double dir = Math.atan2(joystickY,joystickX);
 
+    if(rad>0){
+      rad = Math.pow(rad,turnExponent) * turnMaxSpeed;
+    }else{
+      rad = -Math.pow(-rad,turnExponent) * turnMaxSpeed;
+    }
+
+    hypot = Math.pow(hypot,driveExponent) * driveMaxSpeed;
+
   //field oriented :p
     //oriented to 180 degrees
     double zeroHeading = 0;
-    if(FMSGetter.isRedAlliance())
+    if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
       zeroHeading = Math.PI; 
 
   if(beFieldOriented)
     dir+=odometry.getEstimatedPosition().getRotation().getRadians() + zeroHeading;
 
-  hypot = Math.pow(hypot,driveExponent) * driveMaxSpeed;
+
 
   joystickX = hypot*Math.cos(dir);
   joystickY = hypot*Math.sin(dir);
 
-  if(rad>0){
-    rad = Math.pow(rad,turnExponent) * turnMaxSpeed;
-  }else{
-    rad = -Math.pow(-rad,turnExponent) * turnMaxSpeed;
-  }
 
 
-/* Angular adjustment stuff */
+    if(stateController.alignWhenClose() && stateController.getArmState() != StateControllerSub.ArmState.HOLD)
+      rad+=MBUtils.clamp(stateController.alignWhenCloseAngDiff() * alignmentkP,1);
+
+    double creep = 0;
+
+    if(stateController.getArmState() == StateControllerSub.ArmState.INTAKE && rawJoyHypot<0.1)
+     creep = -0.5 ; //-0.5
+
+    SmartDashboard.putNumber("rawJoyHypot",rawJoyHypot);
+
+    SmartDashboard.putNumber("alignWhenCloseAngDiff",stateController.alignWhenCloseAngDiff());
+
+
+
+    /* Angular adjustment stuff */
 //  if(Math.abs(rad)>radPerSecondDeadband || lastStillHeading.getDegrees() == 0){
 //    lastStillHeading = Rotation2d.fromDegrees(pigeon.getAngle());
 //  }
 
 
 
-  drive(-joystickY ,-joystickX ,-rad);
+  drive(-joystickY + creep ,-joystickX ,-rad);
 }
 
+public void noteAssistCreep(double vel){
+    double rad = MBUtils.clamp(stateController.alignWhenCloseAngDiff() * alignmentkP,1);
+    drive(0,vel,-rad);
+}
 
 
 
@@ -155,6 +230,15 @@ public void xConfig() {
 
 Rotation2d lastStillHeading = new Rotation2d();
 public void drive(double xMeters,double yMeters, double rad){
+
+  if(Robot.isSimulation()){
+    simXMeters = xMeters;
+    simYMeters = yMeters;
+    simRad = rad;
+
+  }
+
+/*
   if(Math.abs(rad)>radPerSecondDeadband || lastStillHeading.getDegrees() == 0){
     lastStillHeading = Rotation2d.fromDegrees(pigeon.getAngle());
   }
@@ -168,35 +252,40 @@ public void drive(double xMeters,double yMeters, double rad){
   if(!beFieldOriented) radFeed = 0;
 
 
+  radFeed = 0;
+ //TODO subtract radfeed if it should be enabled
+ */
+  SwerveModuleState[] states = kinematics.toSwerveModuleStates(new ChassisSpeeds(xMeters,yMeters,rad ));
 
-  SwerveModuleState[] states = kinematics.toSwerveModuleStates(new ChassisSpeeds(xMeters,yMeters,rad - radFeed));
-
+  SmartDashboard.putNumberArray("fieldsPassedIntoKinematics",new double[]{xMeters,yMeters,rad});
   setStates(states);
 
-  if(Robot.isSimulation()){
-    if(lastSimDriveUpdateTime == 0)
-      lastSimDriveUpdateTime = Timer.getFPGATimestamp();
 
-    Rotation2d newAngle = Rotation2d.fromRadians(odometry.getEstimatedPosition().getRotation().getRadians() + rad * (Timer.getFPGATimestamp() - lastSimDriveUpdateTime));
-
-    double hypot = Math.hypot(xMeters,yMeters);
-    double angOfTranslation = Math.atan2(yMeters,xMeters);
-
-    Pose2d newPose = new Pose2d(
-            odometry.getEstimatedPosition().getX() + hypot*Math.cos(angOfTranslation+newAngle.getRadians()) *  (Timer.getFPGATimestamp() - lastSimDriveUpdateTime),
-            odometry.getEstimatedPosition().getY() + hypot*Math.sin(angOfTranslation+newAngle.getRadians())  *(Timer.getFPGATimestamp() - lastSimDriveUpdateTime),
-            newAngle
-    );
-
-  //  odometry.addVisionMeasurement(newPose, Timer.getFPGATimestamp(), VecBuilder.fill(0, 0, Units.degreesToRadians(0))); //trust, bro
-
-    resetOdometry(newPose);
-    lastSimDriveUpdateTime = Timer.getFPGATimestamp();
-  }
 
 }
 double lastSimDriveUpdateTime = 0;
 
+double simXMeters,simYMeters,simRad;
+void simDriveUpdate(){
+  if(lastSimDriveUpdateTime == 0)
+    lastSimDriveUpdateTime = Timer.getFPGATimestamp();
+
+  Rotation2d newAngle = Rotation2d.fromRadians(odometry.getEstimatedPosition().getRotation().getRadians() + simRad * (Timer.getFPGATimestamp() - lastSimDriveUpdateTime));
+
+  double hypot = Math.hypot(simXMeters,simYMeters);
+  double angOfTranslation = Math.atan2(simYMeters,simXMeters);
+
+  Pose2d newPose = new Pose2d(
+          odometry.getEstimatedPosition().getX() + hypot*Math.cos(angOfTranslation+newAngle.getRadians()) *  (Timer.getFPGATimestamp() - lastSimDriveUpdateTime),
+          odometry.getEstimatedPosition().getY() + hypot*Math.sin(angOfTranslation+newAngle.getRadians())  *(Timer.getFPGATimestamp() - lastSimDriveUpdateTime),
+          newAngle
+  );
+
+  //  odometry.addVisionMeasurement(newPose, Timer.getFPGATimestamp(), VecBuilder.fill(0, 0, Units.degreesToRadians(0))); //trust, bro
+
+  resetOdometry(newPose);
+  lastSimDriveUpdateTime = Timer.getFPGATimestamp();
+}
 
   void setStates(SwerveModuleState[] states){
     frontLeft.setState(states[0]);
@@ -212,32 +301,26 @@ double lastSimDriveUpdateTime = 0;
     rearRight.setStateWithoutDeadband(states[3]);
   }
 
-  public void autoBalanceForward(){
-    double roll = pigeon.getRoll(); //probably in degrees
-    double speedForward = roll*(1.0/100);
-
-    if(roll>15)
-      speedForward = 0.5;
-    if(roll<-15)
-      speedForward = -0.5;
 
 
-    speedForward = MBUtils.clamp(speedForward, 0.5);
 
-    drive(-speedForward,0,0);
-  }
 
 void updatePoseFromVision(){
     Optional<EstimatedRobotPose> result = visionSubsystem.getEstimatedGlobalPose(odometry.getEstimatedPosition());
     if(result.isPresent()){
       odometry.addVisionMeasurement(result.get().estimatedPose.toPose2d(), result.get().timestampSeconds);
-      SmartDashboard.putNumber("lastVisionX",result.get().estimatedPose.getX());
-      SmartDashboard.putNumber("lastVisionY",result.get().estimatedPose.getY());
+    //  SmartDashboard.putNumber("lastVisionX",result.get().estimatedPose.getX());
+    //  SmartDashboard.putNumber("lastVisionY",result.get().estimatedPose.getY());
       visionField.setRobotPose(result.get().estimatedPose.toPose2d());
-      SmartDashboard.putData("visionField",visionField);
+    //  SmartDashboard.putData("visionField",visionField);
 
 
-      SmartDashboard.putNumber("resultWasPresent",Timer.getFPGATimestamp());
+      Pose3d odometry3D = result.get().estimatedPose;
+      SmartDashboard.putNumberArray("vision3D",new double[]{odometry3D.getX(),odometry3D.getY(),odometry3D.getZ(),odometry3D.getRotation().getQuaternion().getW(),odometry3D.getRotation().getQuaternion().getX(),odometry3D.getRotation().getQuaternion().getY(),odometry3D.getRotation().getQuaternion().getZ()});
+
+
+
+    //  SmartDashboard.putNumber("resultWasPresent",Timer.getFPGATimestamp());
     }
     //add vision measurement if present while passing in current reference pose
 }
@@ -245,21 +328,27 @@ void updatePoseFromVision(){
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    stateController.feedRobotPose(odometry.getEstimatedPosition());
 
-    SmartDashboard.putNumber("FLVel",frontLeft.getModuleVelocity());
+    //SmartDashboard.putNumber("frontLeftDriveVel",frontLeft.getState().speedMetersPerSecond);
+    //SmartDashboard.putNumber("frontLeftDriveVel2",frontLeft.getModuleVelocity());
 
-odometry.updateWithTime(Timer.getFPGATimestamp(),pigeon.getRotation2d(),getPositions());
+   // SmartDashboard.putNumber("frontLeftDrivePos",frontLeft.getPosition().distanceMeters);
 
-updatePoseFromVision();
+    SmartDashboard.putNumberArray("modulePositions",new double[]{frontLeft.getPosition().distanceMeters,frontRight.getPosition().distanceMeters,rearLeft.getPosition().distanceMeters,rearRight.getPosition().distanceMeters});
+    SmartDashboard.putNumberArray("moduleHeadings",new double[]{frontLeft.getAngle(),frontRight.getAngle(),rearLeft.getAngle(),rearRight.getAngle()});
+    SmartDashboard.putNumberArray("moduleAbsoluteReadings",new double[]{frontLeft.getAbsoluteEncoderRad(),frontRight.getAbsoluteEncoderRad(),rearLeft.getAbsoluteEncoderRad(),rearRight.getAbsoluteEncoderRad()});
+    SmartDashboard.putNumberArray("moduleAbsoluteReadingsWrappedToMatch",new double[]{frontLeft.getAbsoluteEncoderRadWrappedToMatch(),frontRight.getAbsoluteEncoderRadWrappedToMatch(),rearLeft.getAbsoluteEncoderRadWrappedToMatch(),rearRight.getAbsoluteEncoderRadWrappedToMatch()});
 
+ //   SmartDashboard.putNumber("Mathdotrandom",Math.random());
 
-  field2d.setRobotPose(odometry.getEstimatedPosition());
-  //SmartDashboard.putData("field",field2d);
+    if(Robot.isSimulation())
+      simDriveUpdate();
 
-    SmartDashboard.putNumber("odom_x",odometry.getEstimatedPosition().getX());
-    SmartDashboard.putNumber("odom_y",odometry.getEstimatedPosition().getY());
-    SmartDashboard.putNumber("odom_deg",odometry.getEstimatedPosition().getRotation().getDegrees());
+    if(Robot.isReal())
+      odometry.updateWithTime(Timer.getFPGATimestamp(),pigeon.getRotation2d(),getPositions());
 
+    updatePoseFromVision();
 
     SmartDashboard.putNumberArray("odometry",new double[]{
             odometry.getEstimatedPosition().getX(),
@@ -267,41 +356,18 @@ updatePoseFromVision();
             odometry.getEstimatedPosition().getRotation().getRadians()
     });
 
+  //  SmartDashboard.putNumber("fl_head",frontLeft.getAbsoluteEncoderRad());
+  //  SmartDashboard.putNumber("fr_head",frontRight.getAbsoluteEncoderRad());
+  //  SmartDashboard.putNumber("rl_head",rearLeft.getAbsoluteEncoderRad());
+ //   SmartDashboard.putNumber("rr_head",rearRight.getAbsoluteEncoderRad());
 
 
-
-    SmartDashboard.putNumber("closestNodeY",getClosestNodeY());
 
   }
 
-  public double getClosestNodeY(){
-    double closestY = nodeYValues[0];
-    double smallestDist = Math.abs(nodeYValues[0] - odometry.getEstimatedPosition().getY());
 
-    for(int i = 0; i< nodeYValues.length; i++){
-      double dist = Math.abs(nodeYValues[i] - odometry.getEstimatedPosition().getY());
-      if(dist<smallestDist){
-        smallestDist = dist;
-        closestY = nodeYValues[i];
-      }
-    }
 
-    return closestY;
-  }
 
-  public Pose2d getClosestNode(){
-    double closestDist = Math.hypot(odometry.getEstimatedPosition().getX() - Constants.FieldConstants.alignmentPoses[0].getX(),odometry.getEstimatedPosition().getY() -  Constants.FieldConstants.alignmentPoses[0].getY());
-    Pose2d output = Constants.FieldConstants.alignmentPoses[0];
-
-    for(int i = 0; i<alignmentPoses.length; i++){
-      double dist = Math.hypot(odometry.getEstimatedPosition().getX() - Constants.FieldConstants.alignmentPoses[i].getX(),odometry.getEstimatedPosition().getY() -  Constants.FieldConstants.alignmentPoses[i].getY());
-      if(dist<closestDist){
-        closestDist = dist;
-        output = alignmentPoses[i];
-      }
-    }
-    return output;
-  }
 
   public void resetOdometry(){
     odometry.resetPosition(pigeon.getRotation2d(),getPositions(),new Pose2d());
@@ -354,7 +420,7 @@ updatePoseFromVision();
 
     drive( hypot*Math.cos(angleOfTravel) + xFF, hypot * Math.sin(angleOfTravel) + yFF, angDiff + radFF);
 
-    SmartDashboard.putNumberArray("desiredPose",new double[]{desiredPose.getX(),desiredPose.getY(),desiredPose.getRotation().getRadians()});
+ //   SmartDashboard.putNumberArray("desiredPose",new double[]{desiredPose.getX(),desiredPose.getY(),desiredPose.getRotation().getRadians()});
 
 
   }

@@ -101,6 +101,28 @@ public class SwerveModule extends SubsystemBase {
         return absoluteEncoder.getAbsolutePosition()*2*Math.PI + absoluteEncoderOffset;
     }
 
+  //  double getAbsoluteEncoderRadWrapped
+
+    double getAbsoluteEncoderRadWrappedToMatch() {
+        //  Get the absolute encoder position in radians
+        double absReading = absoluteEncoder.getAbsolutePosition() * 2 * Math.PI;
+        //  Convert the falcon reading to radians
+        double falconReading = turningToRad(turningMotor.getSelectedSensorPosition());
+
+        //  Calculate the raw difference between the absolute encoder and the falcon reading
+        double rawDifference = absReading - falconReading;
+
+        //  Find the closest number of full wraps to the falcon reading
+        double closestWrap = 2 * Math.PI * Math.round(rawDifference / (2 * Math.PI));
+
+        //  Adjust the absolute encoder reading to the closest wrapped position
+        return absReading - closestWrap + absoluteEncoderOffset;
+    }
+
+
+
+
+
     static double turningToRad(double turning){
         turning/=falconTicks;
         turning/=turningGearRatio;
@@ -116,7 +138,9 @@ public class SwerveModule extends SubsystemBase {
     }
 
     public double getAngle(){
-        return turningToRad(turningMotor.getSelectedSensorPosition());
+
+       // return turningToRad(turningMotor.getSelectedSensorPosition());
+        return getAbsoluteEncoderRadWrappedToMatch();
     }
 
     public void setState(SwerveModuleState state){
@@ -130,6 +154,10 @@ public class SwerveModule extends SubsystemBase {
 
     }
 
+    public SwerveModuleState getState(){
+        return new SwerveModuleState(getModuleVelocity(),Rotation2d.fromRadians(getAngle()));
+    }
+
     public void setStateWithoutDeadband(SwerveModuleState state) {
 
         state = SwerveModuleState.optimize(state,Rotation2d.fromRadians(getAngle())); //minimize change in heading
@@ -137,7 +165,7 @@ public class SwerveModule extends SubsystemBase {
         double delta = state.angle.getRadians() - getAngle(); //error
         double deltaConverted = delta % Math.PI; //error converted to representative of the actual gap; error > pi indicates we aren't taking the shortest route to setpoint, but rather doing one or more 180* rotations.this is caused by the discontinuity of numbers(pi is the same location as -pi, yet -pi is less than pi)
         double setAngle = Math.abs(deltaConverted) < (Math.PI / 2) ? getAngle() + deltaConverted : getAngle() - ((deltaConverted/Math.abs(deltaConverted)) * (Math.PI-Math.abs(deltaConverted))); //makes set angle +/- 1/2pi of our current position(capable of pointing all directions)
-
+    
 
         turningMotor.set(ControlMode.Position,radToTurning(setAngle));
         driveMotor.set(ControlMode.Velocity, driveMetersPerSecondToFalcon(state.speedMetersPerSecond));
@@ -166,9 +194,6 @@ public class SwerveModule extends SubsystemBase {
         return falconTicksIn;
     }
 
-    public SwerveModulePosition getModulePosition(){
-        return new SwerveModulePosition(falconToDriveMeters(driveMotor.getSelectedSensorPosition()),new Rotation2d(getAngle()));
-    }
 
     public SwerveModulePosition getPosition(){
       //  SmartDashboard.putNumber("sensorPosDrive",falconToDriveMeters(driveMotor.getSelectedSensorPosition()));
