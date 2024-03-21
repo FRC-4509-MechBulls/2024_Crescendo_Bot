@@ -78,10 +78,6 @@ public class SwerveModule extends SubsystemBase {
         turningMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
         turningMotor.setInverted(true);
 
-
-        driveMotor
-
-
         StatorCurrentLimitConfiguration turningStatorConfig = new StatorCurrentLimitConfiguration(false,40,40,0);
         SupplyCurrentLimitConfiguration turningSupplyConfig = new SupplyCurrentLimitConfiguration(true,20,30,50);
 
