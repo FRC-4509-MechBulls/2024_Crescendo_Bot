@@ -41,7 +41,7 @@ public class EFSubsystem extends SubsystemBase {
         //TODO current limits?
         intakeFollower.follow(intakeMaster,FollowerType.PercentOutput);
         intakeMaster.setInverted(true);
-        intakeFollower.setInverted(false);
+        intakeFollower.setInverted(true);
 
 
         upperShooter.restoreFactoryDefaults();

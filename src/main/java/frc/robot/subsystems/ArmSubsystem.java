@@ -43,6 +43,8 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(4);
 
         armMaster.restoreFactoryDefaults();
 
+        armMaster.setIdleMode(CANSparkBase.IdleMode.kCoast);
+
 
         armMaster.setSmartCurrentLimit(30);
       //  armMaster.setSecondaryCurrentLimit(60, 10);
@@ -168,7 +170,7 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(4);
       //  SmartDashboard.putNumber("armError",)
    //     SmartDashboard.putNumber("absoluteThroughSPARK",encoder.getPosition());
 
-        SmartDashboard.putNumber("rawArmEncoder",encoder.getPosition());
+        SmartDashboard.putNumber("rawArmEncoder",armDutyCycle.getAbsolutePosition());
 
         SmartDashboard.putNumber("armError",getArmError());
 
@@ -233,7 +235,7 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(4);
 
     boolean brakeEngageTracker = false;
     public boolean shouldBrakeEngage(){
-        if(stateControllerSub.getArmState() == StateControllerSub.ArmState.INTAKE)
+        if(stateControllerSub.getArmState() == StateControllerSub.ArmState.INTAKE || stateControllerSub.getArmState() == StateControllerSub.ArmState.SPEAKER)
             return false;
 
         if(Math.abs(getArmError())<brakeEngageError)
@@ -249,7 +251,7 @@ DutyCycleEncoder armDutyCycle = new DutyCycleEncoder(4);
         double out = armDutyCycle.getAbsolutePosition();
        // double out = 0;
 
-        double zeroReading = 0.222;
+        double zeroReading = 0.477;
         double zeroAngleHalfRots = Units.degreesToRotations(96) * 2;
 
         out -=zeroReading;

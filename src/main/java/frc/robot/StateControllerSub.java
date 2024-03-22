@@ -27,7 +27,7 @@ public class StateControllerSub extends SubsystemBase {
 
     public enum ArmState{HOLD,SPEAKER,AMP,TRAP,INTAKE,SOURCE}
     public enum EFState{HOLD,INTAKE,EJECT,READY,SHOOT}
-    public enum ClimbState{DOWN,READY,CLIMBED} //only ever set to ready or climbed
+    public enum ClimbState{READY,CLIMBED} //only ever set to ready or climbed
     public enum Objective{SPEAKER,AMP,SOURCE,TRAP}
     public enum SelectedTrap{AMP,SOURCE,REAR}
 
@@ -38,7 +38,7 @@ public class StateControllerSub extends SubsystemBase {
 
     private ArmState armState = ArmState.HOLD;
     private EFState efState = EFState.HOLD;
-    private ClimbState climbState = ClimbState.DOWN;
+    private ClimbState climbState = ClimbState.CLIMBED;
     Objective objective = Objective.SPEAKER;
     SelectedTrap selectedTrap = SelectedTrap.AMP;
 
@@ -231,15 +231,7 @@ public ClimbState getClimbStateConsideringDuckMode(){
 
 
 
-public void toggleClimbed(){
-        if(climbState == ClimbState.DOWN) //local variable climbState should never be down. (that's what the climbStateConsideringDuckMode() method is for)
-            climbState = ClimbState.CLIMBED;
 
-        if(climbState == ClimbState.CLIMBED)
-            climbState = ClimbState.READY;
-        else if(climbState == ClimbState.READY)
-            climbState = ClimbState.CLIMBED;
-}
 
 public void setClimbState(ClimbState climbState){
         this.climbState = climbState;
@@ -329,12 +321,7 @@ public void setClimbState(ClimbState climbState){
 
         SmartDashboard.putNumber("distToObjective",distanceToObjective(objective));
 
-        if(duckMode == DuckMode.UNDUCK){
-            if(climbState == ClimbState.DOWN)
-                climbState = ClimbState.READY;
-        }else{
-               // climbState = ClimbState.DOWN;
-        }
+
 
 
 
@@ -451,7 +438,7 @@ public void setClimbState(ClimbState climbState){
     public void resetPressed(){
         armState = ArmState.HOLD;
         efState = EFState.HOLD;
-        climbState = ClimbState.DOWN;
+        climbState = ClimbState.CLIMBED;
         useFedPoseIntention = UseFedPoseIntention.NO;
 
     }
@@ -463,9 +450,7 @@ public void setClimbState(ClimbState climbState){
        // climbState = ClimbState.STOWED; //TODO: should this be here?
     }
 
-    public void stowClimbPressed(){
-        climbState = ClimbState.DOWN;
-    }
+
     public void raiseClimbPressed(){
         climbState = ClimbState.READY;
     }

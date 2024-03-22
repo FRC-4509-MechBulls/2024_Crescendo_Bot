@@ -113,7 +113,7 @@ public final class Constants {
 
   public static class ArmConstants{
 
-    public static final double armMaxPower = 0.3; //0.6
+    public static final double armMaxPower = 0.6; //0.6
 
     public static final double armkP = 0.9;
     public static final double armkI = 0.4;
@@ -136,7 +136,7 @@ public final class Constants {
 
     public static final double armGearRatio = (40.0/14) * 80.0;
 
-    public static final int armMasterID = 30;
+    public static final int armMasterID = 50;
     public static final int armFollowerID = 31;
     public static final double duckingRad = Units.degreesToRadians(20.0);
     public static final double holdingRadSafe = Units.degreesToRadians(50.0);
