@@ -24,12 +24,14 @@ public final class Constants {
             1.3,
             2,
             2.25,
+            2.6,
             3,
             3.52,
             4.2
     };
     public static final double[] velocity = {
             50,
+            60,
             60,
             60,
             70,
@@ -41,7 +43,8 @@ public final class Constants {
             25,
             38,
             38,
-            42,
+            43,
+            44.5,
             45,
             49
 

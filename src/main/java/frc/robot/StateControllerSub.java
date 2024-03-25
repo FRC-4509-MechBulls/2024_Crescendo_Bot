@@ -150,6 +150,7 @@ public class StateControllerSub extends SubsystemBase {
         return SmartDashboard.getBoolean("tuningMode",false);
     }
 
+    public boolean doCreep(){return SmartDashboard.getBoolean("doCreep",true);}
     public void setUseFedPoseIntention(UseFedPoseIntention useFedPoseIntention){
         this.useFedPoseIntention = useFedPoseIntention;
     }
@@ -261,6 +262,7 @@ public void setClimbState(ClimbState climbState){
 
 
         SmartDashboard.putBoolean("tuningMode",false);
+        SmartDashboard.putBoolean("doCreep",true);
         SmartDashboard.putNumber("tuningAngle",90);
         SmartDashboard.putNumber("tuningFlywheelVel",10);
 
