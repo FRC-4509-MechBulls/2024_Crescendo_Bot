@@ -6,7 +6,9 @@
     "speaker-ampside",
     "speaker-center"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "alt-wing"
+  ],
   "defaultMaxVel": 4.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
