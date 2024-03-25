@@ -113,9 +113,9 @@ public final class Constants {
 
   public static class ArmConstants{
 
-    public static final double armMaxPower = 0.6; //0.6
+    public static final double armMaxPower = 1; //0.6
 
-    public static final double armkP = 0.9;
+    public static final double armkP = 2;
     public static final double armkI = 0.4;
     public static final double armkD = 0.0;
 
@@ -130,8 +130,8 @@ public final class Constants {
 
     public static final double armIZone = Units.degreesToRadians(10);
 
-    public static final double brakeEngageError = Units.degreesToRadians(3);
-    public static final double brakeDisengageError = Units.degreesToRadians(9);
+    public static final double brakeEngageError = Units.degreesToRadians(1);
+    public static final double brakeDisengageError = Units.degreesToRadians(4);
 
 
     public static final double armGearRatio = (40.0/14) * 80.0;
