@@ -354,14 +354,14 @@ public void setClimbState(ClimbState climbState){
         double bothRumbleVal = 0;
         double operatorRumbleVal = 0;
 
-        if(Timer.getFPGATimestamp() - timestampOfRumbleStart <0.3 && armState == ArmState.SPEAKER)
-            bothRumbleVal = 1;
+        //if(Timer.getFPGATimestamp() - timestampOfRumbleStart <0.3 && armState == ArmState.SPEAKER)
+            //bothRumbleVal = 1;
 
         if(readyToShoot && armState == ArmState.SPEAKER)
             operatorRumbleVal +=1;
 
         if(armState == ArmState.INTAKE && !beamBreak1.get())
-            operatorRumbleVal+=1;
+            bothRumbleVal+=1;
 
 
         driver.getHID().setRumble(GenericHID.RumbleType.kBothRumble,bothRumbleVal);
