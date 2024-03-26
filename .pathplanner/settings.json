@@ -3,6 +3,7 @@
   "robotLength": 1.2,
   "holonomicMode": true,
   "pathFolders": [
+    "speaker-sourceside",
     "speaker-ampside",
     "speaker-center"
   ],

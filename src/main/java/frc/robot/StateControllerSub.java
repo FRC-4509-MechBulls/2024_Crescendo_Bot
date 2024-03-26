@@ -85,6 +85,7 @@ public class StateControllerSub extends SubsystemBase {
 
     public void setPPAimAssistEnabled(boolean intakeAssistPPEnabled){
         this.aimAssistPPEnabled = intakeAssistPPEnabled;
+
     }
 
 
@@ -245,10 +246,17 @@ public void setClimbState(ClimbState climbState){
     public StateControllerSub(CommandXboxController driver, CommandXboxController operator){
         NamedCommands.registerCommand("intakeMode",new InstantCommand(this::intakePressed));
         NamedCommands.registerCommand("holdMode",new InstantCommand(this::holdPressed));
+        NamedCommands.registerCommand("ejectMode",new InstantCommand(this::ejectPressed));
         NamedCommands.registerCommand("setObjectiveSpeaker",new InstantCommand(this::speakerPressed));
         NamedCommands.registerCommand("setObjectiveAmp",new InstantCommand(this::ampPressed));
         NamedCommands.registerCommand("readyToShootMode",new InstantCommand(this::readyToShootPressed));
         NamedCommands.registerCommand("shootMode",new InstantCommand(this::shootPressed));
+        NamedCommands.registerCommand("ampMode",new InstantCommand(this::ampPressed));
+
+        NamedCommands.registerCommand("duckModeTrue",new InstantCommand(()->setDuckMode(true)));
+        NamedCommands.registerCommand("duckModeFalse",new InstantCommand(()->setDuckMode(false)));
+
+        NamedCommands.registerCommand("ampMode",new InstantCommand(this::ampPressed));
 
         NamedCommands.registerCommand("enableAimAssist",new InstantCommand(()-> setPPAimAssistEnabled(true)));
         NamedCommands.registerCommand("disableAimAssist",new InstantCommand(()-> setPPAimAssistEnabled(false)));
@@ -442,6 +450,7 @@ public void setClimbState(ClimbState climbState){
         efState = EFState.HOLD;
         climbState = ClimbState.CLIMBED;
         useFedPoseIntention = UseFedPoseIntention.NO;
+        setDuckMode(true);
 
     }
 

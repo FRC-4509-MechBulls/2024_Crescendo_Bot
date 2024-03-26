@@ -189,7 +189,7 @@ StateControllerSub stateController;
 
     double creep = 0;
 
-    if(stateController.getArmState() == StateControllerSub.ArmState.INTAKE && stateController.doCreep() && rawJoyHypot<0.1)
+    if(stateController.getArmState() == StateControllerSub.ArmState.INTAKE && stateController.doCreep() && stateController.alignWhenClose() && rawJoyHypot<0.1)
      creep = -0.5 ; //-0.5
 
 
