@@ -24,8 +24,12 @@ public class VisionSubsystem extends SubsystemBase {
     AprilTagFieldLayout aprilTagFieldLayout;
     PhotonCamera shooterSideArducam;
 
+    PhotonCamera moduleArducam;
+
     PhotonCamera intakeAssistCamera = new PhotonCamera("intake_assist_awesome");
-    PhotonPoseEstimator photonPoseEstimator;
+    PhotonPoseEstimator photonPoseEstimatorShooter;
+
+    PhotonPoseEstimator photonPoseEstimatorModule;
 
     StateControllerSub stateControllerSub;
     public VisionSubsystem(StateControllerSub stateControllerSub) {
@@ -38,10 +42,22 @@ public class VisionSubsystem extends SubsystemBase {
         }
 
         shooterSideArducam = new PhotonCamera("Arducam_OV2311_shooter");
-        Transform3d robotToCam = new Transform3d(new Translation3d(0.357,0.076,0.224), new Rotation3d(0,Units.degreesToRadians(-30),0));
-        photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, shooterSideArducam, robotToCam);
+        moduleArducam = new PhotonCamera("Arducam_OV2311_module2");
+        Transform3d robotToShooterCam = new Transform3d(new Translation3d(0.357,0.076,0.224), new Rotation3d(0,Units.degreesToRadians(-30),0)); //z = 0.224
+        Transform3d robotToModuleCam = new Transform3d(new Translation3d(-0.355,-0.335,0.152), new Rotation3d(0,Units.degreesToRadians(-30),Units.degreesToRadians(180)));
+
+        //use max dist for lens?
+        //x -> y
+        //y -> -x
+        //z -> -z
+
+
+        photonPoseEstimatorShooter = new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, shooterSideArducam, robotToShooterCam);
+        photonPoseEstimatorModule = new PhotonPoseEstimator(aprilTagFieldLayout, PhotonPoseEstimator.PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, moduleArducam, robotToModuleCam);
        // photonPoseEstimator.setPrimaryStrategy();
-        photonPoseEstimator.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
+        photonPoseEstimatorShooter.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
+        photonPoseEstimatorModule.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
+
 
         //1st + is cam forward
         //2nd + is cam to left
@@ -52,12 +68,14 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-        // photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-        //return Optional.empty();
-//Optional<EstimatedRobotPose> update = photonPoseEstimator.update();
 
-        return photonPoseEstimator.update();
-        
+        Optional<EstimatedRobotPose> shooterEstimate = photonPoseEstimatorShooter.update();
+        Optional<EstimatedRobotPose> moduleEstimate = photonPoseEstimatorModule.update();
+
+
+        if(shooterEstimate.isPresent())
+            return shooterEstimate;
+        return moduleEstimate;
     }
 
 
