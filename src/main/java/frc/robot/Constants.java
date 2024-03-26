@@ -27,7 +27,7 @@ public final class Constants {
             2.6,
             3,
             3.52,
-            4.2
+            3.82
     };
     public static final double[] velocity = {
             50,
@@ -36,7 +36,7 @@ public final class Constants {
             60,
             70,
             70,
-            70
+            80
 
     };
     public static final double[] angle = {
@@ -46,7 +46,7 @@ public final class Constants {
             43,
             44.5,
             45,
-            49
+            48
 
 
     };
@@ -134,7 +134,7 @@ public final class Constants {
     public static final double armIZone = Units.degreesToRadians(10);
 
     public static final double brakeEngageError = Units.degreesToRadians(1);
-    public static final double brakeDisengageError = Units.degreesToRadians(4);
+    public static final double brakeDisengageError = Units.degreesToRadians(6);
 
 
     public static final double armGearRatio = (40.0/14) * 80.0;
@@ -171,7 +171,7 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
 
-    public static final double driveExponent = 1.8;
+    public static final double driveExponent = 1;
     public static final double driveMaxSpeed = 5; //5
     public static final double turnExponent = 1.8;
     public static final double turnMaxSpeed = 11; //11
