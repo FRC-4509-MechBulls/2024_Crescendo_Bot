@@ -90,7 +90,7 @@ public class RobotContainer {
   //  driver.x().onTrue(new InstantCommand(stateController::ejectPressed));
   //  driver.y().onTrue(new InstantCommand(stateController::readyToShootPressed));
 
-    driver.a().onTrue(new InstantCommand(stateController::stowClimbPressed));
+   // driver.a().onTrue(new InstantCommand(stateController::stowClimbPressed));
     driver.y().onTrue(new InstantCommand(stateController::raiseClimbPressed));
     driver.x().onTrue(new InstantCommand(stateController::climbPressed));
     driver.b().onTrue(new InstantCommand(stateController::resetPressed));
@@ -155,6 +155,8 @@ public class RobotContainer {
     autoChooser.setDefaultOption("no auto :'( ", null);
 
     autoChooser.addOption("CS-PL-01-00-02",new PathPlannerAuto("CS-PL-01-00-02"));
+    autoChooser.addOption("SS-PL-12",new PathPlannerAuto("SS-PL-12"));
+    autoChooser.addOption("CS-PL-01-00-02-12",new PathPlannerAuto("CS-PL-01-00-02-12"));
     autoChooser.addOption("AS-PL-00",new PathPlannerAuto("AS-PL-00"));
     autoChooser.addOption("SS-PL",new PathPlannerAuto("SS-PL"));
     autoChooser.addOption("wipe",new PathPlannerAuto("wipe"));

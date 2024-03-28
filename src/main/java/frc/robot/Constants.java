@@ -24,26 +24,29 @@ public final class Constants {
             1.3,
             2,
             2.25,
+            2.6,
             3,
             3.52,
-            4.2
+            3.82
     };
     public static final double[] velocity = {
             50,
             60,
             60,
+            60,
             70,
             70,
-            70
+            80
 
     };
     public static final double[] angle = {
             25,
             38,
             38,
-            42,
+            43,
+            44.5,
             45,
-            49
+            48
 
 
     };
@@ -113,9 +116,9 @@ public final class Constants {
 
   public static class ArmConstants{
 
-    public static final double armMaxPower = 0.3; //0.6
+    public static final double armMaxPower = 1; //0.6
 
-    public static final double armkP = 0.9;
+    public static final double armkP = 2;
     public static final double armkI = 0.4;
     public static final double armkD = 0.0;
 
@@ -130,13 +133,13 @@ public final class Constants {
 
     public static final double armIZone = Units.degreesToRadians(10);
 
-    public static final double brakeEngageError = Units.degreesToRadians(3);
-    public static final double brakeDisengageError = Units.degreesToRadians(9);
+    public static final double brakeEngageError = Units.degreesToRadians(1);
+    public static final double brakeDisengageError = Units.degreesToRadians(6);
 
 
     public static final double armGearRatio = (40.0/14) * 80.0;
 
-    public static final int armMasterID = 30;
+    public static final int armMasterID = 50;
     public static final int armFollowerID = 31;
     public static final double duckingRad = Units.degreesToRadians(20.0);
     public static final double holdingRadSafe = Units.degreesToRadians(50.0);
@@ -168,7 +171,7 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
 
-    public static final double driveExponent = 1.8;
+    public static final double driveExponent = 1;
     public static final double driveMaxSpeed = 5; //5
     public static final double turnExponent = 1.8;
     public static final double turnMaxSpeed = 11; //11

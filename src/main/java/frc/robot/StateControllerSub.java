@@ -27,7 +27,7 @@ public class StateControllerSub extends SubsystemBase {
 
     public enum ArmState{HOLD,SPEAKER,AMP,TRAP,INTAKE,SOURCE}
     public enum EFState{HOLD,INTAKE,EJECT,READY,SHOOT}
-    public enum ClimbState{DOWN,READY,CLIMBED} //only ever set to ready or climbed
+    public enum ClimbState{READY,CLIMBED} //only ever set to ready or climbed
     public enum Objective{SPEAKER,AMP,SOURCE,TRAP}
     public enum SelectedTrap{AMP,SOURCE,REAR}
 
@@ -38,7 +38,7 @@ public class StateControllerSub extends SubsystemBase {
 
     private ArmState armState = ArmState.HOLD;
     private EFState efState = EFState.HOLD;
-    private ClimbState climbState = ClimbState.DOWN;
+    private ClimbState climbState = ClimbState.CLIMBED;
     Objective objective = Objective.SPEAKER;
     SelectedTrap selectedTrap = SelectedTrap.AMP;
 
@@ -85,6 +85,7 @@ public class StateControllerSub extends SubsystemBase {
 
     public void setPPAimAssistEnabled(boolean intakeAssistPPEnabled){
         this.aimAssistPPEnabled = intakeAssistPPEnabled;
+
     }
 
 
@@ -150,6 +151,7 @@ public class StateControllerSub extends SubsystemBase {
         return SmartDashboard.getBoolean("tuningMode",false);
     }
 
+    public boolean doCreep(){return SmartDashboard.getBoolean("doCreep",true);}
     public void setUseFedPoseIntention(UseFedPoseIntention useFedPoseIntention){
         this.useFedPoseIntention = useFedPoseIntention;
     }
@@ -231,15 +233,7 @@ public ClimbState getClimbStateConsideringDuckMode(){
 
 
 
-public void toggleClimbed(){
-        if(climbState == ClimbState.DOWN) //local variable climbState should never be down. (that's what the climbStateConsideringDuckMode() method is for)
-            climbState = ClimbState.CLIMBED;
 
-        if(climbState == ClimbState.CLIMBED)
-            climbState = ClimbState.READY;
-        else if(climbState == ClimbState.READY)
-            climbState = ClimbState.CLIMBED;
-}
 
 public void setClimbState(ClimbState climbState){
         this.climbState = climbState;
@@ -252,10 +246,17 @@ public void setClimbState(ClimbState climbState){
     public StateControllerSub(CommandXboxController driver, CommandXboxController operator){
         NamedCommands.registerCommand("intakeMode",new InstantCommand(this::intakePressed));
         NamedCommands.registerCommand("holdMode",new InstantCommand(this::holdPressed));
+        NamedCommands.registerCommand("ejectMode",new InstantCommand(this::ejectPressed));
         NamedCommands.registerCommand("setObjectiveSpeaker",new InstantCommand(this::speakerPressed));
         NamedCommands.registerCommand("setObjectiveAmp",new InstantCommand(this::ampPressed));
         NamedCommands.registerCommand("readyToShootMode",new InstantCommand(this::readyToShootPressed));
         NamedCommands.registerCommand("shootMode",new InstantCommand(this::shootPressed));
+        NamedCommands.registerCommand("ampMode",new InstantCommand(this::ampPressed));
+
+        NamedCommands.registerCommand("duckModeTrue",new InstantCommand(()->setDuckMode(true)));
+        NamedCommands.registerCommand("duckModeFalse",new InstantCommand(()->setDuckMode(false)));
+
+        NamedCommands.registerCommand("ampMode",new InstantCommand(this::ampPressed));
 
         NamedCommands.registerCommand("enableAimAssist",new InstantCommand(()-> setPPAimAssistEnabled(true)));
         NamedCommands.registerCommand("disableAimAssist",new InstantCommand(()-> setPPAimAssistEnabled(false)));
@@ -269,6 +270,7 @@ public void setClimbState(ClimbState climbState){
 
 
         SmartDashboard.putBoolean("tuningMode",false);
+        SmartDashboard.putBoolean("doCreep",true);
         SmartDashboard.putNumber("tuningAngle",90);
         SmartDashboard.putNumber("tuningFlywheelVel",10);
 
@@ -329,12 +331,7 @@ public void setClimbState(ClimbState climbState){
 
         SmartDashboard.putNumber("distToObjective",distanceToObjective(objective));
 
-        if(duckMode == DuckMode.UNDUCK){
-            if(climbState == ClimbState.DOWN)
-                climbState = ClimbState.READY;
-        }else{
-               // climbState = ClimbState.DOWN;
-        }
+
 
 
 
@@ -367,14 +364,14 @@ public void setClimbState(ClimbState climbState){
         double bothRumbleVal = 0;
         double operatorRumbleVal = 0;
 
-        if(Timer.getFPGATimestamp() - timestampOfRumbleStart <0.3 && armState == ArmState.SPEAKER)
-            bothRumbleVal = 1;
+        //if(Timer.getFPGATimestamp() - timestampOfRumbleStart <0.3 && armState == ArmState.SPEAKER)
+            //bothRumbleVal = 1;
 
         if(readyToShoot && armState == ArmState.SPEAKER)
             operatorRumbleVal +=1;
 
         if(armState == ArmState.INTAKE && !beamBreak1.get())
-            operatorRumbleVal+=1;
+            bothRumbleVal+=1;
 
 
         driver.getHID().setRumble(GenericHID.RumbleType.kBothRumble,bothRumbleVal);
@@ -451,8 +448,9 @@ public void setClimbState(ClimbState climbState){
     public void resetPressed(){
         armState = ArmState.HOLD;
         efState = EFState.HOLD;
-        climbState = ClimbState.DOWN;
+        climbState = ClimbState.CLIMBED;
         useFedPoseIntention = UseFedPoseIntention.NO;
+        setDuckMode(true);
 
     }
 
@@ -463,9 +461,7 @@ public void setClimbState(ClimbState climbState){
        // climbState = ClimbState.STOWED; //TODO: should this be here?
     }
 
-    public void stowClimbPressed(){
-        climbState = ClimbState.DOWN;
-    }
+
     public void raiseClimbPressed(){
         climbState = ClimbState.READY;
     }

@@ -172,6 +172,125 @@
               {
                 "type": "path",
                 "data": {
+                  "pathName": "speakerCenterToNote00"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.65
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "enableAimAssist"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "holdMode"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "note00ToSpeakerCenter"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.3
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "disableAimAssist"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "readyToShootMode"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "waitForArmError"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 5.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shootMode"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.4
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "disableAimAssist"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeMode"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
                   "pathName": "speakerCenterToNote02"
                 }
               },
@@ -265,10 +384,35 @@
           "data": {
             "name": "shootMode"
           }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.4
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "intakeMode"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "speakerCenterToNote12"
+                }
+              }
+            ]
+          }
         }
       ]
     }
   },
-  "folder": "alt-wing",
+  "folder": null,
   "choreoAuto": false
 }
