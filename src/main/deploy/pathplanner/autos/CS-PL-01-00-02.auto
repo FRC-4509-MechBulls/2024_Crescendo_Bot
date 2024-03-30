@@ -384,6 +384,24 @@
           "data": {
             "name": "shootMode"
           }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.4
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "holdMode"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "speakerCenterLeave"
+          }
         }
       ]
     }
