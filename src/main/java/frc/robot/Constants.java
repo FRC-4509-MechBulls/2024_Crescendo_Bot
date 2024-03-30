@@ -118,7 +118,7 @@ public final class Constants {
 
     public static final double armMaxPower = 1; //0.6
 
-    public static final double armkP = 2;
+    public static final double armkP = 1;
     public static final double armkI = 0.4;
     public static final double armkD = 0.0;
 
