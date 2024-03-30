@@ -223,7 +223,7 @@ public final class Constants {
 
     public static final int frontRightDriveID = 3;
     public static final int frontRightTurningID = 7;
-    public static final double frontRightOffsetRad =  0.754;
+    public static final double frontRightOffsetRad =  0.754 - Units.degreesToRadians(30);
 
     public static final int rearRightDriveID = 1;
     public static final int rearRightTurningID = 4;

@@ -46,7 +46,7 @@ public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new SwerveSubsystem. */
 
   SwerveModule frontLeft = new SwerveModule(frontLeftDriveID,frontLeftTurningID,false,true,3,frontLeftOffsetRad);
-  SwerveModule frontRight = new SwerveModule(frontRightDriveID,frontRightTurningID,true,true,1,frontRightOffsetRad);
+  SwerveModule frontRight = new SwerveModule(frontRightDriveID,frontRightTurningID,false,true,1,frontRightOffsetRad);
 
   SwerveModule rearLeft = new SwerveModule(rearLeftDriveID,rearLeftTurningID,true,true,0,rearLeftOffsetRad);
   SwerveModule rearRight = new SwerveModule(rearRightDriveID,rearRightTurningID,true,true,2,rearRightOffsetRad);
