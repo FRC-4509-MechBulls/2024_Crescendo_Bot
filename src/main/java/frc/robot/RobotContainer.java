@@ -154,13 +154,11 @@ public class RobotContainer {
   private void createAutos(){
     autoChooser.setDefaultOption("no auto :'( ", null);
 
-    autoChooser.addOption("CS-PL-01-00-02",new PathPlannerAuto("CS-PL-01-00-02"));
+    autoChooser.addOption("CS-PL-01-00-02-taxi",new PathPlannerAuto("CS-PL-01-00-02-taxi"));
+    autoChooser.addOption("CS-PL-00-01-02-14-13",new PathPlannerAuto("CS-PL-00-01-02-14-13"));
+
     autoChooser.addOption("SS-PL-12",new PathPlannerAuto("SS-PL-12"));
-    autoChooser.addOption("CS-PL-01-00-02-12",new PathPlannerAuto("CS-PL-01-00-02-12"));
-    autoChooser.addOption("AS-PL-00",new PathPlannerAuto("AS-PL-00"));
     autoChooser.addOption("SS-PL",new PathPlannerAuto("SS-PL"));
-    autoChooser.addOption("wipe",new PathPlannerAuto("wipe"));
-    autoChooser.addOption("CS-PL-01-02",new PathPlannerAuto("CS-PL-01-02"));
 
 
 

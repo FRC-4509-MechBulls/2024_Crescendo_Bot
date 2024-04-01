@@ -350,6 +350,7 @@ public void setClimbState(ClimbState climbState){
 
         alignWhenCloseEnabled = SmartDashboard.getBoolean("alignWhenClose",true);
 
+        SmartDashboard.putNumber("matchTime",Timer.getMatchTime());
     }
 
     double lastUnacceptableErrorTime = 0;

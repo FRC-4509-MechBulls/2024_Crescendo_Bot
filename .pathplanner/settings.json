@@ -3,14 +3,15 @@
   "robotLength": 1.2,
   "holonomicMode": true,
   "pathFolders": [
-    "speaker-sourceside",
+    "New Folder",
     "speaker-ampside",
-    "speaker-center"
+    "speaker-center",
+    "speaker-sourceside"
   ],
   "autoFolders": [
     "alt-wing"
   ],
-  "defaultMaxVel": 4.0,
+  "defaultMaxVel": 3.8,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
