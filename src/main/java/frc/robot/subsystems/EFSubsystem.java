@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.revrobotics.CANSparkBase;
+import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -78,6 +79,25 @@ public class EFSubsystem extends SubsystemBase {
 
         upperShooter.setInverted(true);
         lowerShooter.setInverted(true);
+
+
+        upperShooter.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus1,500);
+        upperShooter.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus2,500);
+        upperShooter.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus3,500);
+        upperShooter.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus4,500);
+        upperShooter.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus5,500);
+        upperShooter.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus6,500);
+
+
+        lowerShooter.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus1,500);
+        lowerShooter.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus2,500);
+        lowerShooter.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus3,500);
+        lowerShooter.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus4,500);
+        lowerShooter.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus5,500);
+        lowerShooter.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus6,500);
+
+
+
 
 
         upperShooter.burnFlash();
