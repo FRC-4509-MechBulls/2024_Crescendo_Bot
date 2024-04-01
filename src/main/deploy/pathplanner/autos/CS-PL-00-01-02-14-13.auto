@@ -118,18 +118,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "holdMode"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.4
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "readyToShootMode"
                 }
               },
@@ -224,18 +212,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "holdMode"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.4
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "readyToShootMode"
                 }
               },
@@ -327,18 +303,6 @@
           "type": "sequential",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "holdMode"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.4
-                }
-              },
               {
                 "type": "named",
                 "data": {

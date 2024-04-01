@@ -341,6 +341,11 @@ public void setClimbState(ClimbState climbState){
             makeEFHoldTimer.reset();
 
         }
+        if(makeEFReadyTimer.hasElapsed(0.3)){
+            efState = EFState.READY;
+            makeEFReadyTimer.stop();
+            makeEFReadyTimer.reset();
+        }
 
         if(!beamBreak1.get() && armState == ArmState.INTAKE){
        //    timestampOfRumbleStart = Timer.getFPGATimestamp();
@@ -472,6 +477,7 @@ public void setClimbState(ClimbState climbState){
 
 
     Timer makeEFHoldTimer = new Timer();
+    Timer makeEFReadyTimer = new Timer();
 
     public void holdPressed(){
         armState=ArmState.HOLD;
@@ -493,7 +499,14 @@ public void setClimbState(ClimbState climbState){
     }
     public void readyToShootPressed(){
        // armState = ArmState.HOLD;
-        efState = EFState.READY;
+
+        if(efState == EFState.INTAKE){
+            efState= EFState.EJECT;
+            makeEFReadyTimer.reset();
+            makeEFReadyTimer.start();
+        }else{
+            efState = EFState.READY;
+        }
 
       //  efState = EFState.READY;
     }
