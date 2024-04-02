@@ -341,7 +341,7 @@ public void setClimbState(ClimbState climbState){
             makeEFHoldTimer.reset();
 
         }
-        if(makeEFReadyTimer.hasElapsed(0.3)){
+        if(makeEFReadyTimer.hasElapsed(0.12)){
             efState = EFState.READY;
             makeEFReadyTimer.stop();
             makeEFReadyTimer.reset();
@@ -356,6 +356,9 @@ public void setClimbState(ClimbState climbState){
         alignWhenCloseEnabled = SmartDashboard.getBoolean("alignWhenClose",true);
 
         SmartDashboard.putNumber("matchTime",Timer.getMatchTime());
+
+
+        SmartDashboard.putBoolean("useFedPoseIntention",useFedPoseIntention == UseFedPoseIntention.YES && (Timer.getFPGATimestamp()%0.25>0.25/2));
     }
 
     double lastUnacceptableErrorTime = 0;

@@ -68,7 +68,7 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(drive);
 
     NamedCommands.registerCommand("joystick0", new RunCommand(()->swerveSubsystem.joystickDrive(0,0,0),swerveSubsystem));
-    NamedCommands.registerCommand("waitForArmError", new WaitForArmError(armSubsystem, Units.degreesToRadians(2),0.25));
+    NamedCommands.registerCommand("waitForArmError", new WaitForArmError(armSubsystem, Units.degreesToRadians(1),0.25));
 
     // Configure the trigger bindings
     configureBindings();
@@ -159,6 +159,7 @@ public class RobotContainer {
 
     autoChooser.addOption("SS-PL-12",new PathPlannerAuto("SS-PL-12"));
     autoChooser.addOption("SS-PL",new PathPlannerAuto("SS-PL"));
+    autoChooser.addOption("AS-PL",new PathPlannerAuto("AS-PL"));
 
 
 

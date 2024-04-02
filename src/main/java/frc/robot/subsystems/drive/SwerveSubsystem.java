@@ -70,7 +70,7 @@ StateControllerSub stateController;
     pigeon.configFactoryDefault();
     pigeon.zeroGyroBiasNow();
     odometry = new SwerveDrivePoseEstimator(kinematics,pigeon.getRotation2d(),getPositions(),new Pose2d());
-    odometry.setVisionMeasurementStdDevs(VecBuilder.fill(2, 2, Units.degreesToRadians(400)));
+    odometry.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, Units.degreesToRadians(400)));
     this.visionSubsystem = visionSubsystem;
     this.stateController = stateController;
 
@@ -185,7 +185,7 @@ StateControllerSub stateController;
 
 
     if(stateController.alignWhenClose() && stateController.getArmState() != StateControllerSub.ArmState.HOLD)
-      rad+=MBUtils.clamp(stateController.alignWhenCloseAngDiff() * alignmentkP,1);
+      rad+=MBUtils.clamp(stateController.alignWhenCloseAngDiff() * alignmentkP,2);
 
     double creep = 0;
 

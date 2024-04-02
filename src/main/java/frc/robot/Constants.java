@@ -27,7 +27,7 @@ public final class Constants {
             2.6,
             3,
             3.52,
-            3.82
+            3.7
     };
     public static final double[] velocity = {
             50,
@@ -36,7 +36,7 @@ public final class Constants {
             60,
             70,
             70,
-            80
+            70
 
     };
     public static final double[] angle = {
@@ -186,7 +186,7 @@ public final class Constants {
 
   public static final class DriveConstants{
 
-    public static final double alignmentkP = 12;
+    public static final double alignmentkP = 10;
 
     /*Physical Characteristics*/
     public static final double TRACK_WIDTH = Units.inchesToMeters(23.625); //need to find
