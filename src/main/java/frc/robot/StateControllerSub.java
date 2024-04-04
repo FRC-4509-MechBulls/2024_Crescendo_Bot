@@ -341,7 +341,7 @@ public void setClimbState(ClimbState climbState){
             makeEFHoldTimer.reset();
 
         }
-        if(makeEFReadyTimer.hasElapsed(0.12)){
+        if(makeEFReadyTimer.hasElapsed(0.17)){
             efState = EFState.READY;
             makeEFReadyTimer.stop();
             makeEFReadyTimer.reset();

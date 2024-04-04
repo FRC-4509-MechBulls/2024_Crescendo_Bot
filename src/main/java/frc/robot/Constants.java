@@ -118,9 +118,9 @@ public final class Constants {
 
     public static final double armMaxPower = 1; //0.6
 
-    public static final double armkP = 2;
-    public static final double armkI = 0.4;
-    public static final double armkD = 0.0;
+    public static final double armkP = 1.6;
+    public static final double armkI = 0.2;
+    public static final double armkD = 0.03;
 
 
     public static final double armkPBrakeless = 0.3;
@@ -172,7 +172,7 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
 
     public static final double driveExponent = 1;
-    public static final double driveMaxSpeed = 5; //5
+    public static final double driveMaxSpeed = 4; //5
     public static final double turnExponent = 1.8;
     public static final double turnMaxSpeed = 11; //11
 

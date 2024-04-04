@@ -70,7 +70,7 @@ StateControllerSub stateController;
     pigeon.configFactoryDefault();
     pigeon.zeroGyroBiasNow();
     odometry = new SwerveDrivePoseEstimator(kinematics,pigeon.getRotation2d(),getPositions(),new Pose2d());
-    odometry.setVisionMeasurementStdDevs(VecBuilder.fill(1, 1, Units.degreesToRadians(400)));
+    odometry.setVisionMeasurementStdDevs(VecBuilder.fill(5, 5, Units.degreesToRadians(400)));
     this.visionSubsystem = visionSubsystem;
     this.stateController = stateController;
 

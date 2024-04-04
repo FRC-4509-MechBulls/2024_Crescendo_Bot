@@ -68,7 +68,7 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(drive);
 
     NamedCommands.registerCommand("joystick0", new RunCommand(()->swerveSubsystem.joystickDrive(0,0,0),swerveSubsystem));
-    NamedCommands.registerCommand("waitForArmError", new WaitForArmError(armSubsystem, Units.degreesToRadians(1),0.25));
+    NamedCommands.registerCommand("waitForArmError", new WaitForArmError(armSubsystem, Units.degreesToRadians(2),0.25));
 
     // Configure the trigger bindings
     configureBindings();
