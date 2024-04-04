@@ -118,7 +118,7 @@ public class RobotContainer {
 
    // driver.rightTrigger(0.5).onTrue(swerveSubsystem.getDefaultCommand());
 
-    driver.rightBumper().onTrue(new InstantCommand(stateController::scheduleAlignmentCommand,swerveSubsystem));
+   // driver.rightBumper().onTrue(new InstantCommand(stateController::scheduleAlignmentCommand,swerveSubsystem));
     driver.rightBumper().onFalse(swerveSubsystem.getDefaultCommand());
 
 
