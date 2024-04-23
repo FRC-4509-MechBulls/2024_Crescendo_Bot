@@ -128,6 +128,10 @@ public class RobotContainer {
 
     operator.leftTrigger(0.5).onTrue(new InstantCommand(()->stateController.shootPressed()));
 
+    // Testing stuff idk (dpad forward pressed then move robot forward)
+
+    driver.povUp().whileTrue(new RunCommand(()->swerveSubsystem.aimAtPerson(), swerveSubsystem));
+
    //TODO driver.x().onTrue(new InstantCommand(stateController::shootPressed));
 
 

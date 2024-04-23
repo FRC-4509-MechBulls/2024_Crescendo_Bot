@@ -22,6 +22,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -44,6 +46,8 @@ import static frc.robot.Constants.OperatorConstants.*;
 
 public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new SwerveSubsystem. */
+
+  private NetworkTable personTable = NetworkTableInstance.getDefault().getTable("personDetector");
 
   SwerveModule frontLeft = new SwerveModule(frontLeftDriveID,frontLeftTurningID,false,true,3,frontLeftOffsetRad);
   SwerveModule frontRight = new SwerveModule(frontRightDriveID,frontRightTurningID,false,true,1,frontRightOffsetRad);
@@ -128,6 +132,19 @@ StateControllerSub stateController;
   }
 
 
+  public void aimAtPerson() {
+
+
+    double[] personXList  = personTable.getEntry("personList").getDoubleArray(new double[]{});
+
+    if (personTable.getEntry("personCount").getInteger(0) == 0) {
+      personX = 0;
+    }
+
+    personX *= 4;
+    personX = MBUtils.clamp(personX,2);
+    drive(0, 0, -personX);
+  }
 
   public void joystickDrive(double joystickX, double joystickY, double rad){
 
@@ -186,6 +203,8 @@ StateControllerSub stateController;
 
     if(stateController.alignWhenClose() && stateController.getArmState() != StateControllerSub.ArmState.HOLD)
       rad+=MBUtils.clamp(stateController.alignWhenCloseAngDiff() * alignmentkP,2);
+
+
 
     double creep = 0;
 
@@ -423,6 +442,7 @@ void updatePoseFromVision(){
     drive( hypot*Math.cos(angleOfTravel) + xFF, hypot * Math.sin(angleOfTravel) + yFF, angDiff + radFF);
 
  //   SmartDashboard.putNumberArray("desiredPose",new double[]{desiredPose.getX(),desiredPose.getY(),desiredPose.getRotation().getRadians()});
+
 
 
   }
