@@ -131,14 +131,39 @@ StateControllerSub stateController;
     return new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),rearLeft.getPosition(),rearRight.getPosition()};
   }
 
-
+boolean personLastSeenOnLeft = false;
   public void aimAtPerson() {
 
 
     double[] personXList  = personTable.getEntry("personList").getDoubleArray(new double[]{});
 
-    if (personTable.getEntry("personCount").getInteger(0) == 0) {
-      personX = 0;
+    SmartDashboard.putNumberArray("personXListReceived",personXList);
+
+    if(personXList.length<1) {
+     // drive(0,0,0);
+      SmartDashboard.putNumber("personX",5);
+
+      if (personLastSeenOnLeft) {
+        drive(0, 0, 0.3);
+      } else {
+        drive(0, 0, -0.3);
+      }
+
+      return;
+    }
+
+    double personX = personXList[0];
+
+    SmartDashboard.putNumber("personX", personX);
+
+    for(int i = 1; i <personXList.length; i++)
+      if(Math.abs(personX) > Math.abs(personXList[i]))
+        personX = personXList[i];
+
+    if (personX > 0) {
+      personLastSeenOnLeft = false;
+    } else {
+      personLastSeenOnLeft = true;
     }
 
     personX *= 4;
