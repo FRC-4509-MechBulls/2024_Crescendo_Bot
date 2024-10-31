@@ -60,7 +60,10 @@ public class RobotContainer {
 
 
   RunCommand drive = new RunCommand(()->swerveSubsystem.joystickDrive(driver.getLeftX(),driver.getLeftY(),driver.getRightX()),swerveSubsystem);
-
+  InstantCommand turnRight = new InstantCommand(()->swerveSubsystem.joystickDrive(1,0,0), swerveSubsystem);
+  InstantCommand turnUp = new InstantCommand(()->swerveSubsystem.joystickDrive(0,1,0), swerveSubsystem);
+  InstantCommand turnDown = new InstantCommand(()->swerveSubsystem.joystickDrive(0,-1,0), swerveSubsystem);
+  InstantCommand turnLeft = new InstantCommand(()->swerveSubsystem.joystickDrive(-1,0,0), swerveSubsystem);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -80,10 +83,34 @@ public class RobotContainer {
     driver.start().onTrue(new InstantCommand(swerveSubsystem::resetOdometry));
     driver.back().onTrue(new InstantCommand(swerveSubsystem::toggleFieldOriented));
 
+    driver.povUp().onTrue(turnUp);
+    driver.povDown().onTrue(turnDown);
+    driver.povLeft().onTrue(turnLeft);
+    driver.povRight().onTrue(turnRight);
+
+    driver.y().onTrue(new InstantCommand(stateController::raiseClimbPressed));
+    driver.x().onTrue(new InstantCommand(stateController::climbPressed));
+    driver.b().onTrue(new InstantCommand(stateController::resetPressed));
+
+    driver.leftBumper().onTrue(new InstantCommand(()->stateController.setDuckMode(false)));
+    driver.leftBumper().onFalse(new InstantCommand(()->stateController.setDuckMode(true)));
+
+    driver.rightBumper().onTrue(new InstantCommand(stateController::scheduleAlignmentCommand,swerveSubsystem));
+    driver.rightBumper().onFalse(swerveSubsystem.getDefaultCommand());
+
+    operator.povUp().onTrue(new InstantCommand(stateController::sourcePressed));
+    operator.povRight().onTrue(new InstantCommand(stateController::ampPressed));
+    operator.povDown().onTrue(new InstantCommand(stateController::speakerPressed));
+
     operator.a().onTrue(new InstantCommand(stateController::intakePressed));
     operator.b().onTrue(new InstantCommand(stateController::holdPressed));
     operator.x().onTrue(new InstantCommand(stateController::ejectPressed));
     operator.y().onTrue(new InstantCommand(stateController::readyToShootPressed));
+
+    operator.leftBumper().onTrue(new InstantCommand(stateController::resetPressed));
+    operator.rightBumper().onTrue(new InstantCommand(()->stateController.setSpeakerBase(!stateController.getSpeakerBase())));
+
+    operator.leftTrigger(0.5).onTrue(new InstantCommand(()->stateController.shootPressed()));
 
   //  driver.a().onTrue(new InstantCommand(stateController::intakePressed));
   //  driver.b().onTrue(new InstantCommand(stateController::holdPressed));
@@ -91,42 +118,34 @@ public class RobotContainer {
   //  driver.y().onTrue(new InstantCommand(stateController::readyToShootPressed));
 
    // driver.a().onTrue(new InstantCommand(stateController::stowClimbPressed));
-    driver.y().onTrue(new InstantCommand(stateController::raiseClimbPressed));
-    driver.x().onTrue(new InstantCommand(stateController::climbPressed));
-    driver.b().onTrue(new InstantCommand(stateController::resetPressed));
 
-    operator.leftBumper().onTrue(new InstantCommand(stateController::resetPressed));
+
 
    // operator.leftBumper().onTrue(new InstantCommand(stateController::stowPressed));
    // operator.rightBumper().onTrue(new InstantCommand(stateController::raiseClimbPressed));
    // operator.rightTrigger(0.5).onTrue(new InstantCommand(stateController::climbPressed));
 
-    operator.povUp().onTrue(new InstantCommand(stateController::sourcePressed));
-    operator.povRight().onTrue(new InstantCommand(stateController::ampPressed));
-    operator.povDown().onTrue(new InstantCommand(stateController::speakerPressed));
+
 
     //operator.povLeft().onTrue(new InstantCommand(stateController::trapPressed));
 
    // operator.leftTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));
-    driver.rightTrigger(0.5).onTrue(new InstantCommand(stateController::shootPressed));
+    
 
    // driver.rightBumper().onTrue(new InstantCommand(stateController::toggleClimbed));
-    driver.leftTrigger(0.5).onTrue(new InstantCommand(()->stateController.readyToShootPressed()));
+  
 
-    driver.leftBumper().onTrue(new InstantCommand(()->stateController.setDuckMode(false)));
-    driver.leftBumper().onFalse(new InstantCommand(()->stateController.setDuckMode(true)));
+
 
    // driver.rightTrigger(0.5).onTrue(swerveSubsystem.getDefaultCommand());
 
-    driver.rightBumper().onTrue(new InstantCommand(stateController::scheduleAlignmentCommand,swerveSubsystem));
-    driver.rightBumper().onFalse(swerveSubsystem.getDefaultCommand());
+
 
 
   //  driver.povUp().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(0)).schedule()));
   //  driver.povLeft().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(1.0/3)).schedule()));
   //  driver.povRight().onTrue(new InstantCommand(()->Alignments.trapTest(stateController, Rotation2d.fromRotations(-1.0/3)).schedule()));
 
-    operator.leftTrigger(0.5).onTrue(new InstantCommand(()->stateController.shootPressed()));
 
    //TODO driver.x().onTrue(new InstantCommand(stateController::shootPressed));
 

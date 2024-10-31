@@ -49,6 +49,7 @@ public class StateControllerSub extends SubsystemBase {
     DuckMode duckMode = DuckMode.DOWN;
 
     boolean alignWhenCloseEnabled = true;
+    boolean speakerBase = true;
 
 
     private Pose2d robotPose = new Pose2d();
@@ -167,10 +168,22 @@ public class StateControllerSub extends SubsystemBase {
         feedIntendedPose(AllianceFlipUtil.apply(pose));
     }
 
-
+    public boolean getSpeakerBase() {
+        return speakerBase;
+    }
+    public void setSpeakerBase(boolean value) {
+        speakerBase = value;
+    }
+    
     public double getSpeakerAngle(){ //TODO: arm angle in radians
         if(tuningMode())
             return Units.degreesToRadians(SmartDashboard.getNumber("tuningAngle",90));
+
+        if(speakerBase){
+            Optional<Double> angle = MBUtils.interpolateOrExtrapolateFlat(ShootingTables.dist,ShootingTables.angle, 1.3);
+        if(angle.isPresent())
+            return Units.degreesToRadians(angle.get());
+        }
 
      //   if(useFedPoseIntention == UseFedPoseIntention.YES)
         double distanceToUse = distanceToMySpeaker();

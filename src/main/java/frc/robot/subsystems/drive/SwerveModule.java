@@ -1,6 +1,7 @@
 package frc.robot.subsystems.drive;
 
 import com.ctre.phoenix.motorcontrol.*;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -22,6 +23,7 @@ public class SwerveModule extends SubsystemBase {
     private boolean absoluteEncoderReversed;
     double absoluteEncoderOffset;
 
+    
 
     public SwerveModule(int driveMotorID, int turningMotorID, boolean driveMotorReversed, boolean turningMotorReversed, int absoluteEncoderID, double absoluteEncoderOffset){
 
@@ -37,8 +39,6 @@ public class SwerveModule extends SubsystemBase {
         absoluteEncoder.setDistancePerRotation(1.0);
         this.absoluteEncoderOffset = absoluteEncoderOffset;
 
-
-
         /*Drive Motor Configs */
         driveMotor.config_kP(0,driveMotorkP);
         driveMotor.config_kI(0,driveMotorkI);
@@ -51,8 +51,8 @@ public class SwerveModule extends SubsystemBase {
         driveMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
         driveMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
 
-        StatorCurrentLimitConfiguration driveStatorConfig = new StatorCurrentLimitConfiguration(false,40,40,0);
-        SupplyCurrentLimitConfiguration driveSupplyConfig = new SupplyCurrentLimitConfiguration(true,45,55,50);
+        StatorCurrentLimitConfiguration driveStatorConfig = new StatorCurrentLimitConfiguration(true,40,45,0);
+        SupplyCurrentLimitConfiguration driveSupplyConfig = new SupplyCurrentLimitConfiguration(true,40,45,50);
 
         driveMotor.configStatorCurrentLimit(driveStatorConfig);
         driveMotor.configSupplyCurrentLimit(driveSupplyConfig);
@@ -78,7 +78,7 @@ public class SwerveModule extends SubsystemBase {
         turningMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
         turningMotor.setInverted(true);
 
-        StatorCurrentLimitConfiguration turningStatorConfig = new StatorCurrentLimitConfiguration(false,40,40,0);
+        StatorCurrentLimitConfiguration turningStatorConfig = new StatorCurrentLimitConfiguration(true,40,40,0);
         SupplyCurrentLimitConfiguration turningSupplyConfig = new SupplyCurrentLimitConfiguration(true,20,30,50);
 
         turningMotor.configStatorCurrentLimit(turningStatorConfig);

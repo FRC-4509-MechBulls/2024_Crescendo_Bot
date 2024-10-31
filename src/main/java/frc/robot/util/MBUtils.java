@@ -2,6 +2,9 @@ package frc.robot.util;
 
 import java.util.Optional;
 
+import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants;
+
 public class MBUtils {
 
     public static double lerp(double value1, double value2, double t) { //linear interpolation!! (for shrimp)
@@ -196,6 +199,9 @@ public class MBUtils {
         }
     }
 
+    public static double falconTicksToRad(double ticks) {
+        return (ticks*2*Math.PI)/(DriveConstants.falconTicks*DriveConstants.turningGearRatio);
+    }
 
 
 }
