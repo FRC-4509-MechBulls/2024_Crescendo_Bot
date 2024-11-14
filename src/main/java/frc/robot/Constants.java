@@ -219,20 +219,20 @@ public final class Constants {
 
 
     /*Motor IDs and offsets */
-    public static final int frontLeftDriveID = 8;
+    public static final int frontLeftDriveID = 1;
     public static final int frontLeftTurningID = 2;
     public static final double frontLeftOffsetRad = 0.797+Math.PI/2 + (Math.PI - 3.068); //0.797+Math.PI/2 + (Math.PI - 3.068); 
 
     public static final int frontRightDriveID = 3;
-    public static final int frontRightTurningID = 7;
+    public static final int frontRightTurningID = 4;
     public static final double frontRightOffsetRad = 2.900 - 3*Math.PI/2 - 1.12; //2.900 - 3*Math.PI/2 - 1.12;
 
-    public static final int rearRightDriveID = 1;
-    public static final int rearRightTurningID = 4;
+    public static final int rearRightDriveID = 7;
+    public static final int rearRightTurningID = 8;
     public static final double rearRightOffsetRad = 2.116 - 1*Math.PI/2 + (2*Math.PI - 6.127); //2.116 - 1*Math.PI/2 + (2*Math.PI - 6.127);
 
-    public static final int rearLeftDriveID = 6;
-    public static final int rearLeftTurningID = 5;
+    public static final int rearLeftDriveID = 5;
+    public static final int rearLeftTurningID = 6;
     public static final double rearLeftOffsetRad = 5.541 - 3*Math.PI/2 + (2*Math.PI - 6.124); //5.541 - 3*Math.PI/2 + (2*Math.PI - 6.124);
 
 
